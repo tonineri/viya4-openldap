@@ -1,0 +1,38 @@
+---
+config:
+  application:
+    sas.identities.providers.ldap.connection:
+      host: 'sas-ldap-service'
+      port: '636'
+      url: 'ldaps://${sas.identities.providers.ldap.connection.host}:${sas.identities.providers.ldap.connection.port}'
+      userDN: 'cn=sasbind,dc=sasldap,dc=com'
+      password: 'SAS@ldapB1nd'
+      anonymousBind: 'false'
+    sas.identities.providers.ldap.group:
+      accountId: 'cn'
+      baseDN: 'ou=groups,dc=sasldap,dc=com'
+      createdDate: 'createTimestamp'
+      distinguishedName: 'none'
+      member: 'memberUid'
+      memberOf: 'none'
+      modifiedDate: 'modifyTimestamp'
+      objectClass: 'posixGroup'
+      objectFilter: '(objectClass=posixGroup)'
+      searchFilter: '${sas.identities.providers.ldap.group.accountId}={0}'
+    sas.identities.providers.ldap.user:
+      accountId: 'uid'
+      baseDN: 'ou=users,dc=sasldap,dc=com'
+      createdDate: 'createTimestamp'
+      distinguishedName: 'none'
+      memberOf: 'none'
+      modifiedDate: 'modifyTimestamp'
+      objectClass: 'posixAccount'
+      objectFilter: '(objectClass=posixAccount)'
+      searchFilter: '${sas.identities.providers.ldap.user.accountId}={0}'
+    sas.identities.providers.ldap:
+      primaryGroupMembershipsEnabled: 'true'
+    sas.identities:
+      administrator: 'sasadm'
+    sas.logon.initial:
+      user: sasboot
+      password: SASpwd001

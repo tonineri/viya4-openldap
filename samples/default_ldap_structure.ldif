@@ -1,0 +1,173 @@
+# Organizational Unit - Users
+dn: ou=users,dc=sasldap,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: users
+
+# Organizational Unit - Groups
+dn: ou=groups,dc=sasldap,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: groups
+
+# Group - SAS Service Accounts
+dn: cn=sas,ou=groups,dc=sasldap,dc=com
+objectClass: extensibleObject
+objectClass: groupOfNames
+objectClass: posixGroup
+objectClass: top
+gidNumber: 1001
+cn: sas
+name: SAS System Accounts
+displayName: SAS System Accounts
+member: uid=sas,ou=users,dc=sasldap,dc=com
+member: uid=cas,ou=users,dc=sasldap,dc=com
+memberUid: sas
+memberUid: cas
+l: Italy
+o: SASLDAP
+
+# Group - SAS Admins group
+dn: cn=sasadmins,ou=groups,dc=sasldap,dc=com
+objectClass: extensibleObject
+objectClass: groupOfNames
+objectClass: posixGroup
+objectClass: top
+gidNumber: 2001
+cn: sasadmins
+name: SAS Admins
+displayName: SAS Admins
+member: uid=sasadm,ou=users,dc=sasldap,dc=com
+memberUid: sasadm
+l: Italy
+o: SASLDAP
+
+# Group - SAS Developers group
+dn: cn=sasdevs,ou=groups,dc=sasldap,dc=com
+objectClass: extensibleObject
+objectClass: groupOfNames
+objectClass: posixGroup
+objectClass: top
+gidNumber: 3001
+cn: sasdevs
+name: SAS Developers
+displayName: SAS Developers
+member: uid=sasdev,ou=users,dc=sasldap,dc=com
+memberUid: sasdev
+l: Italy
+o: SASLDAP
+
+# Group - SAS Users group
+dn: cn=sasusers,ou=groups,dc=sasldap,dc=com
+objectClass: extensibleObject
+objectClass: groupOfNames
+objectClass: posixGroup
+objectClass: top
+gidNumber: 4001
+cn: sasusers
+name: SASUsers
+displayName: SAS Users
+member: uid=sasuser,ou=users,dc=sasldap,dc=com
+memberUid: sasuser
+l: Italy
+o: SASLDAP
+
+# User - SAS System Account
+dn: uid=sas,ou=users,dc=sasldap,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: posixAccount
+objectClass: top
+uidNumber: 1001
+gidNumber: 1001
+uid: sas
+cn: sas
+givenName: SAS
+sn: System Account
+displayName: SAS System Account
+mail: sas@sasldap.com
+l: Italy
+o: SASLDAP
+homeDirectory: /home/sas
+loginShell: /bin/bash
+userPassword: lnxsas
+
+# User - CAS System Account
+dn: uid=cas,ou=users,dc=sasldap,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: posixAccount
+objectClass: top
+uidNumber: 1002
+gidNumber: 1001
+uid: cas
+cn: cas
+givenName: CAS
+sn: System Account
+displayName: CAS System Account
+mail: cas@sasldap.com
+l: Italy
+o: SASLDAP
+homeDirectory: /home/cas
+loginShell: /bin/bash
+userPassword: lnxsas
+
+# User - SAS Admin user
+dn: uid=sasadm,ou=users,dc=sasldap,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: posixAccount
+objectClass: top
+uidNumber: 2001
+gidNumber: 2001
+uid: sasadm
+cn: sasadm
+givenName: SAS Admin
+sn: Admin    
+displayName: SAS Admin Admin
+mail: sasadm@sasldap.com
+l: Italy
+o: SASLDAP
+homeDirectory: /home/sasadm
+loginShell: /bin/bash
+userPassword: lnxsas
+
+# User - SAS Dev user
+dn: uid=sasdev,ou=users,dc=sasldap,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: posixAccount
+objectClass: top
+uidNumber: 3001
+gidNumber: 3001
+uid: sasdev
+cn: sasdev
+givenName: SAS Developer
+sn: Developer
+displayName: SAS Developer
+mail: sasdev@sasldap.com
+l: Italy
+o: SASLDAP
+homeDirectory: /home/sasdev
+loginShell: /bin/bash
+userPassword: lnxsas
+
+# User - SAS User user
+dn: uid=sasuser,ou=users,dc=sasldap,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: posixAccount
+objectClass: top
+uidNumber: 4001
+gidNumber: 4001
+uid: sasuser
+cn: sasuser
+givenName: SAS User
+sn: User
+displayName: SAS User
+mail: sasuser@sasldap.com
+l: Italy
+o: SASLDAP
+homeDirectory: /home/sasuser
+loginShell: /bin/bash
+userPassword: lnxsas

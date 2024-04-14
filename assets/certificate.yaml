@@ -1,0 +1,27 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sas-ldap-certificate
+spec:
+  secretName: sas-ldap-certificate
+  duration: 87600h # 10y
+  renewBefore: 360h # 15d
+  subject:
+    organizations:
+      - SASLDAP
+  commonName: sasldap.com
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 2048
+  usages:
+    - server auth
+  dnsNames:
+  - sasldap.com
+  - sas-ldap-service
+  - "*.sasldap.com"
+  issuerRef:
+    name: sas-ldap-cert-issuer
+    kind: Issuer

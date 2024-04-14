@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sas-ldap-service
+  labels:
+    app: sas-ldap-service
+    app.kubernetes.io/part-of: sas-ldap
+spec:
+  ports:
+    - name: sas-ldaps-port
+      port: 636
+      targetPort: 636
+      protocol: TCP
+    - name: sas-ldaps-gport
+      port: 3269
+      targetPort: 3269
+      protocol: TCP
+  selector:
+    app: sas-ldap-server
