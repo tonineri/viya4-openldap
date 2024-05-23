@@ -1,6 +1,6 @@
 <div align="center">
 
-![SAS Viya](./.design/logo.png)
+![SAS Viya](/.design/logo.png)
 
 # **SAS Viya 4 | OpenLDAP (Persistent)**
 
