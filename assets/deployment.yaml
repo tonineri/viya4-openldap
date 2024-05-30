@@ -21,8 +21,6 @@ spec:
         - name: sas-ldap-server
           image: antonioneri/openldap:latest
           imagePullPolicy: IfNotPresent
-          args:
-            - --copy-service
           volumeMounts:
             - name: sas-ldap-volume-overlay
               mountPath: /container/service/slapd/assets/config/bootstrap/ldif/03-memberOf.ldif
