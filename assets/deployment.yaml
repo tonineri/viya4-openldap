@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: sas-ldap-server
-          image: osixia/openldap:1.5.0
+          image: antonioneri/openldap:latest
           imagePullPolicy: IfNotPresent
           args:
             - --copy-service
