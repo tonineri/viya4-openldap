@@ -27,7 +27,7 @@ spec:
             - name: sas-ldap-volume-overlay
               mountPath: /container/service/slapd/assets/config/bootstrap/ldif/03-memberOf.ldif
               subPath: 03-memberOf.ldif
-            - name: sas-ldap-data
+            - name: sas-ldap-db
               mountPath: /var/lib/ldap
             - name: sas-ldap-config
               mountPath: /etc/ldap/slapd.d
@@ -85,9 +85,9 @@ spec:
         - name: sas-ldap-volume-overlay
           configMap:
             name: sas-ldap-memberof-overlay
-        - name: sas-ldap-data
+        - name: sas-ldap-db
           persistentVolumeClaim:
-            claimName: sas-ldap-data-pvc
+            claimName: sas-ldap-db-pvc
         - name: sas-ldap-config
           persistentVolumeClaim:
             claimName: sas-ldap-config-pvc
