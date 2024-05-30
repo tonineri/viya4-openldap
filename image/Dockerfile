@@ -49,7 +49,7 @@ RUN wget https://github.com/cloudflare/cfssl/releases/download/v${CFSSL_VERSION}
 ## cleanup
 RUN rm cfssl_${CFSSL_VERSION}_linux_amd64 cfssljson_${CFSSL_VERSION}_linux_amd64
 
-# Add container directory to /container and assign execute permissions on executables
+# Add container directory to /container and assign execution permissions on executables
 ADD container /container
 RUN chmod +x /container/service/slapd/*.sh /container/tool/install-service.py
 
