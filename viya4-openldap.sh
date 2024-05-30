@@ -256,10 +256,10 @@ echo -e "Port:   1636"
 echo -e "User:   cn=admin,dc=sasldap,dc=com"
 echo -e "Pass:   SAS@ldapAdm1n"
 echo -e "BaseDN: dc=sasldap,dc=com"
-echo -e "Certificate: $PWD/certificate/sasldap_CA.crt"
+echo -e "Certificate: $PWD/certificates/sasldap_CA.crt"
 echo -e "________________________________________________________________"
 echo -e "\n$OPTMSG | You can upload the default OU/User/Group structure by launching the following command ${BOLD}on a new terminal while port-forwarding is running${NONE}:"
-echo -e "${ITALIC}LDAPTLS_REQCERT=allow LDAPTLS_CACERT="$PWD/certificate/sasldap_CA.crt" ldapadd -x -H ldaps://localhost:1636 -D cn=admin,dc=sasldap,dc=com -w SAS@ldapAdm1n -f $PWD/samples/default_ldap_structure.ldif${NONE}"
+echo -e "${ITALIC}LDAPTLS_REQCERT=allow LDAPTLS_CACERT="$PWD/certificates/sasldap_CA.crt" ldapadd -x -H ldaps://localhost:1636 -D cn=admin,dc=sasldap,dc=com -w SAS@ldapAdm1n -f $PWD/samples/default_ldap_structure.ldif${NONE}"
 echo -e "\n$NOTEMSG | These are the default accounts and passwords that would be deployed in the LDAP, ${BOLD}${YELLOW}if${NONE} you'd choose to upload the default structure:"
 echo -e "\n| username | password      |"
 echo -e "|----------|---------------|"
@@ -325,7 +325,7 @@ while true; do
   kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1636:636
 done
 
-echo -e "\n$NOTEMSG | Copy the ${ITALIC}../certificate/sasldap_CA.crt${NONE} file in your ${ITALIC}\$deploy/site-config/security/cacerts${NONE} directory and define it in your ${ITALIC}customer-provided-ca-certificates.yaml${NONE} file."
+echo -e "\n$NOTEMSG | Copy the ${ITALIC}../certificates/sasldap_CA.crt${NONE} file in your ${ITALIC}\$deploy/site-config/security/cacerts${NONE} directory and define it in your ${ITALIC}customer-provided-ca-certificates.yaml${NONE} file."
 echo -e "        If no modifications were made to the script, consider copying the ${ITALIC}samples/sitedefault.yaml${NONE} to ${ITALIC}\$deploy/site-config/sitedefault.yaml${NONE}."
 echo -e "        Ensure you also defined it in the 'transformers' section of your ${ITALIC}\$deploy/kustomization.yaml${NONE} file."
 exit 1

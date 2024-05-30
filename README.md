@@ -16,14 +16,13 @@
 4. [Port-forwarding and Management](#port-forwarding-and-management)
 5. [Users and Passwords](#users-and-passwords)
 6. [Configure with SAS Viya](#configure-with-sas-viya)
-7. [Troubleshooting](#troubleshooting)
 
 ![Divider](/.design/divider.png)
 
 ## Description
 
 This script streamlines the establishment of a dedicated namespace for OpenLDAP, deploying it effortlessly with default user and group configurations.
-The tool **only** supports encrypted connection to ports **636** / **3269**.
+The tool **only** supports encrypted connection to ports **636** / **3269** .
 
 ![Divider](/.design/divider.png)
 
@@ -76,7 +75,7 @@ chmod +x viya4-openldap.sh
 4. **OPTIONAL**: You can upload the default OU/User/Group structure (found in [samples/default_ldap_structure.ldif](samples/default_ldap_structure.ldif)) by opening a new terminal and launching the following command from the `viya4-openldap` directory **while port-forwarding is running**:
 
 ```bash
-LDAPTLS_REQCERT=allow LDAPTLS_CACERT="$PWD/certificate/sasldap_CA.crt" ldapadd -x -H ldaps://localhost:1636 -D cn=admin,dc=sasldap,dc=com -w SAS@ldapAdm1n -f $PWD/samples/default_ldap_structure.ldif
+LDAPTLS_REQCERT=allow LDAPTLS_CACERT="$PWD/certificates/sasldap_CA.crt" ldapadd -x -H ldaps://localhost:1636 -D cn=admin,dc=sasldap,dc=com -w SAS@ldapAdm1n -f $PWD/samples/default_ldap_structure.ldif
 ```
 
 5. **OPTIONAL**: If no modifications were made to the script, consider copying the [samples/sitedefault.yaml](samples/sitedefault.yaml) to `$deploy/site-config/sitedefault.yaml`.
@@ -92,7 +91,7 @@ LDAPTLS_REQCERT=allow LDAPTLS_CACERT="$PWD/certificate/sasldap_CA.crt" ldapadd -
 1. To access and manage your LDAP, execute the following command on your jump host:
 
   ```bash
-  kubectl --namespace "$NS" port-forward --address 0.0.0.0 svc/sas-ldap-service 1636:636
+  kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1636:636
   ```
 
 ![Divider](/.design/divider.png)
@@ -104,7 +103,7 @@ LDAPTLS_REQCERT=allow LDAPTLS_CACERT="$PWD/certificate/sasldap_CA.crt" ldapadd -
 - User:         `cn=admin,dc=sasldap,dc=com`
 - Pass:         `SAS@ldapAdm1n`
 - BaseDN:       `dc=sasldap,dc=com`
-- Certificate:  `viya4-openldap/certificate/sasldap_CA.crt`
+- Certificate:  `viya4-openldap/certificates/sasldap_CA.crt`
 
 ![Divider](/.design/divider.png)
 
@@ -131,16 +130,6 @@ LDAPTLS_REQCERT=allow LDAPTLS_CACERT="$PWD/certificate/sasldap_CA.crt" ldapadd -
 
 ## Configure with SAS Viya
 
-Copy the `viya4-openldap/certificate/sasldap_CA.crt` file in your `$deploy/site-config/security/cacerts` directory and define it in your `customer-provided-ca-certificates.yaml` file."
-
-![Divider](/.design/divider.png)
-
-## Troubleshooting
-
-If cert-manager Issuer and CAs cannot be created, make sure you have the appropriate CRDs set. If not, launch this command:
-
-```bash
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.14.4/cert-manager.crds.yaml
-```
+Copy the `viya4-openldap/certificates/sasldap_CA.crt` file in your `$deploy/site-config/security/cacerts` directory and define it in your `customer-provided-ca-certificates.yaml` file."
 
 ![Divider](/.design/divider.png)
