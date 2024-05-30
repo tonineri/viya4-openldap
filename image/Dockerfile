@@ -48,7 +48,6 @@ RUN rm cfssl_${CFSSL_VERSION}_linux_amd64 cfssljson_${CFSSL_VERSION}_linux_amd64
 # Add container directory to /container, assign execution permissions and add them to PATH
 ADD container /container
 RUN chmod +x /container/service/slapd/*.sh /container/tool/*
-ENV PATH=/container/tool:${PATH}
 
 # Execute the install-service.py script
 RUN python3 /container/tool/install-service.py
