@@ -32,9 +32,7 @@ RUN apt-get update -y \
         slapd-contrib=${OPENLDAP_VERSION}\* \
         krb5-kdc-ldap \
         wget \
-    && apt-get remove -y --purge --auto-remove curl ca-certificates \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && update-ca-certificates
 
 # Install `cfssl` and `cfssljson`
 WORKDIR /tmp
@@ -55,6 +53,10 @@ ENV PATH=/container/tool:${PATH}
 # Execute the install-service.py script
 RUN install-service
 
+# Cleanup
+RUN apt-get remove -y --purge --auto-remove curl ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 # Expose LDAPS and Global Catalog (LDAPS) ports
 EXPOSE 636 3269
 
