@@ -31,8 +31,15 @@ spec:
               mountPath: /var/lib/ldap
             - name: sas-ldap-config
               mountPath: /etc/ldap/slapd.d
-            - name: sas-ldap-certs
-              mountPath: /container/service/slapd/assets/certs
+            - name: sas-ldap-certs-ca
+              mountPath: /container/service/slapd/assets/certs/ca.crt
+              subPath: ca.crt
+            - name: sas-ldap-certs-crt
+              mountPath: /container/service/slapd/assets/certs/tls.crt
+              subPath: tls.crt
+            - name: sas-ldap-certs-key
+              mountPath: /container/service/slapd/assets/certs/tls.key
+              subPath: tls.key
           ports:
             - containerPort: 636
               name: sas-ldaps-port
@@ -46,7 +53,7 @@ spec:
             - name: LDAP_TLS_KEY_FILENAME
               value: "tls.key"
             - name: LDAP_TLS_CA_CRT_FILENAME
-              value: "tls.crt"
+              value: "ca.crt"
             - name: LDAP_TLS_VERIFY_CLIENT
               value: "never"
             - name: LDAP_ORGANISATION
@@ -84,6 +91,12 @@ spec:
         - name: sas-ldap-config
           persistentVolumeClaim:
             claimName: sas-ldap-config-pvc
-        - name: sas-ldap-certs
+        - name: sas-ldap-certs-ca
+          secret:
+            secretName: "sas-ldap-ca-certificate"
+        - name: sas-ldap-certs-crt
+          secret:
+            secretName: "sas-ldap-certificate"
+        - name: sas-ldap-certs-key
           secret:
             secretName: "sas-ldap-certificate"

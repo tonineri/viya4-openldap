@@ -100,13 +100,129 @@ else
   fi
 fi
 
-# Deploy Issuer
+# Create certificates
 echo -e "________________________________________________________________"
-echo -e "\n$INFOMSG | Executing CA creation subprocess..."
-chmod +x assets/certificate_generation.sh > /dev/null 2>&1
-sh assets/certificate_generation.sh
-echo -e "$INFOMSG | CA creation subprocess completed."
-kubectl -n ${NS} apply -f assets/cert-manager-ca.yml > /dev/null 2>&1
+echo -e "\n$INFOMSG | Creating certificates..."
+mkdir -p certificates > /dev/null 2>&1
+# Create CA private key
+openssl genrsa -aes256 -passout pass:SAS-ld4p -out certificates/sasldap_CA.key 2048 > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo -e "$ERRORMSG | Failed to create CA private key."
+    exit 1
+fi
+
+# Create CA certificate
+openssl req -new -x509 -sha256 -extensions v3_ca \
+    -days 3650 \
+    -subj "/C=IT/ST=Lombardy/L=Milan/O=SASLDAP/CN=SAS Viya LDAP Root CA/emailAddress=noreply@sasldap.com" \
+    -key certificates/sasldap_CA.key \
+    -out certificates/sasldap_CA.crt \
+    -passin pass:SAS-ld4p > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo -e "$ERRORMSG | Failed to create CA certificate."
+    exit 1
+fi
+
+# Remove passphrase from CA key
+openssl rsa -in certificates/sasldap_CA.key -out certificates/sasldap_CA_nopass.key -passin pass:SAS-ld4p > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo -e "$ERRORMSG | Failed to remove passphrase from CA private key."
+    exit 1
+fi
+
+# Check that all files were created successfully
+CERTFILES="certificates/sasldap_CA.crt certificates/sasldap_CA_nopass.key certificates/sasldap_CA.key"
+for file in $CERTFILES; do
+    if [ -s "$file" ]; then
+        echo -e "$INFOMSG | $file created."
+    else
+        echo -e "$ERRORMSG | Certificates not created correctly."
+        exit 1
+    fi
+done
+
+# Create server private key
+openssl genrsa -out certificates/sasldap_server.key 2048 > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo -e "$ERRORMSG | Failed to create server private key."
+    exit 1
+fi
+
+# Create OpenSSL config file for the server certificate
+cat > certificates/sasldap_server.cnf <<EOF
+[ req ]
+default_bits       = 2048
+distinguished_name = req_distinguished_name
+req_extensions     = req_ext
+x509_extensions    = v3_req
+prompt             = no
+
+[ req_distinguished_name ]
+C  = IT
+ST = Lombardy
+L  = Milan
+O  = SASLDAP
+CN = sasldap.com
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ v3_req ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1   = sasldap.com
+DNS.2   = sas-ldap-service
+DNS.3   = *.sasldap.com
+DNS.4   = localhost
+EOF
+
+# Create server certificate signing request (CSR)
+openssl req -new -key certificates/sasldap_server.key -out certificates/sasldap_server.csr \
+    -config certificates/sasldap_server.cnf > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo -e "$ERRORMSG | Failed to create server CSR."
+    exit 1
+fi
+
+# Sign the server certificate with the CA
+openssl x509 -req -in certificates/sasldap_server.csr -CA certificates/sasldap_CA.crt -CAkey certificates/sasldap_CA_nopass.key \
+    -CAcreateserial -out certificates/sasldap_server.crt -days 3650 -sha256 \
+    -extensions v3_req -extfile certificates/sasldap_server.cnf > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo -e "$ERRORMSG | Failed to sign server certificate."
+    exit 1
+fi
+
+# Check that the server certificate and key were created successfully
+SERVER_CERTFILES="certificates/sasldap_server.crt certificates/sasldap_server.key"
+for file in $SERVER_CERTFILES; do
+    if [ -s "$file" ]; then
+        echo -e "$INFOMSG | $file created."
+    else
+        echo -e "$ERRORMSG | Server certificates not created correctly."
+        exit 1
+    fi
+done
+
+# Create Kubernetes secrets
+echo -e "$INFOMSG | Creating Kubernetes secrets..."
+
+kubectl create secret generic sas-ldap-ca-certificate --from-file=ca.crt=certificates/sasldap_CA.crt --from-file=ca.key=certificates/sasldap_CA_nopass.key -n $NS
+if [ $? -ne 0 ]; then
+    echo -e "$ERRORMSG | Failed to create CA secret."
+    exit 1
+fi
+
+kubectl create secret generic sas-ldap-certificate --from-file=tls.crt=certificates/sasldap_server.crt --from-file=tls.key=certificates/sasldap_server.key -n $NS
+if [ $? -ne 0 ]; then
+    echo -e "$ERRORMSG | Failed to create server certificate secret."
+    exit 1
+fi
+
+echo -e "$INFOMSG | Kubernetes secrets created successfully."
+echo -e "$INFOMSG | Certificates created."
+#kubectl -n ${NS} apply -f assets/cert-manager-ca.yml > /dev/null 2>&1
 echo -e "________________________________________________________________"
 
 # Deploy OpenLDAP
@@ -195,7 +311,7 @@ cleanup() {
   echo -e "________________________________________________________________"
   echo -e "\n$INFOMSG | Port forwarding stopped!"
   echo -e "$INFOMSG | To access your LDAP again, launch the following command before accessing it via LDAP browser:"
-  echo -e "${ITALIC}kubectl --namespace $NS port-forward --address 0.0.0.0 svc/sas-ldap-service 1636:636${NONE}"
+  echo -e "${ITALIC}kubectl --namespace $NS port-forward --address localhost svc/sas-ldap-service 1636:636${NONE}"
   echo -e ""
   exit 0
 }
@@ -206,7 +322,7 @@ trap cleanup INT
 # Port-forward until Ctrl-C
 
 while true; do
-  kubectl --namespace "$NS" port-forward --address 0.0.0.0 svc/sas-ldap-service 1636:636
+  kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1636:636
 done
 
 echo -e "\n$NOTEMSG | Copy the ${ITALIC}../certificate/sasldap_CA.crt${NONE} file in your ${ITALIC}\$deploy/site-config/security/cacerts${NONE} directory and define it in your ${ITALIC}customer-provided-ca-certificates.yaml${NONE} file."
