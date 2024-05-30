@@ -57,6 +57,7 @@ RUN python3 /container/tool/install-service.py
 RUN apt-get remove -y --purge --auto-remove curl ca-certificates \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # Expose LDAPS and Global Catalog (LDAPS) ports
 EXPOSE 636 3269
 
