@@ -51,7 +51,7 @@ RUN chmod +x /container/service/slapd/*.sh /container/tool/*
 ENV PATH=/container/tool:${PATH}
 
 # Execute the install-service.py script
-RUN install-service
+RUN python3 /container/tool/install-service.py
 
 # Cleanup
 RUN apt-get remove -y --purge --auto-remove curl ca-certificates \
