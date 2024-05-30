@@ -51,10 +51,11 @@ RUN rm cfssl_${CFSSL_VERSION}_linux_amd64 cfssljson_${CFSSL_VERSION}_linux_amd64
 
 # Add container directory to /container and assign execution permissions on executables
 ADD container /container
-RUN chmod +x /container/service/slapd/*.sh /container/tool/install-service.py
+RUN chmod +x /container/service/slapd/*.sh /container/tool/*
+ENV PATH:/container/tool:${PATH}
 
 # Execute the install-service.py script
-RUN python3 /container/tool/install-service.py
+RUN install-service
 
 # Expose LDAPS and Global Catalog (LDAPS) ports
 EXPOSE 636 3269
