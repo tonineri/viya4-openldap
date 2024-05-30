@@ -9,7 +9,6 @@ log-helper level eq trace && set -x
 # see https://github.com/docker/docker/issues/8231
 ulimit -n $LDAP_NOFILE
 
-
 # usage: file_env VAR
 #    ie: file_env 'XYZ_DB_PASSWORD'
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
@@ -31,7 +30,6 @@ file_env() {
 
         unset "$fileVar"
 }
-
 
 file_env 'LDAP_ADMIN_PASSWORD'
 file_env 'LDAP_CONFIG_PASSWORD'
@@ -118,9 +116,7 @@ copy_internal_seed_if_exists "${LDAP_SEED_INTERNAL_LDIF_PATH}" "${CONTAINER_SERV
 # container first start
 if [ ! -e "$FIRST_START_DONE" ]; then
 
-  #
   # Helpers
-  #
   function get_ldap_base_dn() {
     # if LDAP_BASE_DN is empty set value from LDAP_DOMAIN
     if [ -z "$LDAP_BASE_DN" ]; then
@@ -169,15 +165,11 @@ if [ ! -e "$FIRST_START_DONE" ]; then
     fi
   }
 
-  #
   # Global variables
-  #
   BOOTSTRAP=false
 
-  #
   # database and config directory are empty
   # setup bootstrap config - Part 1
-  #
   if [ -z "$(ls -A -I lost+found --ignore=.* /var/lib/ldap)" ] && \
     [ -z "$(ls -A -I lost+found --ignore=.* /etc/ldap/slapd.d)" ]; then
 
@@ -224,23 +216,17 @@ EOF
 
     rm ${CONTAINER_SERVICE_DIR}/slapd/assets/config/bootstrap/schema/rfc2307bis.*
 
-  #
   # Error: the database directory (/var/lib/ldap) is empty but not the config directory (/etc/ldap/slapd.d)
-  #
   elif [ -z "$(ls -A -I lost+found --ignore=.* /var/lib/ldap)" ] && [ ! -z "$(ls -A -I lost+found --ignore=.* /etc/ldap/slapd.d)" ]; then
     log-helper error "Error: the database directory (/var/lib/ldap) is empty but not the config directory (/etc/ldap/slapd.d)"
     exit 1
 
-  #
   # Error: the config directory (/etc/ldap/slapd.d) is empty but not the database directory (/var/lib/ldap)
-  #
   elif [ ! -z "$(ls -A -I lost+found --ignore=.* /var/lib/ldap)" ] && [ -z "$(ls -A -I lost+found --ignore=.* /etc/ldap/slapd.d)" ]; then
     log-helper error "Error: the config directory (/etc/ldap/slapd.d) is empty but not the database directory (/var/lib/ldap)"
     exit 1
 
-  #
   # We have a database and config directory
-  #
   else
 
     # try to detect if ldap backend is hdb but LDAP_BACKEND environment variable is mdb
@@ -258,10 +244,7 @@ EOF
   if [ "${KEEP_EXISTING_CONFIG,,}" == "true" ]; then
     log-helper info "/!\ KEEP_EXISTING_CONFIG = true configration will not be updated"
   else
-    #
     # start OpenLDAP
-    #
-
     # get previous hostname if OpenLDAP was started with replication
     # to avoid configuration pbs
     PREVIOUS_HOSTNAME_PARAM=""
@@ -292,7 +275,7 @@ EOF
       [[ -z "$PREVIOUS_LDAP_TLS_KEY_PATH" ]] && PREVIOUS_LDAP_TLS_KEY_PATH="${CONTAINER_SERVICE_DIR}/slapd/assets/certs/$LDAP_TLS_KEY_FILENAME"
       [[ -z "$PREVIOUS_LDAP_TLS_DH_PARAM_PATH" ]] && PREVIOUS_LDAP_TLS_DH_PARAM_PATH="${CONTAINER_SERVICE_DIR}/slapd/assets/certs/$LDAP_TLS_DH_PARAM_FILENAME"
 
-      #ssl-helper $LDAP_SSL_HELPER_PREFIX $PREVIOUS_LDAP_TLS_CRT_PATH $PREVIOUS_LDAP_TLS_KEY_PATH $PREVIOUS_LDAP_TLS_CA_CRT_PATH
+      # ssl-helper $LDAP_SSL_HELPER_PREFIX $PREVIOUS_LDAP_TLS_CRT_PATH $PREVIOUS_LDAP_TLS_KEY_PATH $PREVIOUS_LDAP_TLS_CA_CRT_PATH
       [ -f ${PREVIOUS_LDAP_TLS_DH_PARAM_PATH} ] || openssl dhparam -out ${LDAP_TLS_DH_PARAM_PATH} 2048
 
       if [ "${DISABLE_CHOWN,,}" == "false" ]; then
@@ -314,9 +297,7 @@ EOF
     log-helper info "Waiting for OpenLDAP to start..."
     while [ ! -e /run/slapd/slapd.pid ]; do sleep 0.1; done
 
-    #
     # setup bootstrap config - Part 2
-    #
     if $BOOTSTRAP; then
 
       log-helper info "Add bootstrap schemas..."
@@ -397,7 +378,7 @@ EOF
 
       # generate a certificate and key with ssl-helper tool if LDAP_CRT and LDAP_KEY files don't exists
       # https://github.com/osixia/docker-light-baseimage/blob/master/image/service-available/:ssl-tools/assets/tool/ssl-helper
-      #ssl-helper $LDAP_SSL_HELPER_PREFIX $LDAP_TLS_CRT_PATH $LDAP_TLS_KEY_PATH $LDAP_TLS_CA_CRT_PATH
+      # ssl-helper $LDAP_SSL_HELPER_PREFIX $LDAP_TLS_CRT_PATH $LDAP_TLS_KEY_PATH $LDAP_TLS_CA_CRT_PATH
 
       # create DHParamFile if not found
       [ -f ${LDAP_TLS_DH_PARAM_PATH} ] || openssl dhparam -out ${LDAP_TLS_DH_PARAM_PATH} 2048
@@ -445,12 +426,7 @@ EOF
       #[[ -f "$WAS_STARTED_WITH_TLS" ]] && rm -f "$WAS_STARTED_WITH_TLS"
     fi
 
-
-
-    #
     # Replication config
-    #
-
     function disableReplication() {
       sed -i "s|{{ LDAP_BACKEND }}|${LDAP_BACKEND}|g" ${CONTAINER_SERVICE_DIR}/slapd/assets/config/replication/replication-disable.ldif
       ldapmodify -c -Y EXTERNAL -Q -H ldapi:/// -f ${CONTAINER_SERVICE_DIR}/slapd/assets/config/replication/replication-disable.ldif 2>&1 | log-helper debug || true
@@ -519,9 +495,7 @@ EOF
         touch "$WAS_ADMIN_PASSWORD_SET"
     fi
 
-    #
     # stop OpenLDAP
-    #
     log-helper info "Stop OpenLDAP..."
 
     SLAPD_PID=$(cat /run/slapd/slapd.pid)
@@ -529,9 +503,7 @@ EOF
     while [ -e /proc/$SLAPD_PID ]; do sleep 0.1; done # wait until slapd is terminated
   fi
 
-  #
   # ldap client config
-  #
   if [ "${LDAP_TLS,,}" == "true" ]; then
     log-helper info "Configure ldap client TLS configuration..."
     sed -i --follow-symlinks "s,TLS_CACERT.*,TLS_CACERT ${LDAP_TLS_CA_CRT_PATH},g" /etc/ldap/ldap.conf
@@ -544,17 +516,13 @@ EOF
     cp -f $HOME/.ldaprc ${CONTAINER_SERVICE_DIR}/slapd/assets/.ldaprc
   fi
 
-  #
   # remove container config files
-  #
   if [ "${LDAP_REMOVE_CONFIG_AFTER_SETUP,,}" == "true" ]; then
     log-helper info "Remove config files..."
     rm -rf ${CONTAINER_SERVICE_DIR}/slapd/assets/config
   fi
 
-  #
   # setup done :)
-  #
   log-helper info "First start is done..."
   touch $FIRST_START_DONE
 fi
