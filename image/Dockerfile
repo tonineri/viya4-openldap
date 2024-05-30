@@ -1,20 +1,47 @@
 FROM ubuntu:24.04
 
-ARG OPENLDAP_LTS=2.5.18
+ARG OPENLDAP_VERSION=2.5.18
+ARG CFSSL_VERSION=1.6.5
 
 ARG LDAP_OPENLDAP_GID
 ARG LDAP_OPENLDAP_UID
 
-ARG PQCHECKER_VERSION=2.0.0
-ARG PQCHECKER_MD5=c005ce596e97d13e39485e711dcbc7e1
+ARG DEBIAN_FRONTEND=noninteractive
 
 # Add openldap user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 # If explicit uid or gid is given, use it.
 RUN if [ -z "${LDAP_OPENLDAP_GID}" ]; then groupadd -g 911 -r openldap; else groupadd -r -g ${LDAP_OPENLDAP_GID} openldap; fi \
     && if [ -z "${LDAP_OPENLDAP_UID}" ]; then useradd -u 911 -r -g openldap openldap; else useradd -r -g openldap -u ${LDAP_OPENLDAP_UID} openldap; fi
 
-# Add buster-backports in preparation for downloading newer openldap components, especially sladp
-RUN echo "deb http://ftp.debian.org/debian buster-backports main" >> /etc/apt/sources.list
+# Install necessary packages
+RUN apt update -y \
+    && apt install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        ldap-utils=${OPENLDAP_VERSION} \
+        libsasl2-modules \
+        libsasl2-modules-db \
+        libsasl2-modules-gssapi-mit \
+        libsasl2-modules-ldap \
+        libsasl2-modules-otp \
+        libsasl2-modules-sql \
+        openssl \
+        slapd=${OPENLDAP_VERSION} \
+        slapd-contrib=${OPENLDAP_VERSION} \
+        krb5-kdc-ldap \
+        wget \
+    && update-ca-certificates \
+    && apt-get remove -y --purge --auto-remove curl ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Install `cfssl` and `cfssljson`
+WORKDIR /tmp
+RUN wget https://github.com/cloudflare/cfssl/releases/download/v${CFSSL_VERSION}/cfssl_${CFSSL_VERSION}_linux_amd64 && \
+    install cfssl_${CFSSL_VERSION}_linux_amd64 -o root -g root /usr/local/bin/cfssl
+
+RUN wget https://github.com/cloudflare/cfssl/releases/download/v${CFSSL_VERSION}/cfssljson_${CFSSL_VERSION}_linux_amd64 && \
+    install cfssljson_${CFSSL_VERSION}_linux_amd64 -o root -g root /usr/local/bin/cfssljson
 
 # Install OpenLDAP, ldap-utils and ssl-tools from the (backported) baseimage and clean apt-get files
 # sources: https://github.com/osixia/docker-light-baseimage/blob/master/image/tool/add-service-available
@@ -24,7 +51,7 @@ RUN echo "path-include /usr/share/doc/krb5*" >> /etc/dpkg/dpkg.cfg.d/docker && a
     && LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get -t buster-backports install -y --no-install-recommends \
     ca-certificates \
     curl \
-    ldap-utils=${OPENLDAP_LTS}\* \
+    ldap-utils=${OPENLDAP_VERSION}\* \
     libsasl2-modules \
     libsasl2-modules-db \
     libsasl2-modules-gssapi-mit \
@@ -32,8 +59,8 @@ RUN echo "path-include /usr/share/doc/krb5*" >> /etc/dpkg/dpkg.cfg.d/docker && a
     libsasl2-modules-otp \
     libsasl2-modules-sql \
     openssl \
-    slapd=${OPENLDAP_LTS}\* \
-    slapd-contrib=${OPENLDAP_LTS}\* \
+    slapd=${OPENLDAP_VERSION}\* \
+    slapd-contrib=${OPENLDAP_VERSION}\* \
     krb5-kdc-ldap \
     && curl -o pqchecker.deb -SL http://www.meddeb.net/pub/pqchecker/deb/8/pqchecker_${PQCHECKER_VERSION}_amd64.deb \
     && echo "${PQCHECKER_MD5} *pqchecker.deb" | md5sum -c - \
@@ -45,7 +72,7 @@ RUN echo "path-include /usr/share/doc/krb5*" >> /etc/dpkg/dpkg.cfg.d/docker && a
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Add service directory to /container/service
-ADD service /container/service
+ADD container/service /container/service
 
 # Use baseimage install-service script
 # https://github.com/osixia/docker-light-baseimage/blob/master/image/tool/install-service
@@ -55,7 +82,7 @@ RUN /container/tool/install-service
 ADD environment /container/environment/99-default
 
 # Expose default ldap and ldaps ports
-EXPOSE 389 636
+EXPOSE 636 3269
 
 # Put ldap config and database dir in a volume to persist data.
 # VOLUME /etc/ldap/slapd.d /var/lib/ldap
