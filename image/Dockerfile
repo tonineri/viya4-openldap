@@ -21,7 +21,7 @@ RUN apt-get update -y \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
-        ldap-utils=${OPENLDAP_VERSION} \
+        ldap-utils=${OPENLDAP_VERSION}\* \
         libsasl2-modules \
         libsasl2-modules-db \
         libsasl2-modules-gssapi-mit \
@@ -30,8 +30,8 @@ RUN apt-get update -y \
         libsasl2-modules-sql \
         openssl \
         python3-minimal \
-        slapd=${OPENLDAP_VERSION} \
-        slapd-contrib=${OPENLDAP_VERSION} \
+        slapd=${OPENLDAP_VERSION}\* \
+        slapd-contrib=${OPENLDAP_VERSION}\* \
         krb5-kdc-ldap \
         wget \
     && apt-get remove -y --purge --auto-remove curl ca-certificates \
@@ -49,7 +49,7 @@ RUN wget https://github.com/cloudflare/cfssl/releases/download/v${CFSSL_VERSION}
 ## cleanup
 RUN rm cfssl_${CFSSL_VERSION}_linux_amd64 cfssljson_${CFSSL_VERSION}_linux_amd64
 
-# Add container directory to /container and assign execution permissions on executables
+# Add container directory to /container, assign execution permissions and add them to PATH
 ADD container /container
 RUN chmod +x /container/service/slapd/*.sh /container/tool/*
 ENV PATH=/container/tool:${PATH}
