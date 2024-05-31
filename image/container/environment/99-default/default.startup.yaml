@@ -6,8 +6,8 @@
 # This helps to keep your container configuration secret.
 
 # Required and used for new ldap server only
-LDAP_ORGANISATION: Example Inc.
-LDAP_DOMAIN: example.org
+LDAP_ORGANISATION: SASLDAP
+LDAP_DOMAIN: sasldap.com
 LDAP_BASE_DN: #if empty automatically set from LDAP_DOMAIN
 
 LDAP_ADMIN_PASSWORD: admin
@@ -22,13 +22,12 @@ LDAP_RFC2307BIS_SCHEMA: false
 # Backend
 LDAP_BACKEND: mdb
 
-# Tls
+# TLS
 LDAP_TLS: false
-LDAP_TLS_CRT_FILENAME: ldap.crt
-LDAP_TLS_KEY_FILENAME: ldap.key
-LDAP_TLS_DH_PARAM_FILENAME: dhparam.pem
-LDAP_TLS_CA_CRT_FILENAME: ca.crt
-
+#LDAP_TLS_CRT_FILENAME: ldap.crt
+#LDAP_TLS_KEY_FILENAME: ldap.key
+#LDAP_TLS_DH_PARAM_FILENAME: dhparam.pem
+#LDAP_TLS_CA_CRT_FILENAME: ca.crt
 LDAP_TLS_ENFORCE: false
 LDAP_TLS_CIPHER_SUITE: SECURE256:+SECURE128:-VERS-TLS-ALL:+VERS-TLS1.2:-RSA:-DHE-DSS:-CAMELLIA-128-CBC:-CAMELLIA-256-CBC
 LDAP_TLS_VERIFY_CLIENT: never
@@ -57,10 +56,8 @@ KEEP_EXISTING_CONFIG: false
 LDAP_REMOVE_CONFIG_AFTER_SETUP: true
 
 # ssl-helper environment variables prefix
-LDAP_SSL_HELPER_PREFIX: ldap # ssl-helper first search config from LDAP_SSL_HELPER_* variables, before SSL_HELPER_* variables.
-
-SSL_HELPER_AUTO_RENEW_SERVICES_IMPACTED: slapd
-
+#LDAP_SSL_HELPER_PREFIX: ldap # ssl-helper first search config from LDAP_SSL_HELPER_* variables, before SSL_HELPER_* variables.
+#SSL_HELPER_AUTO_RENEW_SERVICES_IMPACTED: slapd
 # Internal seeding. For example, for services in Gitlab CI.
 LDAP_SEED_INTERNAL_LDAP_TLS_CRT_FILE:
 LDAP_SEED_INTERNAL_LDAP_TLS_KEY_FILE:
