@@ -21,7 +21,7 @@
 
 ## Description
 
-This script streamlines the establishment of a dedicated namespace for OpenLDAP, deploying it effortlessly with default user and group configurations.
+Based on [osixia/openldap](https://github.com/osixia/docker-openldap), this script streamlines the establishment of a dedicated namespace for OpenLDAP, deploying it effortlessly with default user and group configurations.
 The tool **only** supports encrypted connection to port **636**.
 
 ![Divider](/.design/divider.png)
