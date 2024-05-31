@@ -22,7 +22,7 @@
 ## Description
 
 This script streamlines the establishment of a dedicated namespace for OpenLDAP, deploying it effortlessly with default user and group configurations.
-The tool **only** supports encrypted connection to ports **636** / **3269** .
+The tool **only** supports encrypted connection to port **636**.
 
 ![Divider](/.design/divider.png)
 

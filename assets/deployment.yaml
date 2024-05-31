@@ -41,8 +41,6 @@ spec:
           ports:
             - containerPort: 636
               name: sas-ldaps-port
-            - containerPort: 3269
-              name: sas-ldaps-gport
           env:
             - name: LDAP_TLS
               value: "true"
