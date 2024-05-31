@@ -54,7 +54,7 @@ ENV CONTAINER_SERVICE_DIR=/container/service
 ENV CONTAINER_TOOL_DIR=/container/tool
 
 # Execute the install-service.py script
-RUN install-service
+RUN python3 /container/tool/install-service.py
 
 # Cleanup
 RUN apt-get remove -y --purge --auto-remove curl ca-certificates \
