@@ -183,10 +183,11 @@ echo -e "\n⮞ ${BYELLOW}Prerequisites Check${NONE}\n"
 
 requiredPackages=("kubectl" "kustomize" "ldapadd" "nc")
 for pkg in "${requiredPackages[@]}"; do
-    execute \
-      --title "Checking if ${CYAN}$pkg${NONE} is installed" \
-      "which $pkg &>/dev/null" \
-      --error "$ERRORMSG | ${CYAN}$pkg${NONE} is not installed"
+  sleep 1
+  execute \
+    --title "Checking if ${CYAN}$pkg${NONE} is installed" \
+    "which $pkg &>/dev/null" \
+    --error "$ERRORMSG | ${CYAN}$pkg${NONE} is not installed"
 done
 
 ## Check if namespace exists
@@ -203,6 +204,7 @@ checkNamespace() {
     fi
 }
 
+sleep 1
 execute \
   --title "Checking namespace ${CYAN}$NS${NONE}" \
   checkNamespace \
@@ -230,6 +232,7 @@ generateCAkey() {
   fi
 }
 
+sleep 1
 execute \
   --title "Generating self-signed ${CYAN}CA private key${NONE}" \
   generateCAkey \
@@ -250,6 +253,7 @@ generateCAcrt() {
   fi
 }
 
+sleep 1
 execute \
   --title "Generating self-signed ${CYAN}CA certificate${NONE}" \
   generateCAcrt \
@@ -265,6 +269,7 @@ generateServerKey() {
   fi
 }
 
+sleep 1
 execute \
   --title "Generating self-signed ${CYAN}Server private key${NONE}" \
   generateServerKey \
@@ -313,6 +318,7 @@ generateServerCSR() {
   fi
 }
 
+sleep 1
 execute \
   --title "Generating self-signed ${CYAN}Server CSR${NONE}" \
   generateServerCSR \
@@ -336,6 +342,7 @@ generateServerCrt() {
   fi
 }
 
+sleep 1
 execute \
   --title "Generating self-signed ${CYAN}Server certificate${NONE}" \
   generateServerCrt \
@@ -358,6 +365,7 @@ createCAsecret() {
   fi
 }
 
+sleep 1
 execute \
   --title "Creating ${CYAN}CA secret${NONE}" \
   createCAsecret \
@@ -375,6 +383,7 @@ createServerSecret() {
   fi
 }
 
+sleep 1
 execute \
   --title "Creating ${CYAN}Server secret${NONE}" \
   createServerSecret \
@@ -394,6 +403,7 @@ buildOpenLDAP() {
   fi
 }
 
+sleep 1
 execute \
   --title "Building ${CYAN}OpenLDAP${NONE} deployment" \
   buildOpenLDAP \
@@ -408,6 +418,7 @@ applyOpenLDAP() {
   fi
 }
 
+sleep 1
 execute \
   --title "Applying ${CYAN}OpenLDAP${NONE} deployment" \
   applyOpenLDAP \
@@ -458,6 +469,7 @@ waitSlapdStarting() {
   return 1  # Return failure if the message is not found within the timeout
 }
 
+sleep 1
 execute \
   --title "Waiting for ${CYAN}OpenLDAP${NONE} server to start" \
   "waitSlapdStarting 120" \
