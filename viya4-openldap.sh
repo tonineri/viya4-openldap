@@ -555,7 +555,7 @@ if [ "$OpenLDAPdeployed" = true ]; then
         echo -e "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."
         kill $port_forward_pid
         wait $port_forward_pid 2>/dev/null
-        return 1
+        return 1 # SAS Viya-ready structure failed to deploy
       fi
       break
 
@@ -571,7 +571,7 @@ if [ "$OpenLDAPdeployed" = true ]; then
   done
 else
   echo -e "\n${ERRORMSG} | ${CYAN}OpenLDAP${NONE} deployment failed."
-  return 1
+  exit 1
 fi
 
 divider
