@@ -424,11 +424,11 @@ waitOpenLDAP() {
     echo "DEBUG: Pod not found"
     return 1 # Pod not found
   fi
-  if kubectl wait --for=condition=ready pod -l app=sas-ldap-server -n $NS > /dev/null 2>&1; then
+  if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS --timeout=120s; then
     echo "DEBUG: Pod is ready, starting port-forward"
     kubectl port-forward -n $NS $podOpenLDAP 1636:636 > /dev/null 2>&1 &
   else
-    echo "DEBUG: Pod is not ready"
+    echo "DEBUG: Pod is not ready or wait timed out"
     return 1 # Failed to find the pod or pod not ready
   fi
   # Wait for the local port to be open
@@ -462,7 +462,7 @@ checkSlapdStarting() {
 ### Wait until "slapd starting" message appears in the pod's logs
 waitSlapdStarting() {
   secs=$1
-  echo "DEBUG: Entering waitSlapdStarting"
+  echo "DEBUG: Entering waitSlapdStarting with timeout = $secs"
   while [ $secs -gt 0 ]; do
     if checkSlapdStarting; then
       OpenLDAPdeployed=true
@@ -483,8 +483,8 @@ execute \
   "waitSlapdStarting 120" \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} server failed to start."
 
-# Debug: print the value of OpenLDAPdeployed
-echo "DEBUG: OpenLDAPdeployed = $OpenLDAPdeployed"
+
+echo "DEBUG: OpenLDAPdeployed = $OpenLDAPdeployed" # Debug: print the value of OpenLDAPdeployed
 
 divider
 
