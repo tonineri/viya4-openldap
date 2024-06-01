@@ -344,7 +344,7 @@ execute \
 divider
 
 ## Kubernetes secrets
-echo -e "\n⮞  ${BYELLOW}Kubernetes Secrets Generation${NONE}\n"
+echo -e "\n⮞  ${BYELLOW}Kubernetes Secrets Creation${NONE}\n"
 
 ### CA secret
 createCAsecret() {
@@ -448,6 +448,7 @@ waitSlapdStarting() {
   secs=$1
   while [ $secs -gt 0 ]; do
     if checkSlapdStarting; then
+      OpenLDAPDeployed=true
       return 0  # Return success if the message is found
     else
       sleep 1
@@ -464,6 +465,12 @@ execute \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} server failed to start."
 
 divider
+
+## OpenLDAP additional
+echo -e "\n⮞  ${BYELLOW}Kubernetes Secrets Creation${NONE}\n"
+
+### CA secret
+createCAsecret() {
 
 #
 #echo -e "$INFOMSG | OpenLDAP deployed."
