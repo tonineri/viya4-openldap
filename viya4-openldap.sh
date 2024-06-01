@@ -434,12 +434,12 @@ waitOpenLDAP() {
 checkSlapdStarting() {
   if waitOpenLDAP; then
     if kubectl logs -n $NS $podOpenLDAP | grep -q "slapd starting"; then
-      return 0  # Return success if the message is found
+      return 0 # Return success if the message is found
     else
-      return 1  # Return failure if the message is not found
+      return 1 # Return failure if the message is not found
     fi
   else
-    return 1  # waitOpenLDAP failed
+    return 1 # waitOpenLDAP failed
   fi
 }
 
@@ -449,14 +449,13 @@ waitSlapdStarting() {
   while [ $secs -gt 0 ]; do
     if checkSlapdStarting; then
       OpenLDAPDeployed=true
-      return 0  # Return success if the message is found
+      return 0 # Return success if the message is found
     else
       sleep 1
       : $((secs--))
     fi
   done
-  echo -e "$ERRORMSG | Timeout: slapd starting message not found in pod's logs."
-  return 1  # Return failure if the message is not found within the timeout
+  return 1 # Return failure if the message is not found within the timeout
 }
 
 execute \
@@ -466,21 +465,63 @@ execute \
 
 divider
 
-## OpenLDAP additional
-echo -e "\n⮞  ${BYELLOW}Kubernetes Secrets Creation${NONE}\n"
+## OpenLDAP info
+if [ "$openLDAPdeployed" = true ]; then
+  echo -e "\n⮞  ${BYELLOW}OpenLDAP configuration${NONE}\n"
+  return 0 # OpenLDAP is deployed
+else
+  return 1 # OpenLDAP deployment failed
+fi
 
-### CA secret
-createCAsecret() {
+### Print connection info
+printConnectionInfo() {
+  echo ""
+  echo -e "Host:   IP/hostname of this host"
+  echo -e "Port:   1636"
+  echo -e "User:   cn=admin,dc=sasldap,dc=com"
+  echo -e "Pass:   SAS@ldapAdm1n"
+  echo -e "BaseDN: dc=sasldap,dc=com"
+  echo -e "CA:     $PWD/certificates/sasldap_CA.crt"
+  echo ""
+}
 
-#
-#echo -e "$INFOMSG | OpenLDAP deployed."
-#echo -e "________________________________________________________________"
-#echo -e "\nThese are the default account and passwords available in SASLDAP:"
-#echo -e "\n| username | password      |"
-#echo -e "|----------|---------------|"
-#echo -e "| admin    | SAS@ldapAdm1n |"
-#echo -e "| sasbind  | SAS@ldapB1nd  |"
-#
+### Print default tree
+printDefaultTree() {
+  echo ""
+  echo -e "🌐 dc=sasldap,dc=com"
+  echo -e " ├──👷🏻‍♂️ cn=admin   | 🔑 SAS@ldapAdm1n"
+  echo -e " └──🔗 cn=sasbind | 🔑 SAS@ldapB1nd"
+  echo ""
+}
+
+### Print SAS tree
+printSAStree() {
+  echo ""
+  echo -e "🌐 dc=sasldap,dc=com"
+  echo -e " ├──👷🏻‍♂️ cn=admin   | 🔑 SAS@ldapAdm1n"
+  echo -e " ├──🔗 cn=sasbind | 🔑 SAS@ldapB1nd"
+  echo -e " ├──📁 ou=groups"
+  echo -e " │   ├──👥 cn=sas       | 🤝 cas, sas"
+  echo -e " │   ├──👥 cn=sasadmins | 🤝 sasadm"
+  echo -e " │   ├──👥 cn=sasdevs   | 🤝 sasdev"
+  echo -e " │   └──👥 cn=sasusers  | 🤝 sasuser"
+  echo -e " └──📁 ou=users"
+  echo -e "     ├──👤 uid=cas     | 🔑 lnxsas"
+  echo -e "     ├──👤 uid=sas     | 🔑 lnxsas"
+  echo -e "     ├──👤 uid=sasadm  | 🔑 lnxsas"
+  echo -e "     ├──👤 uid=sasdev  | 🔑 lnxsas"
+  echo -e "     └──👤 uid=sasuser | 🔑 lnxsas"
+  echo ""
+}
+
+if [ "$openLDAPdeployed" = true ]; then
+  echo -e "\n⮞  ${BYELLOW}OpenLDAP configuration${NONE}\n"
+  return 0 # OpenLDAP is deployed
+else
+  return 1 # OpenLDAP deployment failed
+fi
+
+
 ## Print access info
 #echo -e "________________________________________________________________"
 #echo -e "\nWhile script running, you can access the LDAP from your client via LDAP browser using following parameters:"
