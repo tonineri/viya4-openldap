@@ -533,27 +533,21 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
       port_forward_pid=$!
 
       # Add the default LDAP structure
-      LDAPTLS_REQCERT=allow LDAPTLS_CACERT="certificates/sasldap_CA.crt" \
-      ldapadd -x \
-      -H ldaps://localhost:1636 \
-      -D cn=admin,dc=sasldap,dc=com \
-      -w SAS@ldapAdm1n \
-      -f samples/default_ldap_structure.ldif > /dev/null 2>&1
+      LDAPTLS_REQCERT=allow LDAPTLS_CACERT="certificates/sasldap_CA.crt" ldapadd -x -H ldaps://localhost:1636 -D cn=admin,dc=sasldap,dc=com -w SAS@ldapAdm1n -f samples/default_ldap_structure.ldif > /dev/null 2>&1
 
-      # Check if ldapadd was successful
+      # Check if ldapadd was successful, kill the background port-forward task
       if [ $? -eq 0 ]; then
-        # Kill the background port-forward task
         kill $port_forward_pid
         wait $port_forward_pid 2>/dev/null
-
         echo -e "\nThis is the new ${CYAN}OpenLDAP${NONE} structure:"
-        printSAStree
-        
+        printSAStree     
+
       else
         echo -e "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."
         kill $port_forward_pid
         wait $port_forward_pid 2>/dev/null
         exit 1 # SAS Viya-ready structure failed to deploy
+
       fi
       break
 
