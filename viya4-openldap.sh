@@ -414,7 +414,6 @@ execute \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} deployment application failed."
 
 ### Wait for OpenLDAP server to start
-### Wait for OpenLDAP server to start
 waitOpenLDAP() {
   podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
   if kubectl wait --for=condition=ready pod -l app=sas-ldap-server -n $NS > /dev/null 2>&1; then
