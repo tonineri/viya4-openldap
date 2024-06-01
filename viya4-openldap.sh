@@ -128,8 +128,8 @@ divider() {
 
 printHeader() {
   echo -e "\n________________________________________________________________"
-  echo -e "\n⮞               ${BOLD}Persistent OpenLDAP${NONE} for ${BCYAN}SAS Viya${NONE}              ⮜"
-  echo -e "________________________________________________________________\n"
+  echo -e "\n                ${BOLD}Persistent OpenLDAP${NONE} for ${BCYAN}SAS Viya${NONE}               "
+  echo -e "________________________________________________________________"
 }
 # -----------------------------------------------  options  ----------------------------------------------
 
@@ -179,7 +179,7 @@ printHeader
 # ---------------------------------------------- prerequisites -------------------------------------------
 
 ## Check if kubectl, kustomize and ldap-utils are installed
-echo -e "\n⮞ ${BYELLOW}Prerequisites Check${NONE}\n"
+echo -e "\n⮞  ${BYELLOW}Prerequisites Check${NONE}\n"
 
 requiredPackages=("kubectl" "kustomize" "ldapadd" "nc")
 for pkg in "${requiredPackages[@]}"; do
@@ -213,7 +213,7 @@ divider
 # ---------------------------------------------- mainScript ----------------------------------------------
 
 ## Certificates
-echo -e "\n⮞ ${BYELLOW}Certificate Generation for LDAP(S)${NONE}\n"
+echo -e "\n⮞  ${BYELLOW}Certificate Generation for LDAP(S)${NONE}\n"
 mkdir -p certificates > /dev/null 2>&1
 
 ### Self-signed CA
@@ -344,7 +344,7 @@ execute \
 divider
 
 ## Kubernetes secrets
-echo -e "\n⮞ ${BYELLOW}Kubernetes Secrets Generation${NONE}\n"
+echo -e "\n⮞  ${BYELLOW}Kubernetes Secrets Generation${NONE}\n"
 
 ### CA secret
 createCAsecret() {
@@ -383,7 +383,7 @@ execute \
 divider
 
 ## Deploy OpenLDAP
-echo -e "\n⮞ ${BYELLOW}OpenLDAP Deployment${NONE}\n"
+echo -e "\n⮞  ${BYELLOW}OpenLDAP Deployment${NONE}\n"
 
 ### Build OpenLDAP deployment
 buildOpenLDAP() {
