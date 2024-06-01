@@ -413,68 +413,48 @@ execute \
   applyOpenLDAP \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} deployment application failed."
 
-# Declare the OpenLDAPdeployed variable at the beginning
-OpenLDAPdeployed=false
-
 ### Wait for OpenLDAP server to start
 waitOpenLDAP() {
-  echo "DEBUG: Entering waitOpenLDAP"
   podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
-  if [[ -z "$podOpenLDAP" ]]; then
-    echo "DEBUG: Pod not found"
-    return 1 # Pod not found
-  fi
   if kubectl wait --for=condition=ready pod -l app=sas-ldap-server -n $NS > /dev/null 2>&1; then
-    echo "DEBUG: Pod is ready, starting port-forward"
     kubectl port-forward -n $NS $podOpenLDAP 1636:636 > /dev/null 2>&1 &
   else
-    echo "DEBUG: Pod is not ready"
     return 1 # Failed to find the pod or pod not ready
   fi
   # Wait for the local port to be open
   until nc -z localhost 1636; do
-      echo "DEBUG: Waiting for local port 1636 to be open"
       sleep 1
   done
-  echo "DEBUG: Local port 1636 is open"
   kill $(jobs -p)
   return 0 # OpenLDAP server started
 }
 
 ### Check if "slapd starting" message appears in the pod's logs
 checkSlapdStarting() {
-  echo "DEBUG: Entering checkSlapdStarting"
   if waitOpenLDAP; then
-    echo "DEBUG: waitOpenLDAP succeeded"
     if kubectl logs -n $NS $podOpenLDAP | grep -q "slapd starting"; then
-      echo "DEBUG: Found 'slapd starting' in logs"
       return 0 # Return success if the message is found
     else
-      echo "DEBUG: 'slapd starting' not found in logs"
       return 1 # Return failure if the message is not found
     fi
   else
-    echo "DEBUG: waitOpenLDAP failed"
     return 1 # waitOpenLDAP failed
   fi
 }
 
 ### Wait until "slapd starting" message appears in the pod's logs
+OpenLDAPdeployed=false
 waitSlapdStarting() {
   secs=$1
-  echo "DEBUG: Entering waitSlapdStarting"
   while [ $secs -gt 0 ]; do
     if checkSlapdStarting; then
       OpenLDAPdeployed=true
-      echo "DEBUG: slapd starting message found"
       return 0 # Return success if the message is found
     else
-      echo "DEBUG: slapd starting message not found, retrying... ($secs seconds left)"
       sleep 1
       : $((secs--))
     fi
   done
-  echo "DEBUG: Timeout in waitSlapdStarting"
   return 1 # Return failure if the message is not found within the timeout
 }
 
@@ -483,8 +463,8 @@ execute \
   "waitSlapdStarting 120" \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} server failed to start."
 
-# Debug: print the value of OpenLDAPdeployed
-echo "DEBUG: OpenLDAPdeployed = $OpenLDAPdeployed"
+
+echo "DEBUG: OpenLDAPdeployed = $OpenLDAPdeployed" # Debug: print the value of OpenLDAPdeployed
 
 divider
 
@@ -600,4 +580,87 @@ fi
 divider
 echo ""
 
+## ----------------------------------------------  scriptEnd  ---------------------------------------------
+
+## Print access info
+#echo -e "________________________________________________________________"
+#echo -e "\nWhile script running, you can access the LDAP from your client via LDAP browser using following parameters:"
+#echo -e "Host:   IP/hostname of this host"
+#echo -e "Port:   1636"
+#echo -e "User:   cn=admin,dc=sasldap,dc=com"
+#echo -e "Pass:   SAS@ldapAdm1n"
+#echo -e "BaseDN: dc=sasldap,dc=com"
+#echo -e "Certificate: $PWD/certificates/sasldap_CA.crt"
+#echo -e "________________________________________________________________"
+#echo -e "\n$OPTMSG | You can upload the default OU/User/Group structure by launching the following command ${BOLD}on a new terminal while port-forwarding is running${NONE}:"
+#echo -e "${ITALIC}LDAPTLS_REQCERT=allow LDAPTLS_CACERT="$PWD/certificates/sasldap_CA.crt" ldapadd -x -H ldaps://localhost:1636 -D cn=admin,dc=sasldap,dc=com -w SAS@ldapAdm1n -f $PWD/samples/default_ldap_structure.ldif${NONE}"
+#echo -e "\n$NOTEMSG | These are the default accounts and passwords that would be deployed in the LDAP, ${BOLD}${YELLOW}if${NONE} you'd choose to upload the default structure:"
+#echo -e "\n| username | password      |"
+#echo -e "|----------|---------------|"
+#echo -e "| admin    | SAS@ldapAdm1n |"
+#echo -e "| sasbind  | SAS@ldapB1nd  |"
+#echo -e "| sas      | lnxsas        |"
+#echo -e "| cas      | lnxsas        |"
+#echo -e "| sasadm   | lnxsas        |"
+#echo -e "| sasdev   | lnxsas        |"
+#echo -e "| sasuser  | lnxsas        |"
+#echo -e "________________________________________________________________"
+#echo -e ""
+#
+## Function to check if "slapd starting" message appears in the pod's logs
+#check_slapd_starting() {
+#    pod_name=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
+#    if kubectl logs -n $NS $pod_name | grep -q "slapd starting"; then
+#        return 0  # Return success if the message is found
+#    else
+#        return 1  # Return failure if the message is not found
+#    fi
+#}
+#
+## Function to wait until "slapd starting" message appears in the pod's logs
+#wait_for_slapd_starting() {
+#    secs=$1
+#    while [ $secs -gt 0 ]; do
+#        if check_slapd_starting; then
+#            echo -e ""
+#            echo -e "$INFOMSG | OpenLDAP TLS configuration completed."
+#            echo -e "________________________________________________________________"
+#            echo -e "\n$INFOMSG | Port-forwarding started. ${BOLD}${RED}Ctrl-C${NONE} to stop it."
+#            return 0  # Return success if the message is found
+#        else
+#            echo -ne "$INFOMSG | The script is waiting for${BOLD}${YELLOW} $secs ${NONE}seconds for slapd to start...\033[0K\r"
+#            sleep 1
+#            : $((secs--))
+#        fi
+#    done
+#    echo -e "$ERRORMSG | Timeout: slapd starting message not found in pod's logs."
+#    return 1  # Return failure if the message is not found within the timeout
+#}
+#
+## Call the function to wait for "slapd starting" message
+#wait_for_slapd_starting 120
+#
+## Cleanup function to be trapped
+#cleanup() {
+#  echo -e "________________________________________________________________"
+#  echo -e "\n$INFOMSG | Port forwarding stopped!"
+#  echo -e "$INFOMSG | To access your LDAP again, launch the following command before accessing it via LDAP browser:"
+#  echo -e "${ITALIC}kubectl --namespace $NS port-forward --address localhost svc/sas-ldap-service 1636:636${NONE}"
+#  echo -e ""
+#  exit 0
+#}
+#
+## Trap Ctrl-C and call cleanup function
+#trap cleanup INT
+#
+## Port-forward until Ctrl-C
+#while true; do
+#  kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1636:636
+#done
+#
+#echo -e "\n$NOTEMSG | Copy the ${ITALIC}../certificates/sasldap_CA.crt${NONE} file in your ${ITALIC}\$deploy/site-config/security/cacerts${NONE} directory and define it in your ${ITALIC}customer-provided-ca-certificates.yaml${NONE} file."
+#echo -e "        If no modifications were made to the script, consider copying the ${ITALIC}samples/sitedefault.yaml${NONE} to ${ITALIC}\$deploy/site-config/sitedefault.yaml${NONE}."
+#echo -e "        Ensure you also defined it in the 'transformers' section of your ${ITALIC}\$deploy/kustomization.yaml${NONE} file."
+#exit 1
+#
 ## ----------------------------------------------  scriptEnd  ---------------------------------------------
