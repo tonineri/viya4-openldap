@@ -18,13 +18,12 @@ spec:
     spec:
       containers:
         - name: sas-ldap-server
-          image: osixia/openldap:latest
+          image: osixia/openldap:1.5.0
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: sas-ldap-volume-overlay
               mountPath: /container/service/slapd/assets/config/bootstrap/ldif/03-memberOf.ldif
               subPath: 03-memberOf.ldif
-              readOnly: false
             - name: sas-ldap-db
               mountPath: /var/lib/ldap
             - name: sas-ldap-config
@@ -32,15 +31,12 @@ spec:
             - name: sas-ldap-certs-ca
               mountPath: /container/service/slapd/assets/certs/ca.crt
               subPath: ca.crt
-              readOnly: false
             - name: sas-ldap-certs-crt
               mountPath: /container/service/slapd/assets/certs/tls.crt
               subPath: tls.crt
-              readOnly: false
             - name: sas-ldap-certs-key
               mountPath: /container/service/slapd/assets/certs/tls.key
               subPath: tls.key
-              readOnly: false
           ports:
             - containerPort: 636
               name: sas-ldaps-port
