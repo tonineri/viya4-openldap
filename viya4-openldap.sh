@@ -437,6 +437,7 @@ waitForOpenLDAP() {
   while [ $secs -gt 0 ]; do
     if kubectl logs -n $NS $podOpenLDAP | grep -q "slapd starting"; then
       OpenLDAPdeployed="CHECK"
+      echo -e "$OpenLDAPdeployed"
       kill $port_forward_pid
       wait $port_forward_pid 2>/dev/null
       return 0 # Return success if the message is found
