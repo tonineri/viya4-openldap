@@ -415,14 +415,22 @@ execute \
 
 ### Wait for OpenLDAP server to start
 waitOpenLDAP() {
+  # Get the name of the OpenLDAP pod
+  podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
+  
+  if [[ -z "$podOpenLDAP" ]]; then
+    echo -e "$ERRORMSG | No pod found with label app=sas-ldap-server"
+    return 1
+  fi
+
   # Wait for the pod to be ready
-  if ! kubectl wait --for=condition=ready pod/$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}') -n $NS --timeout=120s; then
-    echo -e "$ERRORMSG | Pod $(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}') not ready within the timeout period"
+  if ! kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS --timeout=120s; then
+    echo -e "$ERRORMSG | Pod $podOpenLDAP not ready within the timeout period"
     return 1
   fi
 
   # Forward the port from the pod to localhost
-  kubectl port-forward -n $NS $(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}') 1636:636 > /dev/null 2>&1 &
+  kubectl port-forward -n $NS $podOpenLDAP 1636:636 > /dev/null 2>&1 &
   port_forward_pid=$!
 
   # Wait until the local port is open
@@ -438,7 +446,7 @@ waitOpenLDAP() {
 
 checkSlapdStarting() {
   if waitOpenLDAP; then
-    if kubectl logs -n $NS $(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}') | grep -q "slapd starting"; then
+    if kubectl logs -n $NS $podOpenLDAP | grep -q "slapd starting"; then
       return 0 # Return success if the message is found
     else
       echo -e "$ERRORMSG | 'slapd starting' message not found in logs"
@@ -456,6 +464,7 @@ waitSlapdStarting() {
   while [ $secs -gt 0 ]; do
     if checkSlapdStarting; then
       OpenLDAPdeployed=1
+      echo -e "\nDEBUG | OpenLDAPdeployed: $OpenLDAPdeployed"
       return 0 # Return success if the message is found
     else
       sleep 1
@@ -525,7 +534,7 @@ printSAStree() {
   echo ""
 }
 
-### OpenLDAP info
+## OpenLDAP info
 if [ "$OpenLDAPdeployed" -eq 1 ]; then
   echo -e "\n⮞  ${BYELLOW}OpenLDAP configuration${NONE}\n"
   
@@ -541,7 +550,7 @@ if [ "$OpenLDAPdeployed" -eq 1 ]; then
 
     if [[ "$user_input" =~ ^[Yy]$ ]]; then
       # Launch port-forward in the background
-      kubectl --namespace $NS port-forward --address localhost svc/sas-ldap-service 1636:636 > /dev/null 2>&1 &
+      kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1636:636 > /dev/null 2>&1 &
       port_forward_pid=$!
 
       # Add the default LDAP structure
