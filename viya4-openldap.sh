@@ -413,48 +413,42 @@ execute \
   applyOpenLDAP \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} deployment application failed."
 
-# Function to wait for the OpenLDAP server to start
+### Wait for OpenLDAP server to start
 waitOpenLDAP() {
-  podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
-  
-  if [[ -z "$podOpenLDAP" ]]; then
-    echo -e "$ERRORMSG | No pod found with label app=sas-ldap-server"
+  # Wait for the pod to be ready
+  if ! kubectl wait --for=condition=ready pod/$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}') -n $NS --timeout=120s; then
+    echo -e "$ERRORMSG | Pod $(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}') not ready within the timeout period"
     return 1
   fi
 
-  if ! kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS --timeout=120s; then
-    echo -e "$ERRORMSG | Pod $podOpenLDAP not ready within the timeout period"
-    return 1
-  fi
-
-  kubectl port-forward -n $NS $podOpenLDAP 1636:636 > /dev/null 2>&1 &
+  # Forward the port from the pod to localhost
+  kubectl port-forward -n $NS $(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}') 1636:636 > /dev/null 2>&1 &
   port_forward_pid=$!
 
+  # Wait until the local port is open
   until nc -z localhost 1636; do
     sleep 1
   done
 
+  # Kill the port-forward process
   kill $port_forward_pid
   wait $port_forward_pid 2>/dev/null
-  return 0
+  return 0 # OpenLDAP server started
 }
 
-# Function to check for "slapd starting" in the pod logs
 checkSlapdStarting() {
   if waitOpenLDAP; then
-    if kubectl logs -n $NS $podOpenLDAP | grep -q "slapd starting"; then
-      return 0
+    if kubectl logs -n $NS $(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}') | grep -q "slapd starting"; then
+      return 0 # Return success if the message is found
     else
       echo -e "$ERRORMSG | 'slapd starting' message not found in logs"
-      return 1
+      return 1 # Return failure if the message is not found
     fi
   else
-    echo -e "$ERRORMSG | waitOpenLDAP function failed"
-    return 1
+    return 1 # waitOpenLDAP failed
   fi
 }
 
-# Function to wait for "slapd starting" message within a specified timeout
 OpenLDAPdeployed=0
 waitSlapdStarting() {
   local secs=$1
@@ -462,7 +456,7 @@ waitSlapdStarting() {
   while [ $secs -gt 0 ]; do
     if checkSlapdStarting; then
       OpenLDAPdeployed=1
-      return 0
+      return 0 # Return success if the message is found
     else
       sleep 1
       ((secs--))
@@ -470,14 +464,14 @@ waitSlapdStarting() {
   done
 
   echo -e "$ERRORMSG | Timeout: 'slapd starting' message not found in logs"
-  return 1
+  return 1 # Return failure if the message is not found within the timeout
 }
 
-# Execute the function to wait for OpenLDAP server to start
 execute \
   --title "Waiting for ${CYAN}OpenLDAP${NONE} server to start" \
   "waitSlapdStarting 120" \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} server failed to start."
+
 
 divider
 
