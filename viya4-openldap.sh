@@ -448,8 +448,8 @@ waitSlapdStarting() {
   secs=$1
   while [ $secs -gt 0 ]; do
     if checkSlapdStarting; then
-      OpenLDAPDeployed=true
       return 0 # Return success if the message is found
+      OpenLDAPdeployed=true
     else
       sleep 1
       : $((secs--))
@@ -516,7 +516,7 @@ printSAStree() {
 }
 
 ### OpenLDAP info
-if [ "$openLDAPdeployed" = true ]; then
+if [ "$OpenLDAPdeployed" = true ]; then
   echo -e "\n⮞  ${BYELLOW}OpenLDAP configuration${NONE}\n"
   
   # Print current OpenLDAP structure
@@ -570,7 +570,7 @@ if [ "$openLDAPdeployed" = true ]; then
     fi
   done
 else
-  echo -e "$ERRORMSG | ${CYAN}OpenLDAP${NONE} deployment failed."
+  echo -e "\n${ERRORMSG} | ${CYAN}OpenLDAP${NONE} deployment failed."
   return 1
 fi
 
