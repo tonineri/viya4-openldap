@@ -415,6 +415,7 @@ execute \
 
 ### Wait for OpenLDAP server to start
 waitForOpenLDAP() {
+  local secs=$1
   local podOpenLDAP
   local port_forward_pid
   podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
