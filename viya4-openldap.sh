@@ -415,12 +415,11 @@ execute \
 
 ### Wait for OpenLDAP server to start
 waitForOpenLDAP() {
-  local secs=$1
-  OpenLDAPdeployed=0
-
-  # Get the pod name
   podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
-  
+  local secs=$1
+  local podOpenLDAP
+  local port_forward_pid
+
   # Wait for pod to be ready
   if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS --timeout=120s; then
     kubectl port-forward -n $NS $podOpenLDAP 1636:636 > /dev/null 2>&1 &
@@ -437,7 +436,7 @@ waitForOpenLDAP() {
   # Check if "slapd starting" message appears in the pod's logs
   while [ $secs -gt 0 ]; do
     if kubectl logs -n $NS $podOpenLDAP | grep -q "slapd starting"; then
-      OpenLDAPdeployed=1
+      OpenLDAPdeployed="CHECK"
       kill $port_forward_pid
       wait $port_forward_pid 2>/dev/null
       return 0 # Return success if the message is found
@@ -511,7 +510,7 @@ printSAStree() {
 }
 
 ## OpenLDAP info
-if [ "$OpenLDAPdeployed" -eq 1 ]; then
+if [ "$OpenLDAPdeployed" = "CHECK" ]; then
   echo -e "\n⮞  ${BYELLOW}OpenLDAP configuration${NONE}\n"
   
   # Print current OpenLDAP structure
