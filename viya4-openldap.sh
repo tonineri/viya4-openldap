@@ -413,6 +413,9 @@ execute \
   applyOpenLDAP \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} deployment application failed."
 
+########################################################################################
+########################################################################################
+
 # Declare the OpenLDAPdeployed variable at the beginning
 OpenLDAPdeployed=false
 
@@ -427,17 +430,19 @@ waitOpenLDAP() {
   if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS --timeout=120s; then
     echo "DEBUG: Pod is ready, starting port-forward"
     kubectl port-forward -n $NS $podOpenLDAP 1636:636 > /dev/null 2>&1 &
+    port_forward_pid=$!
   else
     echo "DEBUG: Pod is not ready or wait timed out"
     return 1 # Failed to find the pod or pod not ready
   fi
   # Wait for the local port to be open
   until nc -z localhost 1636; do
-      echo "DEBUG: Waiting for local port 1636 to be open"
-      sleep 1
+    echo "DEBUG: Waiting for local port 1636 to be open"
+    sleep 1
   done
   echo "DEBUG: Local port 1636 is open"
-  kill $(jobs -p)
+  kill $port_forward_pid
+  wait $port_forward_pid 2>/dev/null
   return 0 # OpenLDAP server started
 }
 
@@ -482,7 +487,6 @@ execute \
   --title "Waiting for ${CYAN}OpenLDAP${NONE} server to start" \
   "waitSlapdStarting 120" \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} server failed to start."
-
 
 echo "DEBUG: OpenLDAPdeployed = $OpenLDAPdeployed" # Debug: print the value of OpenLDAPdeployed
 
