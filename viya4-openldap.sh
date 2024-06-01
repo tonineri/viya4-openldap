@@ -525,7 +525,7 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
 
   # Prompt for deploying SAS Viya-ready structure
   while true; do
-    echo -e "Would you like to deploy the ${CYAN}SAS Viya${NONE}-ready structure? [${BYELLOW}y${NONE}/${BYELLOW}n${NONE}]:"
+    echo -e "\nWould you like to deploy the ${CYAN}SAS Viya${NONE}-ready structure? [${BYELLOW}y${NONE}/${BYELLOW}n${NONE}]:"
     read -r user_input
 
     if [[ "$user_input" =~ ^[Yy]$ ]]; then
