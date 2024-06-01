@@ -192,13 +192,13 @@ done
 ## Check if namespace exists
 checkNamespace() {
     if kubectl get ns "$NS" > /dev/null 2>&1; then
-        return 0  # Namespace found
+        return 0 # Namespace found
     else
         # Create the namespace if it doesn't exist
         if kubectl create namespace "$NS" > /dev/null 2>&1; then
-            return 0  # Namespace created successfully
+            return 0 # Namespace created successfully
         else
-            return 1  # Namespace creation failed
+            return 1 # Namespace creation failed
         fi
     fi
 }
@@ -220,10 +220,13 @@ mkdir -p certificates > /dev/null 2>&1
 #### Generate self-signed CA key
 generateCAkey() {
   if openssl genrsa -aes256 -passout pass:SAS-ld4p -out certificates/sasldap_CA.key 2048 > /dev/null 2>&1; then
-    return 0 # CA private key generated
     if openssl rsa -in certificates/sasldap_CA.key -out certificates/sasldap_CA_nopass.key -passin pass:SAS-ld4p > /dev/null 2>&1; then
       return 0 # Removed CA private key passphrase
+    else
+      return 1 # Failed to remove CA private key passphrase
     fi
+  else
+    return 1 # Failed to generate CA private key
   fi
 }
 
@@ -242,6 +245,8 @@ generateCAcrt() {
       -out certificates/sasldap_CA.crt \
       -passin pass:SAS-ld4p > /dev/null 2>&1; then
     return 0 # CA generated
+  else
+    return 1 # Failed to generate CA
   fi
 }
 
@@ -250,27 +255,13 @@ execute \
   generateCAcrt \
   --error "$ERRORMSG | ${CYAN}CA certificate${NONE} generation failed."
 
-
-##### Check that all CA files were generated successfully
-#CAfiles=("certificates/sasldap_CA.crt" "certificates/sasldap_CA_nopass.key" "certificates/sasldap_CA.key")
-#checkCAfiles() {
-#  for file in "${CAfiles[@]}"; do
-#    if [ -s "$file" ]; then
-#        return 0 # File exists
-#    fi
-#  done
-#}
-#
-#execute \
-#  --title "Checking if self-signed ${CYAN}CA files${NONE} were generated" \
-#  checkCAfiles \
-#  --error "$ERRORMSG | One or more ${CYAN}CA files${NONE} missing."
-#
 ### Self-signed Server
 #### Generate self-signed server private key
 generateServerKey() {
   if openssl genrsa -out certificates/sasldap_server.key 2048 > /dev/null 2>&1; then
     return 0 # Server private key generated
+  else
+    return 1 # Failed to generate Server private key
   fi
 }
 
@@ -317,6 +308,8 @@ generateServerCSR() {
       -out certificates/sasldap_server.csr \
       -config certificates/sasldap_server.conf > /dev/null 2>&1; then
     return 0 # Server CSR generated
+  else
+    return 1 # Failed to generate Server CSR
   fi
 }
 
@@ -338,6 +331,8 @@ generateServerCrt() {
       -extensions v3_req \
       -extfile certificates/sasldap_server.conf > /dev/null 2>&1; then
     return 0 # Server certificate generated
+  else
+    return 1 # Failed to generate Server certificate
   fi
 }
 
@@ -346,21 +341,6 @@ execute \
   generateServerCrt \
   --error "$ERRORMSG | ${CYAN}Server certificate${NONE} generation failed."
 
-##### Check that all Server certificate files were generated successfully
-#serverFiles=("certificates/sasldap_server.crt" "certificates/sasldap_server.key")
-#checkServerFiles() {
-#  for file in "${CcheckServerFiles[@]}"; do
-#    if [ -s "$file" ]; then
-#        return 0 # File exists
-#    fi
-#  done
-#}
-#
-#execute \
-#  --title "Checking if self-signed ${CYAN}Server files${NONE} were generated" \
-#  checkCAfiles \
-#  --error "$ERRORMSG | One or more ${CYAN}Server files${NONE} missing."
-#
 divider
 
 ## Kubernetes secrets
@@ -373,6 +353,8 @@ createCAsecret() {
       --from-file=ca.key=certificates/sasldap_CA_nopass.key \
       -n $NS > /dev/null 2>&1; then
     return 0 # CA secret created
+  else
+    return 1 # Failed to create CA secret
   fi
 }
 
@@ -388,6 +370,8 @@ createServerSecret() {
       --from-file=tls.key=certificates/sasldap_server.key \
       -n $NS > /dev/null 2>&1; then
     return 0 # Server secret created
+  else
+    return 1 # Failed to generate Server secret
   fi
 }
 
@@ -405,6 +389,8 @@ echo -e "\n⮞ ${BYELLOW}OpenLDAP Deployment${NONE}\n"
 buildOpenLDAP() {
   if kustomize build ./assets/ -o assets/${NS}-deployment.yaml | kubectl -n ${NS} apply -f - > /dev/null 2>&1; then
     return 0 # OpenLDAP deployment built
+  else
+    return 1 # OpenLDAP deployment build failed
   fi
 }
 
@@ -417,6 +403,8 @@ execute \
 applyOpenLDAP() {
   if kubectl -n ${NS} apply -f assets/${NS}-deployment.yaml > /dev/null 2>&1; then
     return 0 # OpenLDAP deployment applied
+  else
+    return 1 # OpenLDAP deployment application failed
   fi
 }
 
@@ -441,7 +429,6 @@ waitOpenLDAP() {
 
 ### Check if "slapd starting" message appears in the pod's logs
 checkSlapdStarting() {
-  waitOpenLDAP
   if kubectl logs -n $NS $podOpenLDAP | grep -q "slapd starting"; then
     return 0  # Return success if the message is found
   else
