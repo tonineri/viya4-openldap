@@ -16,14 +16,6 @@ spec:
         app: sas-ldap-server
         app.kubernetes.io/part-of: sas-ldap
     spec:
-      initContainers:
-        - name: init-memberof
-          image: osixia/openldap:1.5.0
-          command: ["/bin/sh", "-c", "ldapmodify -Y EXTERNAL -H ldapi:/// -f /container/service/slapd/assets/config/bootstrap/ldif/03-memberOf.ldif || true"]
-          volumeMounts:
-            - name: sas-ldap-volume-overlay
-              mountPath: /container/service/slapd/assets/config/bootstrap/ldif/03-memberOf.ldif
-              subPath: 03-memberOf.ldif
       containers:
         - name: sas-ldap-server
           image: osixia/openldap:1.5.0
