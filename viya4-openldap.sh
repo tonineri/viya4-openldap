@@ -468,7 +468,8 @@ divider
 ### Print connection info
 printConnectionInfo() {
   echo ""
-  echo -e "${CYAN}OpenLDAP${NONE} connection info:"
+  echo -e "⮞  ${CYAN}OpenLDAP${NONE} connection info"
+  echo ""
   echo -e "Host:   IP/hostname of this host"
   echo -e "Port:   1636"
   echo -e "User:   cn=admin,dc=sasldap,dc=com"
@@ -476,7 +477,7 @@ printConnectionInfo() {
   echo -e "BaseDN: dc=sasldap,dc=com"
   echo -e "CA:     $PWD/certificates/sasldap_CA.crt"
   echo ""
-  echo -e "$INFOMSG | To manage your LDAP, launch the following command before accessing it via LDAP browser:"
+  echo -e "$NOTEMSG | To manage your LDAP, launch the following command ${YELLOW}before${NONE} accessing it via LDAP browser:"
   echo -e "${ITALIC}kubectl --namespace $NS port-forward --address localhost svc/sas-ldap-service 1636:636${NONE}"
 }
 
@@ -511,7 +512,6 @@ printGoodbye(){
   echo ""
   echo -e "${BOLD}Persistent OpenLDAP${NONE} for ${BCYAN}SAS Viya${NONE} deployed successfully!"
   echo -e "This script will now exit"
-  exit 0
 }
 
 ## OpenLDAP info
@@ -563,8 +563,10 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
           --title "Deploying the ${CYAN}SAS Viya${NONE}-ready structure" \
           deploySASViyaStructure \
           --error "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."; then
+        echo ""
         echo -e "\nThis is the new ${CYAN}OpenLDAP${NONE} structure:"
         printSAStree
+        divider
         printConnectionInfo
         printGoodbye
       else
