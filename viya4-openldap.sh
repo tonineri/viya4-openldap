@@ -468,6 +468,7 @@ divider
 ### Print connection info
 printConnectionInfo() {
   echo ""
+  echo -e "${CYAN}OpenLDAP${NONE} connection info:"
   echo -e "Host:   IP/hostname of this host"
   echo -e "Port:   1636"
   echo -e "User:   cn=admin,dc=sasldap,dc=com"
@@ -475,14 +476,8 @@ printConnectionInfo() {
   echo -e "BaseDN: dc=sasldap,dc=com"
   echo -e "CA:     $PWD/certificates/sasldap_CA.crt"
   echo ""
-}
-
-### Print port-forwarding info
-printPortForwarding() {
-  echo ""
   echo -e "$INFOMSG | To manage your LDAP, launch the following command before accessing it via LDAP browser:"
   echo -e "${ITALIC}kubectl --namespace $NS port-forward --address localhost svc/sas-ldap-service 1636:636${NONE}"
-  echo ""
 }
 
 ### Print default tree
@@ -510,13 +505,17 @@ printSAStree() {
   echo -e "     ├──👤 uid=sasadm   | 🔑 lnxsas"
   echo -e "     ├──👤 uid=sasdev   | 🔑 lnxsas"
   echo -e "     └──👤 uid=sasuser  | 🔑 lnxsas"
+}
+
+printGoodbye(){
   echo ""
+  echo -e "${BOLD}Persistent OpenLDAP${NONE} for ${BCYAN}SAS Viya${NONE} deployed successfully!"
+  echo -e "This script will now exit"
+  exit 0
 }
 
 ## OpenLDAP info
 deploySASViyaStructure() {
-  echo -e "$INFOMSG | Attempting to deploy SAS Viya-ready structure..."
-
   # Launch port-forward in the background
   kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1636:636 > /dev/null 2>&1 &
   port_forward_pid=$!
@@ -555,13 +554,19 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
 
   # Prompt for deploying SAS Viya-ready structure
   while true; do
-    echo -e "Would you like to deploy the ${CYAN}SAS Viya${NONE}-ready structure? [${BYELLOW}y${NONE}/${BYELLOW}n${NONE}]:"
+    echo -e "\nWould you like to deploy the ${CYAN}SAS Viya${NONE}-ready structure? [${BYELLOW}y${NONE}/${BYELLOW}n${NONE}]:"
     read -r user_input
 
     if [[ "$user_input" =~ ^[Yy]$ ]]; then
-      if deploySASViyaStructure; then
+      echo ""
+      if execute \
+          --title "Deploying the ${CYAN}SAS Viya${NONE}-ready structure" \
+          deploySASViyaStructure \
+          --error "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."; then
         echo -e "\nThis is the new ${CYAN}OpenLDAP${NONE} structure:"
         printSAStree
+        printConnectionInfo
+        printGoodbye
       else
         echo -e "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."
         exit 1 # SAS Viya-ready structure failed to deploy
@@ -571,7 +576,7 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
     elif [[ "$user_input" =~ ^[Nn]$ ]]; then
       echo -e "\nOpenLDAP connection info:"
       printConnectionInfo
-      printPortForwarding
+      printGoodbye
       break
 
     else
