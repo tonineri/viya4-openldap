@@ -452,7 +452,7 @@ waitForOpenLDAP() {
 }
 
 execute \
-  --title "Waiting for ${CYAN}OpenLDAP${NONE} server to start" \
+  --title "Starting ${CYAN}OpenLDAP${NONE} server." \
   "waitForOpenLDAP 120" \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} server failed to start."
 
@@ -489,16 +489,16 @@ printPortForwarding() {
 printDefaultTree() {
   echo ""
   echo -e "🌐 dc=sasldap,dc=com"
-  echo -e " ├──👷🏻‍♂️ cn=admin    | 🔑 SAS@ldapAdm1n"
-  echo -e " └──🔗 cn=sasbind   | 🔑 SAS@ldapB1nd"
+  echo -e " ├──🛠️ cn=admin   | 🔑 SAS@ldapAdm1n"
+  echo -e " └──🔗 cn=sasbind | 🔑 SAS@ldapB1nd"
 }
 
 ### Print SAS tree
 printSAStree() {
   echo ""
   echo -e "🌐 dc=sasldap,dc=com"
-  echo -e " ├──👷🏻‍♂️ cn=admin    | 🔑 SAS@ldapAdm1n"
-  echo -e " ├──🔗 cn=sasbind   | 🔑 SAS@ldapB1nd"
+  echo -e " ├──🛠️ cn=admin   | 🔑 SAS@ldapAdm1n"
+  echo -e " ├──🔗 cn=sasbind | 🔑 SAS@ldapB1nd"
   echo -e " ├──📁 ou=groups"
   echo -e " │   ├──👥 cn=sas       | 🤝 cas, sas"
   echo -e " │   ├──👥 cn=sasadmins | 🤝 sasadm"
@@ -514,7 +514,38 @@ printSAStree() {
 }
 
 ## OpenLDAP info
-if [ "$OpenLDAPdeployed" = "YES" ]; then
+deploySASViyaStructure() {
+  echo -e "$INFOMSG | Attempting to deploy SAS Viya-ready structure..."
+
+  # Launch port-forward in the background
+  kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1636:636 > /dev/null 2>&1 &
+  port_forward_pid=$!
+  sleep 5 # Give port-forward some time to set up
+
+  # Add the default LDAP structure
+  LDAPTLS_REQCERT=allow LDAPTLS_CACERT="certificates/sasldap_CA.crt" \
+  ldapadd -x \
+  -H ldaps://localhost:1636 \
+  -D cn=admin,dc=sasldap,dc=com \
+  -w SAS@ldapAdm1n \
+  -f samples/default_ldap_structure.ldif > /dev/null 2>&1
+
+  # Check if ldapadd was successful
+  if [ $? -eq 0 ]; then
+    # Kill the background port-forward task
+    kill $port_forward_pid
+    wait $port_forward_pid 2>/dev/null
+    return 0
+  else
+    echo -e "$ERRORMSG | ldapadd command failed. Check if the certificate and credentials are correct."
+    kill $port_forward_pid
+    wait $port_forward_pid 2>/dev/null
+    return 1
+  fi
+}
+
+## OpenLDAP info
+if [ "$OpenLDAPdeployed" = "CHECK" ]; then
   echo -e "\n⮞  ${BYELLOW}OpenLDAP configuration${NONE}\n"
   
   # Print current OpenLDAP structure
@@ -524,30 +555,16 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
 
   # Prompt for deploying SAS Viya-ready structure
   while true; do
-    echo -e "\nWould you like to deploy the ${CYAN}SAS Viya${NONE}-ready structure? [${BYELLOW}y${NONE}/${BYELLOW}n${NONE}]:"
+    echo -e "Would you like to deploy the ${CYAN}SAS Viya${NONE}-ready structure? [${BYELLOW}y${NONE}/${BYELLOW}n${NONE}]:"
     read -r user_input
 
     if [[ "$user_input" =~ ^[Yy]$ ]]; then
-      # Launch port-forward in the background
-      kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1636:636 > /dev/null 2>&1 &
-      port_forward_pid=$!
-
-      # Add the default LDAP structure
-      LDAPTLS_REQCERT=allow LDAPTLS_CACERT="certificates/sasldap_CA.crt" ldapadd -x -H ldaps://localhost:1636 -D cn=admin,dc=sasldap,dc=com -w SAS@ldapAdm1n -f samples/default_ldap_structure.ldif > /dev/null 2>&1
-
-      # Check if ldapadd was successful, kill the background port-forward task
-      if [ $? -eq 0 ]; then
-        kill $port_forward_pid
-        wait $port_forward_pid 2>/dev/null
+      if deploySASViyaStructure; then
         echo -e "\nThis is the new ${CYAN}OpenLDAP${NONE} structure:"
-        printSAStree     
-
+        printSAStree
       else
         echo -e "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."
-        kill $port_forward_pid
-        wait $port_forward_pid 2>/dev/null
         exit 1 # SAS Viya-ready structure failed to deploy
-
       fi
       break
 
