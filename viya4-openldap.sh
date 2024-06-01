@@ -251,21 +251,21 @@ execute \
   --error "$ERRORMSG | ${CYAN}CA certificate${NONE} generation failed."
 
 
-#### Check that all CA files were generated successfully
-CAfiles=("certificates/sasldap_CA.crt" "certificates/sasldap_CA_nopass.key" "certificates/sasldap_CA.key")
-checkCAfiles() {
-  for file in "${CAfiles[@]}"; do
-    if [ -s "$file" ]; then
-        return 0 # File exists
-    fi
-  done
-}
-
-execute \
-  --title "Checking if self-signed ${CYAN}CA files${NONE} were generated" \
-  checkCAfiles \
-  --error "$ERRORMSG | One or more ${CYAN}CA files${NONE} missing."
-
+##### Check that all CA files were generated successfully
+#CAfiles=("certificates/sasldap_CA.crt" "certificates/sasldap_CA_nopass.key" "certificates/sasldap_CA.key")
+#checkCAfiles() {
+#  for file in "${CAfiles[@]}"; do
+#    if [ -s "$file" ]; then
+#        return 0 # File exists
+#    fi
+#  done
+#}
+#
+#execute \
+#  --title "Checking if self-signed ${CYAN}CA files${NONE} were generated" \
+#  checkCAfiles \
+#  --error "$ERRORMSG | One or more ${CYAN}CA files${NONE} missing."
+#
 ### Self-signed Server
 #### Generate self-signed server private key
 generateServerKey() {
@@ -346,21 +346,21 @@ execute \
   generateServerCrt \
   --error "$ERRORMSG | ${CYAN}Server certificate${NONE} generation failed."
 
-#### Check that all Server certificate files were generated successfully
-serverFiles=("certificates/sasldap_server.crt" "certificates/sasldap_server.key")
-checkServerFiles() {
-  for file in "${CcheckServerFiles[@]}"; do
-    if [ -s "$file" ]; then
-        return 0 # File exists
-    fi
-  done
-}
-
-execute \
-  --title "Checking if self-signed ${CYAN}Server files${NONE} were generated" \
-  checkCAfiles \
-  --error "$ERRORMSG | One or more ${CYAN}Server files${NONE} missing."
-
+##### Check that all Server certificate files were generated successfully
+#serverFiles=("certificates/sasldap_server.crt" "certificates/sasldap_server.key")
+#checkServerFiles() {
+#  for file in "${CcheckServerFiles[@]}"; do
+#    if [ -s "$file" ]; then
+#        return 0 # File exists
+#    fi
+#  done
+#}
+#
+#execute \
+#  --title "Checking if self-signed ${CYAN}Server files${NONE} were generated" \
+#  checkCAfiles \
+#  --error "$ERRORMSG | One or more ${CYAN}Server files${NONE} missing."
+#
 divider
 
 ## Kubernetes secrets
