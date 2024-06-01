@@ -418,7 +418,6 @@ waitForOpenLDAP() {
   podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
   local secs=$1
   local podOpenLDAP
-  local port_forward_pid
 
   # Wait for pod to be ready
   if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS --timeout=120s; then
