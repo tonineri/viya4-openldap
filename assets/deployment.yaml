@@ -20,6 +20,8 @@ spec:
         - name: sas-ldap-server
           image: osixia/openldap:1.5.0
           imagePullPolicy: IfNotPresent
+          args:
+            - --copy-service
           volumeMounts:
             - name: sas-ldap-volume-overlay
               mountPath: /container/service/slapd/assets/config/bootstrap/ldif/03-memberOf.ldif
