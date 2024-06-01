@@ -387,7 +387,7 @@ echo -e "\n⮞ ${BYELLOW}OpenLDAP Deployment${NONE}\n"
 
 ### Build OpenLDAP deployment
 buildOpenLDAP() {
-  if kustomize build ./assets/ -o assets/${NS}-deployment.yaml | kubectl -n ${NS} apply -f - > /dev/null 2>&1; then
+  if kustomize build ./assets/ -o ${NS}-deployment.yaml > /dev/null 2>&1; then
     return 0 # OpenLDAP deployment built
   else
     return 1 # OpenLDAP deployment build failed
@@ -401,7 +401,7 @@ execute \
 
 ### Apply OpenLDAP deployment
 applyOpenLDAP() {
-  if kubectl -n ${NS} apply -f assets/${NS}-deployment.yaml > /dev/null 2>&1; then
+  if kubectl -n ${NS} apply -f ${NS}-deployment.yaml > /dev/null 2>&1; then
     return 0 # OpenLDAP deployment applied
   else
     return 1 # OpenLDAP deployment application failed
