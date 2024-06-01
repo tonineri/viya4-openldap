@@ -466,13 +466,6 @@ execute \
 divider
 
 ## OpenLDAP info
-if [ "$openLDAPdeployed" = true ]; then
-  echo -e "\n⮞  ${BYELLOW}OpenLDAP configuration${NONE}\n"
-  return 0 # OpenLDAP is deployed
-else
-  return 1 # OpenLDAP deployment failed
-fi
-
 ### Print connection info
 printConnectionInfo() {
   echo ""
@@ -482,6 +475,14 @@ printConnectionInfo() {
   echo -e "Pass:   SAS@ldapAdm1n"
   echo -e "BaseDN: dc=sasldap,dc=com"
   echo -e "CA:     $PWD/certificates/sasldap_CA.crt"
+  echo ""
+}
+
+### Print port-forwarding info
+printPortForwarding() {
+  echo ""
+  echo -e "$INFOMSG | To manage your LDAP, launch the following command before accessing it via LDAP browser:"
+  echo -e "${ITALIC}kubectl --namespace $NS port-forward --address localhost svc/sas-ldap-service 1636:636${NONE}"
   echo ""
 }
 
@@ -514,13 +515,69 @@ printSAStree() {
   echo ""
 }
 
+### OpenLDAP info
 if [ "$openLDAPdeployed" = true ]; then
   echo -e "\n⮞  ${BYELLOW}OpenLDAP configuration${NONE}\n"
-  return 0 # OpenLDAP is deployed
+  
+  # Print current OpenLDAP structure
+  echo -e "\nCurrent ${CYAN}OpenLDAP${NONE} structure:"
+  printDefaultTree
+  divider
+
+  # Prompt for deploying SAS Viya-ready structure
+  while true; do
+    echo -e "Would you to deploy the ${CYAN}SAS Viya${NONE}-ready structure? [${BYELLOW}y${NONE}/${BYELLOW}n${NONE}]:"
+    read -r user_input
+
+    if [[ "$user_input" =~ ^[Yy]$ ]]; then
+      # Launch port-forward in the background
+      kubectl --namespace $NS port-forward --address localhost svc/sas-ldap-service 1636:636 > /dev/null 2>&1 &
+      port_forward_pid=$!
+
+      # Add the default LDAP structure
+      LDAPTLS_REQCERT=allow LDAPTLS_CACERT="certificates/sasldap_CA.crt" \
+      ldapadd -x \
+      -H ldaps://localhost:1636 \
+      -D cn=admin,dc=sasldap,dc=com \
+      -w SAS@ldapAdm1n \
+      -f samples/default_ldap_structure.ldif > /dev/null 2>&1
+
+      # Check if ldapadd was successful
+      if [ $? -eq 0 ]; then
+        # Kill the background port-forward task
+        kill $port_forward_pid
+        wait $port_forward_pid 2>/dev/null
+
+        echo -e "\nThis is the new ${CYAN}OpenLDAP${NONE} structure:"
+        printSAStree
+        
+      else
+        echo -e "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."
+        kill $port_forward_pid
+        wait $port_forward_pid 2>/dev/null
+        return 1
+      fi
+      break
+
+    elif [[ "$user_input" =~ ^[Nn]$ ]]; then
+      echo -e "\nOpenLDAP connection info:"
+      printConnectionInfo
+      printPortForwarding
+      break
+
+    else
+      echo -e "\n${ERRORMSG} | Accepted inputs: ${BYELLOW}y${NONE}/${BYELLOW}n${NONE}"
+    fi
+  done
 else
-  return 1 # OpenLDAP deployment failed
+  echo -e "$ERRORMSG | ${CYAN}OpenLDAP${NONE} deployment failed."
+  return 1
 fi
 
+divider
+echo ""
+
+## ----------------------------------------------  scriptEnd  ---------------------------------------------
 
 ## Print access info
 #echo -e "________________________________________________________________"
