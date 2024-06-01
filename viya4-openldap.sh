@@ -444,12 +444,13 @@ checkSlapdStarting() {
 }
 
 ### Wait until "slapd starting" message appears in the pod's logs
+OpenLDAPdeployed=false
 waitSlapdStarting() {
   secs=$1
   while [ $secs -gt 0 ]; do
     if checkSlapdStarting; then
-      return 0 # Return success if the message is found
       OpenLDAPdeployed=true
+      return 0 # Return success if the message is found
     else
       sleep 1
       : $((secs--))
@@ -526,7 +527,7 @@ if [ "$OpenLDAPdeployed" = true ]; then
 
   # Prompt for deploying SAS Viya-ready structure
   while true; do
-    echo -e "Would you to deploy the ${CYAN}SAS Viya${NONE}-ready structure? [${BYELLOW}y${NONE}/${BYELLOW}n${NONE}]:"
+    echo -e "Would you like to deploy the ${CYAN}SAS Viya${NONE}-ready structure? [${BYELLOW}y${NONE}/${BYELLOW}n${NONE}]:"
     read -r user_input
 
     if [[ "$user_input" =~ ^[Yy]$ ]]; then
@@ -555,7 +556,7 @@ if [ "$OpenLDAPdeployed" = true ]; then
         echo -e "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."
         kill $port_forward_pid
         wait $port_forward_pid 2>/dev/null
-        return 1 # SAS Viya-ready structure failed to deploy
+        exit 1 # SAS Viya-ready structure failed to deploy
       fi
       break
 
@@ -570,7 +571,7 @@ if [ "$OpenLDAPdeployed" = true ]; then
     fi
   done
 else
-  echo -e "\n${ERRORMSG} | ${CYAN}OpenLDAP${NONE} deployment failed."
+  echo -e "\n${ERRORMSG} | ${CYAN}OpenLDAP${NONE} deployment failed.\n"
   exit 1
 fi
 
