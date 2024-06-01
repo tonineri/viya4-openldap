@@ -414,57 +414,33 @@ execute \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} deployment application failed."
 
 ### Wait for OpenLDAP server to start
-waitOpenLDAP() {
-  # Get the name of the OpenLDAP pod
-  podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
-  
-  if [[ -z "$podOpenLDAP" ]]; then
-    echo -e "$ERRORMSG | No pod found with label app=sas-ldap-server"
-    return 1
-  fi
+waitForOpenLDAP() {
+  local secs=$1
+  local podOpenLDAP
+  local port_forward_pid
 
   # Wait for the pod to be ready
-  if ! kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS --timeout=120s; then
-    echo -e "$ERRORMSG | Pod $podOpenLDAP not ready within the timeout period"
+  podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
+  if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS --timeout=120s; then
+    # Port forward to check if port 636 is open
+    kubectl port-forward -n $NS $podOpenLDAP 1636:636 > /dev/null 2>&1 &
+    port_forward_pid=$!
+  else
+    echo -e "$ERRORMSG | Failed to find the pod or pod not ready"
     return 1
   fi
 
-  # Forward the port from the pod to localhost
-  kubectl port-forward -n $NS $podOpenLDAP 1636:636 > /dev/null 2>&1 &
-  port_forward_pid=$!
-
-  # Wait until the local port is open
+  # Wait for the local port to be open
   until nc -z localhost 1636; do
     sleep 1
   done
 
-  # Kill the port-forward process
-  kill $port_forward_pid
-  wait $port_forward_pid 2>/dev/null
-  return 0 # OpenLDAP server started
-}
-
-checkSlapdStarting() {
-  if waitOpenLDAP; then
-    if kubectl logs -n $NS $podOpenLDAP | grep -q "slapd starting"; then
-      return 0 # Return success if the message is found
-    else
-      echo -e "$ERRORMSG | 'slapd starting' message not found in logs"
-      return 1 # Return failure if the message is not found
-    fi
-  else
-    return 1 # waitOpenLDAP failed
-  fi
-}
-
-OpenLDAPdeployed=0
-waitSlapdStarting() {
-  local secs=$1
-
+  # Check for "slapd starting" message in pod's logs
   while [ $secs -gt 0 ]; do
-    if checkSlapdStarting; then
+    if kubectl logs -n $NS $podOpenLDAP | grep -q "slapd starting"; then
       OpenLDAPdeployed=1
-      echo -e "\nDEBUG | OpenLDAPdeployed: $OpenLDAPdeployed"
+      kill $port_forward_pid
+      wait $port_forward_pid 2>/dev/null
       return 0 # Return success if the message is found
     else
       sleep 1
@@ -473,14 +449,15 @@ waitSlapdStarting() {
   done
 
   echo -e "$ERRORMSG | Timeout: 'slapd starting' message not found in logs"
+  kill $port_forward_pid
+  wait $port_forward_pid 2>/dev/null
   return 1 # Return failure if the message is not found within the timeout
 }
 
 execute \
   --title "Waiting for ${CYAN}OpenLDAP${NONE} server to start" \
-  "waitSlapdStarting 120" \
+  "waitForOpenLDAP 120" \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} server failed to start."
-
 
 divider
 
