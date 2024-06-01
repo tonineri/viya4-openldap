@@ -52,37 +52,32 @@ You can
 
 - Clone the `viya4-openldap` repository:
 
-```bash
-git clone https://github.com/tonineri/viya4-openldap
-```
+  ```bash
+  git clone https://github.com/tonineri/viya4-openldap
+  ```
 
 - Get the latest package:
 
-```bash
-wget -O - https://github.com/tonineri/viya4-openldap/releases/latest/download/viya4-openldap.tgz | tar xz
-```
+  ```bash
+  wget -O - https://github.com/tonineri/viya4-openldap/releases/latest/download/viya4-openldap.tgz | tar xz
+  ```
 
 2. Execute the script, specifying the desired namespace for OpenLDAP:
 
-```bash
-cd viya4-openldap 
-chmod +x viya4-openldap.sh
-./viya4-openldap.sh --namespace <desiredNamespaceName>
-```
+    ```bash
+    cd viya4-openldap 
+    chmod +x viya4-openldap.sh
+    ./viya4-openldap.sh --namespace <desiredNamespaceName>
+    ```
 
 3. Follow any on-screen prompts or instructions to complete the deployment process seamlessly.
 
-4. **OPTIONAL**: You can upload the default OU/User/Group structure (found in [samples/default_ldap_structure.ldif](samples/default_ldap_structure.ldif)) by opening a new terminal and launching the following command from the `viya4-openldap` directory **while port-forwarding is running**:
-
-```bash
-LDAPTLS_REQCERT=allow LDAPTLS_CACERT="$PWD/certificates/sasldap_CA.crt" ldapadd -x -H ldaps://localhost:1636 -D cn=admin,dc=sasldap,dc=com -w SAS@ldapAdm1n -f $PWD/samples/default_ldap_structure.ldif
-```
 
 5. **OPTIONAL**: If no modifications were made to the script, consider copying the [samples/sitedefault.yaml](samples/sitedefault.yaml) to `$deploy/site-config/sitedefault.yaml`.
 
-   > ![Note](/.design/note.png)
-   >
-   > Ensure you also defined it in the 'transformers' section of your `$deploy/kustomization.yaml` file.
+    > ![Note](/.design/note.png)
+    >
+    > Ensure you also defined it in the 'transformers' section of your `$deploy/kustomization.yaml` file.
 
 ![Divider](/.design/divider.png)
 
@@ -90,20 +85,26 @@ LDAPTLS_REQCERT=allow LDAPTLS_CACERT="$PWD/certificates/sasldap_CA.crt" ldapadd 
 
 1. To access and manage your LDAP, execute the following command on your jump host:
 
-  ```bash
-  kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1636:636
-  ```
+    ```bash
+    kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1636:636
+    ```
 
 ![Divider](/.design/divider.png)
 
 2. While port-forwarding in running on you jump host, access the LDAP server through an LDAP browser (like ApacheDirectoryStudio, LdapAdmin, etc.) from your client machine using the following parameters:
 
-- Host:         `IP/hostname of your jump host`
-- Port:         `1636`
-- User:         `cn=admin,dc=sasldap,dc=com`
-- Pass:         `SAS@ldapAdm1n`
-- BaseDN:       `dc=sasldap,dc=com`
-- Certificate:  `viya4-openldap/certificates/sasldap_CA.crt`
+    - Host:         `IP/hostname of your jump host`
+    - Port:         `1636`
+    - User:         `cn=admin,dc=sasldap,dc=com`
+    - Pass:         `SAS@ldapAdm1n`
+    - BaseDN:       `dc=sasldap,dc=com`
+    - Certificate:  `viya4-openldap/certificates/sasldap_CA.crt`
+
+3. **OPTIONAL**: You can manually upload the default OU/User/Group structure (found in [samples/sas_ldap_structure.ldif](samples/sas_ldap_structure.ldif)) by opening a new terminal and launching the following command from the `viya4-openldap` directory **while port-forwarding is running**:
+
+    ```bash
+    LDAPTLS_REQCERT=allow LDAPTLS_CACERT="$PWD/certificates/sasldap_CA.crt" ldapadd -x -H ldaps://    localhost:1636 -D cn=admin,dc=sasldap,dc=com -w SAS@ldapAdm1n -f $PWD/samples/sas_ldap_structure.ldif
+    ```
 
 ![Divider](/.design/divider.png)
 
@@ -116,7 +117,13 @@ LDAPTLS_REQCERT=allow LDAPTLS_CACERT="$PWD/certificates/sasldap_CA.crt" ldapadd 
   | `admin`   | `SAS@ldapAdm1n`| `cn=admin,dc=sasldap,dc=com`             |
   | `sasbind` | `SAS@ldapB1nd` | `cn=sasbind,dc=sasldap,dc=com`           |
 
-- These are the additional default accounts (**if** you decided to upload the [samples/default_ldap_structure.ldif](samples/default_ldap_structure.ldif) file as per [Usage: Point 4](README.md#usage)):
+  ```text
+  🌐 dc=sasldap,dc=com
+    ├──🛠️ cn=admin   | 🔑 SAS@ldapAdm1n
+    └──🔗 cn=sasbind | 🔑 SAS@ldapB1nd
+  ```
+
+- These are the additional default accounts (**if** you decided to upload the [samples/sas_ldap_structure.ldif](samples/sas_ldap_structure.ldif) file as per [Usage: Point 4](README.md#usage)):
 
   | username  | password       | distinguishedName                        |
   |-----------|----------------|------------------------------------------|
@@ -125,6 +132,23 @@ LDAPTLS_REQCERT=allow LDAPTLS_CACERT="$PWD/certificates/sasldap_CA.crt" ldapadd 
   | `sasadm`  | `lnxsas`       | `uid=sasadm,ou=users,dc=sasldap,dc=com`  |
   | `sasdev`  | `lnxsas`       | `uid=sasdev,ou=users,dc=sasldap,dc=com`  |
   | `sasuser` | `lnxsas`       | `uid=sasuser,ou=users,dc=sasldap,dc=com` |
+
+  ```text
+  🌐 dc=sasldap,dc=com
+    ├──🛠️ cn=admin   | 🔑 SAS@ldapAdm1n
+    ├──🔗 cn=sasbind | 🔑 SAS@ldapB1nd
+    ├──📁 ou=groups
+    │   ├──👥 cn=sas       | 🤝 cas, sas
+    │   ├──👥 cn=sasadmins | 🤝 sasadm
+    │   ├──👥 cn=sasdevs   | 🤝 sasdev
+    │   └──👥 cn=sasusers  | 🤝 sasuser
+    └──📁 ou=users
+        ├──👤 uid=cas      | 🔑 lnxsas
+        ├──👤 uid=sas      | 🔑 lnxsas
+        ├──👤 uid=sasadm   | 🔑 lnxsas
+        ├──👤 uid=sasdev   | 🔑 lnxsas
+        └──👤 uid=sasuser  | 🔑 lnxsas
+  ```
 
 ![Divider](/.design/divider.png)
 
