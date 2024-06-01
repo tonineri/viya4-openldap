@@ -470,15 +470,15 @@ printConnectionInfo() {
   echo ""
   echo -e "⮞  ${CYAN}OpenLDAP${NONE} connection info"
   echo ""
-  echo -e "Host:   IP/hostname of this host"
-  echo -e "Port:   1636"
-  echo -e "User:   cn=admin,dc=sasldap,dc=com"
-  echo -e "Pass:   SAS@ldapAdm1n"
-  echo -e "BaseDN: dc=sasldap,dc=com"
-  echo -e "CA:     $PWD/certificates/sasldap_CA.crt"
+  echo -e "   Host:   IP/hostname of this host"
+  echo -e "   Port:   1636"
+  echo -e "   User:   cn=admin,dc=sasldap,dc=com"
+  echo -e "   Pass:   SAS@ldapAdm1n"
+  echo -e "   BaseDN: dc=sasldap,dc=com"
+  echo -e "   CA:     $PWD/certificates/sasldap_CA.crt"
   echo ""
-  echo -e "$NOTEMSG | To manage your LDAP, launch the following command ${YELLOW}before${NONE} accessing it via LDAP browser:"
-  echo -e "${ITALIC}kubectl --namespace $NS port-forward --address localhost svc/sas-ldap-service 1636:636${NONE}"
+  echo -e "   $NOTEMSG | To manage your LDAP, launch the following command ${YELLOW}before${NONE} accessing it via LDAP browser:"
+  echo -e "   ${ITALIC}kubectl --namespace $NS port-forward --address localhost svc/sas-ldap-service 1636:636${NONE}"
 }
 
 ### Print default tree
@@ -568,6 +568,7 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
         printSAStree
         divider
         printConnectionInfo
+        divider
         printGoodbye
       else
         echo -e "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."
@@ -576,8 +577,8 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
       break
 
     elif [[ "$user_input" =~ ^[Nn]$ ]]; then
-      echo -e "\nOpenLDAP connection info:"
       printConnectionInfo
+      divider
       printGoodbye
       break
 
