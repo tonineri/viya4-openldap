@@ -436,8 +436,6 @@ waitForOpenLDAP() {
   # Check if "slapd starting" message appears in the pod's logs
   while [ $secs -gt 0 ]; do
     if kubectl logs -n $NS $podOpenLDAP | grep -q "slapd starting"; then
-      OpenLDAPdeployed="CHECK"
-      echo -e "$OpenLDAPdeployed"
       kill $port_forward_pid
       wait $port_forward_pid 2>/dev/null
       return 0 # Return success if the message is found
@@ -457,6 +455,12 @@ execute \
   --title "Waiting for ${CYAN}OpenLDAP${NONE} server to start" \
   "waitForOpenLDAP 120" \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} server failed to start."
+
+if [ $? -eq 0 ]; then
+  OpenLDAPdeployed="YES"
+else
+  OpenLDAPdeployed="NO"
+fi
 
 divider
 
@@ -511,7 +515,7 @@ printSAStree() {
 }
 
 ## OpenLDAP info
-if [ "$OpenLDAPdeployed" = "CHECK" ]; then
+if [ "$OpenLDAPdeployed" = "YES" ]; then
   echo -e "\n⮞  ${BYELLOW}OpenLDAP configuration${NONE}\n"
   
   # Print current OpenLDAP structure
