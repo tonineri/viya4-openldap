@@ -464,6 +464,9 @@ execute \
   "waitSlapdStarting 120" \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} server failed to start."
 
+
+echo "DEBUG: OpenLDAPdeployed = $OpenLDAPdeployed" # Debug: print the value of OpenLDAPdeployed
+
 divider
 
 ## OpenLDAP info
