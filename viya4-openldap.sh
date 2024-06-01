@@ -485,6 +485,7 @@ printConnectionInfo() {
 printDefaultTree() {
   echo ""
   echo -e "🌐 dc=sasldap,dc=com"
+  sleep 0.5
   echo -e " ├──🛠️ cn=admin   | 🔑 SAS@ldapAdm1n"
   echo -e " └──🔗 cn=sasbind | 🔑 SAS@ldapB1nd"
 }
@@ -493,13 +494,16 @@ printDefaultTree() {
 printSAStree() {
   echo ""
   echo -e "🌐 dc=sasldap,dc=com"
+  sleep 0.5
   echo -e " ├──🛠️ cn=admin   | 🔑 SAS@ldapAdm1n"
   echo -e " ├──🔗 cn=sasbind | 🔑 SAS@ldapB1nd"
   echo -e " ├──📁 ou=groups"
+  sleep 0.5
   echo -e " │   ├──👥 cn=sas       | 🤝 cas, sas"
   echo -e " │   ├──👥 cn=sasadmins | 🤝 sasadm"
   echo -e " │   ├──👥 cn=sasdevs   | 🤝 sasdev"
   echo -e " │   └──👥 cn=sasusers  | 🤝 sasuser"
+  sleep 0.5
   echo -e " └──📁 ou=users"
   echo -e "     ├──👤 uid=cas      | 🔑 lnxsas"
   echo -e "     ├──👤 uid=sas      | 🔑 lnxsas"
@@ -511,7 +515,8 @@ printSAStree() {
 printGoodbye(){
   echo ""
   echo -e "${BOLD}Persistent OpenLDAP${NONE} for ${BCYAN}SAS Viya${NONE} deployed successfully!"
-  echo -e "This script will now exit"
+  sleep 0.5
+  echo -e "This script will now exit."
 }
 
 ## OpenLDAP info
@@ -566,8 +571,10 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
         echo ""
         echo -e "\nThis is the new ${CYAN}OpenLDAP${NONE} structure:"
         printSAStree
+        sleep 0.5
         divider
         printConnectionInfo
+        sleep 0.5
         divider
         printGoodbye
       else
@@ -578,6 +585,7 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
 
     elif [[ "$user_input" =~ ^[Nn]$ ]]; then
       printConnectionInfo
+      sleep 0.5
       divider
       printGoodbye
       break
@@ -590,8 +598,8 @@ else
   echo -e "\n${ERRORMSG} | ${CYAN}OpenLDAP${NONE} deployment failed.\n"
   exit 1
 fi
-
+sleep 0.5
 divider
-echo ""
+echo "\n \n"
 
 ## ----------------------------------------------  scriptEnd  ---------------------------------------------
