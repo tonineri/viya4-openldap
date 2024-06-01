@@ -469,6 +469,7 @@ divider
 printConnectionInfo() {
   echo ""
   echo -e "⮞  ${CYAN}OpenLDAP${NONE} connection info"
+  sleep 0.5
   echo ""
   echo -e "   Host:   IP/hostname of this host"
   echo -e "   Port:   1636"
@@ -476,6 +477,7 @@ printConnectionInfo() {
   echo -e "   Pass:   SAS@ldapAdm1n"
   echo -e "   BaseDN: dc=sasldap,dc=com"
   echo -e "   CA:     $PWD/certificates/sasldap_CA.crt"
+  sleep 0.5
   echo ""
   echo -e "   $NOTEMSG | To manage your LDAP, launch the following command ${YELLOW}before${NONE} accessing it via LDAP browser:"
   echo -e "   ${ITALIC}kubectl --namespace $NS port-forward --address localhost svc/sas-ldap-service 1636:636${NONE}"
