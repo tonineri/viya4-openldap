@@ -534,7 +534,7 @@ deploySASViyaStructure() {
   -H ldaps://localhost:1636 \
   -D cn=admin,dc=sasldap,dc=com \
   -w SAS@ldapAdm1n \
-  -f samples/default_ldap_structure.ldif > /dev/null 2>&1
+  -f samples/sas_ldap_structure.ldif > /dev/null 2>&1
 
   # Check if ldapadd was successful
   if [ $? -eq 0 ]; then
