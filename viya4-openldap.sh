@@ -489,28 +489,27 @@ printPortForwarding() {
 printDefaultTree() {
   echo ""
   echo -e "🌐 dc=sasldap,dc=com"
-  echo -e " ├──👷🏻‍♂️ cn=admin   | 🔑 SAS@ldapAdm1n"
-  echo -e " └──🔗 cn=sasbind | 🔑 SAS@ldapB1nd"
-  echo ""
+  echo -e " ├──👷🏻‍♂️ cn=admin    | 🔑 SAS@ldapAdm1n"
+  echo -e " └──🔗 cn=sasbind   | 🔑 SAS@ldapB1nd"
 }
 
 ### Print SAS tree
 printSAStree() {
   echo ""
   echo -e "🌐 dc=sasldap,dc=com"
-  echo -e " ├──👷🏻‍♂️ cn=admin   | 🔑 SAS@ldapAdm1n"
-  echo -e " ├──🔗 cn=sasbind | 🔑 SAS@ldapB1nd"
+  echo -e " ├──👷🏻‍♂️ cn=admin    | 🔑 SAS@ldapAdm1n"
+  echo -e " ├──🔗 cn=sasbind   | 🔑 SAS@ldapB1nd"
   echo -e " ├──📁 ou=groups"
   echo -e " │   ├──👥 cn=sas       | 🤝 cas, sas"
   echo -e " │   ├──👥 cn=sasadmins | 🤝 sasadm"
   echo -e " │   ├──👥 cn=sasdevs   | 🤝 sasdev"
   echo -e " │   └──👥 cn=sasusers  | 🤝 sasuser"
   echo -e " └──📁 ou=users"
-  echo -e "     ├──👤 uid=cas     | 🔑 lnxsas"
-  echo -e "     ├──👤 uid=sas     | 🔑 lnxsas"
-  echo -e "     ├──👤 uid=sasadm  | 🔑 lnxsas"
-  echo -e "     ├──👤 uid=sasdev  | 🔑 lnxsas"
-  echo -e "     └──👤 uid=sasuser | 🔑 lnxsas"
+  echo -e "     ├──👤 uid=cas      | 🔑 lnxsas"
+  echo -e "     ├──👤 uid=sas      | 🔑 lnxsas"
+  echo -e "     ├──👤 uid=sasadm   | 🔑 lnxsas"
+  echo -e "     ├──👤 uid=sasdev   | 🔑 lnxsas"
+  echo -e "     └──👤 uid=sasuser  | 🔑 lnxsas"
   echo ""
 }
 
