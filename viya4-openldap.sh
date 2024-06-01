@@ -452,7 +452,7 @@ waitForOpenLDAP() {
 }
 
 execute \
-  --title "Starting ${CYAN}OpenLDAP${NONE} server." \
+  --title "Starting ${CYAN}OpenLDAP${NONE} server" \
   "waitForOpenLDAP 120" \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} server failed to start."
 
@@ -545,7 +545,7 @@ deploySASViyaStructure() {
 }
 
 ## OpenLDAP info
-if [ "$OpenLDAPdeployed" = "CHECK" ]; then
+if [ "$OpenLDAPdeployed" = "YES" ]; then
   echo -e "\n⮞  ${BYELLOW}OpenLDAP configuration${NONE}\n"
   
   # Print current OpenLDAP structure
