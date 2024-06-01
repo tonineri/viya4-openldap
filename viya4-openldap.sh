@@ -413,34 +413,19 @@ execute \
   applyOpenLDAP \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} deployment application failed."
 
-########################################################################################
-########################################################################################
-
-# Declare the OpenLDAPdeployed variable at the beginning
-OpenLDAPdeployed=false
-
 ### Wait for OpenLDAP server to start
 waitOpenLDAP() {
-  echo "DEBUG: Entering waitOpenLDAP"
   podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
-  if [[ -z "$podOpenLDAP" ]]; then
-    echo "DEBUG: Pod not found"
-    return 1 # Pod not found
-  fi
   if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS --timeout=120s; then
-    echo "DEBUG: Pod is ready, starting port-forward"
     kubectl port-forward -n $NS $podOpenLDAP 1636:636 > /dev/null 2>&1 &
     port_forward_pid=$!
   else
-    echo "DEBUG: Pod is not ready or wait timed out"
     return 1 # Failed to find the pod or pod not ready
   fi
   # Wait for the local port to be open
   until nc -z localhost 1636; do
-    echo "DEBUG: Waiting for local port 1636 to be open"
-    sleep 1
+      sleep 1
   done
-  echo "DEBUG: Local port 1636 is open"
   kill $port_forward_pid
   wait $port_forward_pid 2>/dev/null
   return 0 # OpenLDAP server started
@@ -448,38 +433,30 @@ waitOpenLDAP() {
 
 ### Check if "slapd starting" message appears in the pod's logs
 checkSlapdStarting() {
-  echo "DEBUG: Entering checkSlapdStarting"
   if waitOpenLDAP; then
-    echo "DEBUG: waitOpenLDAP succeeded"
     if kubectl logs -n $NS $podOpenLDAP | grep -q "slapd starting"; then
-      echo "DEBUG: Found 'slapd starting' in logs"
       return 0 # Return success if the message is found
     else
-      echo "DEBUG: 'slapd starting' not found in logs"
       return 1 # Return failure if the message is not found
     fi
   else
-    echo "DEBUG: waitOpenLDAP failed"
     return 1 # waitOpenLDAP failed
   fi
 }
 
 ### Wait until "slapd starting" message appears in the pod's logs
+OpenLDAPdeployed=0
 waitSlapdStarting() {
   secs=$1
-  echo "DEBUG: Entering waitSlapdStarting with timeout = $secs"
   while [ $secs -gt 0 ]; do
     if checkSlapdStarting; then
-      OpenLDAPdeployed=true
-      echo "DEBUG: slapd starting message found"
+      OpenLDAPdeployed=1
       return 0 # Return success if the message is found
     else
-      echo "DEBUG: slapd starting message not found, retrying... ($secs seconds left)"
       sleep 1
       : $((secs--))
     fi
   done
-  echo "DEBUG: Timeout in waitSlapdStarting"
   return 1 # Return failure if the message is not found within the timeout
 }
 
@@ -488,7 +465,6 @@ execute \
   "waitSlapdStarting 120" \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} server failed to start."
 
-echo "DEBUG: OpenLDAPdeployed = $OpenLDAPdeployed" # Debug: print the value of OpenLDAPdeployed
 
 divider
 
@@ -543,7 +519,7 @@ printSAStree() {
 }
 
 ### OpenLDAP info
-if [ "$OpenLDAPdeployed" = true ]; then
+if [ "$OpenLDAPdeployed" -eq 1 ]; then
   echo -e "\n⮞  ${BYELLOW}OpenLDAP configuration${NONE}\n"
   
   # Print current OpenLDAP structure

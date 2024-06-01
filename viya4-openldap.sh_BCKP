@@ -443,12 +443,12 @@ checkSlapdStarting() {
 }
 
 ### Wait until "slapd starting" message appears in the pod's logs
-OpenLDAPdeployed=false
+OpenLDAPdeployed=0
 waitSlapdStarting() {
   secs=$1
   while [ $secs -gt 0 ]; do
     if checkSlapdStarting; then
-      OpenLDAPdeployed=true
+      OpenLDAPdeployed=1
       return 0 # Return success if the message is found
     else
       sleep 1
@@ -463,8 +463,6 @@ execute \
   "waitSlapdStarting 120" \
   --error "$ERRORMSG | ${CYAN}OpenLDAP${NONE} server failed to start."
 
-
-echo "DEBUG: OpenLDAPdeployed = $OpenLDAPdeployed" # Debug: print the value of OpenLDAPdeployed
 
 divider
 
@@ -519,7 +517,7 @@ printSAStree() {
 }
 
 ### OpenLDAP info
-if [ "$OpenLDAPdeployed" = true ]; then
+if [ "$OpenLDAPdeployed" -eq 1 ]; then
   echo -e "\n⮞  ${BYELLOW}OpenLDAP configuration${NONE}\n"
   
   # Print current OpenLDAP structure
