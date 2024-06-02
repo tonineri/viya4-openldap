@@ -214,13 +214,13 @@ divider
 
 ## Certificates
 echo -e "\n⮞  ${BYELLOW}Certificate Generation for LDAP(S)${NONE}\n"
-mkdir -p certificates > /dev/null 2>&1
+mkdir -p assets/certificates > /dev/null 2>&1
 
 ### Self-signed CA
 #### Generate self-signed CA key
 generateCAkey() {
-  if openssl genrsa -aes256 -passout pass:SAS-ld4p -out certificates/sasldap_CA.key 2048 > /dev/null 2>&1; then
-    if openssl rsa -in certificates/sasldap_CA.key -out certificates/sasldap_CA_nopass.key -passin pass:SAS-ld4p > /dev/null 2>&1; then
+  if openssl genrsa -aes256 -passout pass:SAS-ld4p -out assets/certificates/sasldap_CA.key 2048 > /dev/null 2>&1; then
+    if openssl rsa -in assets/certificates/sasldap_CA.key -out assets/certificates/sasldap_CA_nopass.key -passin pass:SAS-ld4p > /dev/null 2>&1; then
       return 0 # Removed CA private key passphrase
     else
       return 1 # Failed to remove CA private key passphrase
@@ -241,8 +241,8 @@ generateCAcrt() {
   if openssl req -new -x509 -sha256 -extensions v3_ca \
       -days 3650 \
       -subj "/C=IT/ST=Lombardy/L=Milan/O=SASLDAP/CN=SAS Viya LDAP Root CA/emailAddress=noreply@sasldap.com" \
-      -key certificates/sasldap_CA.key \
-      -out certificates/sasldap_CA.crt \
+      -key assets/certificates/sasldap_CA.key \
+      -out assets/certificates/sasldap_CA.crt \
       -passin pass:SAS-ld4p > /dev/null 2>&1; then
     return 0 # CA generated
   else
@@ -258,7 +258,7 @@ execute \
 ### Self-signed Server
 #### Generate self-signed server private key
 generateServerKey() {
-  if openssl genrsa -out certificates/sasldap_server.key 2048 > /dev/null 2>&1; then
+  if openssl genrsa -out assets/certificates/sasldap_server.key 2048 > /dev/null 2>&1; then
     return 0 # Server private key generated
   else
     return 1 # Failed to generate Server private key
@@ -272,7 +272,7 @@ execute \
 
 #### Create OpenSSL config file for the self-signed Server certificate
 createServerConf() {
-  cat > certificates/sasldap_server.conf <<EOF
+  cat > assets/certificates/sasldap_server.conf <<EOF
 [ req ]
 default_bits       = 2048
 distinguished_name = req_distinguished_name
@@ -304,9 +304,9 @@ EOF
 generateServerCSR() {
   createServerConf
   if openssl req -new \
-      -key certificates/sasldap_server.key \
-      -out certificates/sasldap_server.csr \
-      -config certificates/sasldap_server.conf > /dev/null 2>&1; then
+      -key assets/certificates/sasldap_server.key \
+      -out assets/certificates/sasldap_server.csr \
+      -config assets/certificates/sasldap_server.conf > /dev/null 2>&1; then
     return 0 # Server CSR generated
   else
     return 1 # Failed to generate Server CSR
@@ -321,15 +321,15 @@ execute \
 #### Generate Server certificate with the CA
 generateServerCrt() {
   if openssl x509 -req \
-      -in certificates/sasldap_server.csr \
-      -CA certificates/sasldap_CA.crt \
-      -CAkey certificates/sasldap_CA_nopass.key \
+      -in assets/certificates/sasldap_server.csr \
+      -CA assets/certificates/sasldap_CA.crt \
+      -CAkey assets/certificates/sasldap_CA_nopass.key \
       -CAcreateserial \
-      -out certificates/sasldap_server.crt \
+      -out assets/certificates/sasldap_server.crt \
       -days 3650 \
       -sha256 \
       -extensions v3_req \
-      -extfile certificates/sasldap_server.conf > /dev/null 2>&1; then
+      -extfile assets/certificates/sasldap_server.conf > /dev/null 2>&1; then
     return 0 # Server certificate generated
   else
     return 1 # Failed to generate Server certificate
@@ -343,44 +343,44 @@ execute \
 
 divider
 
-## Kubernetes secrets
-echo -e "\n⮞  ${BYELLOW}Kubernetes Secrets Creation${NONE}\n"
-
-### CA secret
-createCAsecret() {
-  if kubectl create secret generic sas-ldap-ca-certificate \
-      --from-file=ca.crt=certificates/sasldap_CA.crt \
-      --from-file=ca.key=certificates/sasldap_CA_nopass.key \
-      -n $NS > /dev/null 2>&1; then
-    return 0 # CA secret created
-  else
-    return 1 # Failed to create CA secret
-  fi
-}
-
-execute \
-  --title "Creating ${CYAN}CA secret${NONE}" \
-  createCAsecret \
-  --error "$ERRORMSG | ${CYAN}CA secret${NONE} creation failed."
-
-### Server secret
-createServerSecret() {
-  if kubectl create secret generic sas-ldap-certificate \
-      --from-file=tls.crt=certificates/sasldap_server.crt \
-      --from-file=tls.key=certificates/sasldap_server.key \
-      -n $NS > /dev/null 2>&1; then
-    return 0 # Server secret created
-  else
-    return 1 # Failed to generate Server secret
-  fi
-}
-
-execute \
-  --title "Creating ${CYAN}Server secret${NONE}" \
-  createServerSecret \
-  --error "$ERRORMSG | ${CYAN}Server secret${NONE} creation failed."
-
-divider
+### Kubernetes secrets
+#echo -e "\n⮞  ${BYELLOW}Kubernetes Secrets Creation${NONE}\n"
+#
+#### CA secret
+#createCAsecret() {
+#  if kubectl create secret generic sas-ldap-ca-certificate \
+#      --from-file=ca.crt=assets/certificates/sasldap_CA.crt \
+#      --from-file=ca.key=assets/certificates/sasldap_CA_nopass.key \
+#      -n $NS > /dev/null 2>&1; then
+#    return 0 # CA secret created
+#  else
+#    return 1 # Failed to create CA secret
+#  fi
+#}
+#
+#execute \
+#  --title "Creating ${CYAN}CA secret${NONE}" \
+#  createCAsecret \
+#  --error "$ERRORMSG | ${CYAN}CA secret${NONE} creation failed."
+#
+#### Server secret
+#createServerSecret() {
+#  if kubectl create secret generic sas-ldap-certificate \
+#      --from-file=tls.crt=assets/certificates/sasldap_server.crt \
+#      --from-file=tls.key=assets/certificates/sasldap_server.key \
+#      -n $NS > /dev/null 2>&1; then
+#    return 0 # Server secret created
+#  else
+#    return 1 # Failed to generate Server secret
+#  fi
+#}
+#
+#execute \
+#  --title "Creating ${CYAN}Server secret${NONE}" \
+#  createServerSecret \
+#  --error "$ERRORMSG | ${CYAN}Server secret${NONE} creation failed."
+#
+#divider
 
 ## Deploy OpenLDAP
 echo -e "\n⮞  ${BYELLOW}OpenLDAP Deployment${NONE}\n"
@@ -476,7 +476,7 @@ printConnectionInfo() {
   echo -e "   User:   cn=admin,dc=sasldap,dc=com"
   echo -e "   Pass:   SAS@ldapAdm1n"
   echo -e "   BaseDN: dc=sasldap,dc=com"
-  echo -e "   CA:     $PWD/certificates/sasldap_CA.crt"
+  echo -e "   CA:     $PWD/assets/certificates/sasldap_CA.crt"
   sleep 0.5
   echo ""
   echo -e "   $NOTEMSG | To manage your LDAP, launch the following command ${YELLOW}before${NONE} accessing it via LDAP browser:"
@@ -529,7 +529,7 @@ deploySASViyaStructure() {
   sleep 5 # Give port-forward some time to set up
 
   # Add the default LDAP structure
-  LDAPTLS_REQCERT=allow LDAPTLS_CACERT="certificates/sasldap_CA.crt" \
+  LDAPTLS_REQCERT=allow LDAPTLS_CACERT="assets/certificates/sasldap_CA.crt" \
   ldapadd -x \
   -H ldaps://localhost:1636 \
   -D cn=admin,dc=sasldap,dc=com \

@@ -1,7 +1,26 @@
----
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
 resources:
-  - storage.yaml
-  - configmap.yaml
   - deployment.yaml
+  - storage.yaml
   - service.yaml
-  
+secretGenerator:
+  - name: sas-ldap-certs
+    files:
+      - ca.crt=certificates/sasldap_CA.crt
+      - tls.crt=certificates/sasldap_server.crt
+      - tls.key=certificates/sasldap_server.key
+configMapGenerator:
+  - name: sas-ldap-config
+    literals:
+      - LDAP_ROOT=dc=sasldap,dc=com
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=SAS@ldapAdm1n
+      - LDAP_USERS=sasbind
+      - LDAP_PASSWORDS=SAS@ldapB1nd
+      - LDAP_ADD_SCHEMAS=yes
+      - LDAP_EXTRA_SCHEMAS=/schemas/rfc2307bis.schema
+      - LDAP_ENABLE_TLS=yes
+      - LDAP_TLS_CERT_FILE=/certs/tls.crt
+      - LDAP_TLS_KEY_FILE=/certs/tls.key
+      - LDAP_TLS_CA_FILE=/certs/ca.crt

@@ -9,8 +9,8 @@ metadata:
 spec:
   ports:
     - name: sas-ldaps-port
-      port: 636
-      targetPort: 636
+      port: 1636
+      targetPort: 1636
       protocol: TCP
   selector:
     app: sas-ldap-server
