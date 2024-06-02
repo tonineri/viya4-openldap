@@ -1,5 +1,6 @@
 #!/bin/bash -e
 log-helper level eq trace && set -x
+source /container/env
 
 # This tool helps to generate tls certificates with cfssl
 # or get certificates from a json file
@@ -32,7 +33,7 @@ SSL_HELPER_AUTO_RENEW_CERT_FROM_FILE=${!PREFIX_SSL_HELPER_AUTO_RENEW_CERT_FROM_F
 SSL_HELPER_AUTO_RENEW_KEY_FROM_FILE=${!PREFIX_SSL_HELPER_AUTO_RENEW_KEY_FROM_FILE:-$SSL_HELPER_AUTO_RENEW_KEY_FROM_FILE}
 SSL_HELPER_AUTO_RENEW_CA_CERT_FROM_FILE=${!PREFIX_SSL_HELPER_AUTO_RENEW_CA_CERT_FROM_FILE:-$SSL_HELPER_AUTO_RENEW_CA_CERT_FROM_FILE}
 
-source "${CONTAINER_SERVICE_DIR}/:ssl-tools/assets/default-env"
+source "${CONTAINER_SERVICE_DIR}/ssl-tools/assets/default-env"
 
 # call the certificate tool cfssl-helper (default) or jsonssl-helper
 ${SSL_HELPER_TOOL,,} "${PREFIX}" "${CERT_FILE}" "${KEY_FILE}" "${CA_FILE}"
@@ -62,14 +63,14 @@ if [ "${SSL_HELPER_AUTO_RENEW,,}" = "true" ]; then
             exit 1
         fi
         
-        mkdir -p "${CONTAINER_SERVICE_DIR}/:ssl-tools/assets/md5$(dirname "${CERT_FILE}")"
-        mkdir -p "${CONTAINER_SERVICE_DIR}/:ssl-tools/assets/md5$(dirname "${KEY_FILE}")"
-        mkdir -p "${CONTAINER_SERVICE_DIR}/:ssl-tools/assets/md5$(dirname "${CA_FILE}")"
+        mkdir -p "${CONTAINER_SERVICE_DIR}/ssl-tools/assets/md5$(dirname "${CERT_FILE}")"
+        mkdir -p "${CONTAINER_SERVICE_DIR}/ssl-tools/assets/md5$(dirname "${KEY_FILE}")"
+        mkdir -p "${CONTAINER_SERVICE_DIR}/ssl-tools/assets/md5$(dirname "${CA_FILE}")"
         
         # calculate certificates files md5
-        md5sum "${CERT_FILE}" | awk '{ print $1 }' > "${CONTAINER_SERVICE_DIR}/:ssl-tools/assets/md5${CERT_FILE}.md5"
-        md5sum "${KEY_FILE}" | awk '{ print $1 }' > "${CONTAINER_SERVICE_DIR}/:ssl-tools/assets/md5${KEY_FILE}.md5"
-        md5sum "${CA_FILE}" | awk '{ print $1 }' > "${CONTAINER_SERVICE_DIR}/:ssl-tools/assets/md5${CA_FILE}.md5"
+        md5sum "${CERT_FILE}" | awk '{ print $1 }' > "${CONTAINER_SERVICE_DIR}/ssl-tools/assets/md5${CERT_FILE}.md5"
+        md5sum "${KEY_FILE}" | awk '{ print $1 }' > "${CONTAINER_SERVICE_DIR}/ssl-tools/assets/md5${KEY_FILE}.md5"
+        md5sum "${CA_FILE}" | awk '{ print $1 }' > "${CONTAINER_SERVICE_DIR}/ssl-tools/assets/md5${CA_FILE}.md5"
         
     fi
     
@@ -78,15 +79,15 @@ if [ "${SSL_HELPER_AUTO_RENEW,,}" = "true" ]; then
         PREFIX_JSONSSL_FILE=${PREFIX}_JSONSSL_FILE
         JSONSSL_FILE=${!PREFIX_JSONSSL_FILE:-$JSONSSL_FILE}
         
-        source "${CONTAINER_SERVICE_DIR}/:ssl-tools/assets/jsonssl-default-env"
+        source "${CONTAINER_SERVICE_DIR}/ssl-tools/assets/jsonssl-default-env"
         
         if [ -z "${JSONSSL_FILE}" ]; then
             JSONSSL_FILE=${JSONSSL_FILE_DEFAULT}
         fi
         
         # calculate jsonssl file md5
-        mkdir -p "${CONTAINER_SERVICE_DIR}/:ssl-tools/assets/md5$(dirname "${JSONSSL_FILE}")"
-        md5sum "${JSONSSL_FILE}" | awk '{ print $1 }' > "${CONTAINER_SERVICE_DIR}/:ssl-tools/assets/md5${JSONSSL_FILE}.md5"
+        mkdir -p "${CONTAINER_SERVICE_DIR}/ssl-tools/assets/md5$(dirname "${JSONSSL_FILE}")"
+        md5sum "${JSONSSL_FILE}" | awk '{ print $1 }' > "${CONTAINER_SERVICE_DIR}/ssl-tools/assets/md5${JSONSSL_FILE}.md5"
         
     fi
     
