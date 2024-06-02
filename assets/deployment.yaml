@@ -28,7 +28,7 @@ spec:
               value: 1636
           envFrom:
             - configMapRef:
-                name: sas-ldap-configmap
+                name: sas-ldap-config
           volumeMounts:
             - name: sas-ldap-data
               mountPath: /bitnami/openldap/data

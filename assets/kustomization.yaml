@@ -11,7 +11,7 @@ secretGenerator:
       - tls.crt=certificates/sasldap_server.crt
       - tls.key=certificates/sasldap_server.key
 configMapGenerator:
-  - name: sas-ldap-configmap
+  - name: sas-ldap-config
     literals:
       - LDAP_PORT=1636
       - LDAP_ROOT=dc=sasldap,dc=com
