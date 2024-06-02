@@ -39,7 +39,7 @@ spec:
             - name: sas-ldap-ldifs
               mountPath: /ldifs
               readOnly: true
-            - name: sas-ldap-schemas
+            - name: sas-ldap-schema
               mountPath: /schemas/0-rfc2307bis.ldif
               subPath: 0-rfc2307bis.ldif
               readOnly: true
@@ -56,3 +56,6 @@ spec:
         - name: sas-ldap-ldifs
           configMap:
             name: sas-ldap-ldifs
+        - name: sas-ldap-schema
+          configMap:
+            name: sas-ldap-schema
