@@ -7,7 +7,7 @@ LABEL maintainer="Antonio Neri <antoneri@proton.me>" \
 COPY container /container
 SHELL ["/bin/bash", "-c"]
 RUN chmod +x /container/build.sh
-RUN /container/build.sh
+RUN /bin/bash -c "/container/build.sh"
 
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US:en" \
