@@ -12,7 +12,7 @@ ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US:en" \
     LC_ALL="en_US.UTF-8"
 
-ARG OPENLDAP_PACKAGE_VERSION=2.6.7
+ARG OPENLDAP_VERSION=2.6.7
 
 ARG LDAP_OPENLDAP_GID
 ARG LDAP_OPENLDAP_UID
@@ -33,7 +33,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get -y --no-install-recommends \
     ca-certificates \
     curl \
-    ldap-utils=${OPENLDAP_PACKAGE_VERSION}\* \
+    ldap-utils=${OPENLDAP_VERSION}* \
     libsasl2-modules \
     libsasl2-modules-db \
     libsasl2-modules-gssapi-mit \
@@ -41,8 +41,8 @@ RUN apt-get -y --no-install-recommends \
     libsasl2-modules-otp \
     libsasl2-modules-sql \
     openssl \
-    slapd=${OPENLDAP_PACKAGE_VERSION}\* \
-    slapd-contrib=${OPENLDAP_PACKAGE_VERSION}\* \
+    slapd=${OPENLDAP_VERSION}* \
+    slapd-contrib=${OPENLDAP_VERSION}* \
     krb5-kdc-ldap \
     && update-ca-certificates
 
