@@ -1,19 +1,8 @@
-# User - SAS Bind User
-dn: cn=sasbind,dc=sasldap,dc=com
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: posixAccount
+# Organizational Unit - Users
+dn: ou=users,dc=sasldap,dc=com
+objectClass: organizationalUnit
 objectClass: top
-uidNumber: 1000
-uid: sasbind
-cn: sasbind
-givenName: SAS Bind
-sn: User
-displayName: SAS Bind User
-mail: sasbind@sasldap.com
-l: Italy
-o: SASLDAP
-userPassword: SAS@ldapB1nd
+ou: users
 
 # Organizational Unit - Groups
 dn: ou=groups,dc=sasldap,dc=com
