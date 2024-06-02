@@ -30,7 +30,7 @@ RUN if [ -z "${LDAP_OPENLDAP_GID}" ]; then groupadd -g 911 -r openldap; else gro
 #          https://github.com/osixia/docker-light-baseimage/blob/master/image/service-available/:ssl-tools/download.sh
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get -y --no-install-recommends \
+RUN apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     ldap-utils=${OPENLDAP_VERSION}* \
