@@ -13,15 +13,36 @@ secretGenerator:
 configMapGenerator:
   - name: sas-ldap-config
     literals:
-      - LDAP_PORT=1636
+      - LDAP_PORT_NUMBER=1389
+      - LDAP_LDAPS_PORT_NUMBER=1636
       - LDAP_ROOT=dc=sasldap,dc=com
       - LDAP_ADMIN_USERNAME=admin
       - LDAP_ADMIN_PASSWORD=SAS@ldapAdm1n
       - LDAP_USERS=sasbind
       - LDAP_PASSWORDS=SAS@ldapB1nd
-      #- LDAP_ADD_SCHEMAS=yes
-      #- LDAP_EXTRA_SCHEMAS=/schemas/rfc2307bis.schema
       - LDAP_ENABLE_TLS=yes
       - LDAP_TLS_CERT_FILE=/certs/tls.crt
       - LDAP_TLS_KEY_FILE=/certs/tls.key
       - LDAP_TLS_CA_FILE=/certs/ca.crt
+# The below section defines variables `LDAP_PORT_NUMBER`
+# and `LDAP_LDAPS_PORT_NUMBER` from the `sas-ldap-config` ConfigMap.
+# These variables are used for port configurations in `service.yaml`
+# and `deployment.yaml` for consistency and maintainability.
+# NOTE: Do not modify the values below.
+vars:
+  - name: LDAP_PORT_NUMBER
+    objref:
+      kind: ConfigMap
+      name: sas-ldap-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.LDAP_PORT_NUMBER
+  - name: LDAP_LDAPS_PORT_NUMBER
+    objref:
+      kind: ConfigMap
+      name: sas-ldap-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.LDAP_LDAPS_PORT_NUMBER
+configurations:
+  - vars.yaml

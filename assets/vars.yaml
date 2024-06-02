@@ -1,0 +1,7 @@
+varReference:
+  - path: spec/template/spec/containers/ports/containerPort
+    kind: Deployment
+  - path: spec/ports/port
+    kind: Service
+  - path: spec/ports/targetPort
+    kind: Service

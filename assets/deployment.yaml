@@ -21,14 +21,15 @@ spec:
           image: bitnami/openldap:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 1636
+            - containerPort: $(LDAP_PORT_NUMBER)
+              name: sas-ldap-port
+            - containerPort: $(LDAP_LDAPS_PORT_NUMBER)
               name: sas-ldaps-port
-          env:
-            - name: LDAP_LDAPS_PORT_NUMBER
-              value: "1636"
           envFrom:
             - configMapRef:
                 name: sas-ldap-config
+            - secretRef:
+                name: sas-ldap-certs
           volumeMounts:
             - name: sas-ldap-data
               mountPath: /bitnami/openldap/data
@@ -46,4 +47,4 @@ spec:
             claimName: sas-ldap-config-pvc
         - name: sas-ldap-certs
           secret:
-            secretName: "sas-ldap-certs"
+            secretName: sas-ldap-certs
