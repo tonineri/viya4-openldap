@@ -40,8 +40,8 @@ spec:
               mountPath: /ldifs
               readOnly: true
             - name: sas-ldap-schema
-              mountPath: /schemas/rfc2307bis.ldif
-              subPath: rfc2307bis.ldif
+              mountPath: /schemas/overlay.ldif
+              subPath: overlay.ldif
               readOnly: true
       volumes:
         - name: sas-ldap-data
