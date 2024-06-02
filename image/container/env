@@ -4,11 +4,13 @@ mini-apt-install() {
 }
 
 # Aliases (for interactive shell use)
-alias vim="vim.tiny"
-alias ll="ls -la"
-alias bat="batcat"
-alias locate="plocate"
-alias please="sudo"
+if [ -t 1 ]; then
+  alias vim="vim.tiny"
+  alias ll="ls -la"
+  alias bat="batcat"
+  alias locate="plocate"
+  alias please="sudo"
+fi
 
 # Variables
 export CONTAINER_SERVICE_DIR="/container/service"

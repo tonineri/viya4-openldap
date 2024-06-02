@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euxo pipefail
 source /container/env
 
 ## Prerequisites
@@ -14,52 +15,43 @@ chmod +x \
 
 groupadd -g 8377 docker_env
 
-# dpkg options
+## dpkg options
 cp /container/file/dpkg_nodoc /etc/dpkg/dpkg.cfg.d/01_nodoc
 cp /container/file/dpkg_nolocales /etc/dpkg/dpkg.cfg.d/01_nolocales
 
-# General config
-export LC_ALL=C
-export DEBIAN_FRONTEND=noninteractive
-MINIMAL_APT_GET_INSTALL='apt-get install -y --no-install-recommends'
-
-## Prevent initramfs updates from trying to run grub and lilo.
-## https://journal.paul.querna.org/articles/2013/10/15/docker-ubuntu-on-rackspace/
-## http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594189
-export INITRD=no
-printf no > /container/environment/INITRD
-
-apt-get update
-
-## Fix some issues with APT packages.
+## Fix some issues with APT packages
 ## See https://github.com/dotcloud/docker/issues/1024
 dpkg-divert --local --rename --add /sbin/initctl
 ln -sf /bin/true /sbin/initctl
 
-## Replace the 'ischroot' tool to make it always return true.
-## Prevent initscripts updates from breaking /dev/shm.
-## https://journal.paul.querna.org/articles/2013/10/15/docker-ubuntu-on-rackspace/
-## https://bugs.launchpad.net/launchpad/+bug/974584
+## Replace the 'ischroot' tool to make it always return true
+## Prevent initscripts updates from breaking /dev/shm
 dpkg-divert --local --rename --add /usr/bin/ischroot
 ln -sf /bin/true /usr/bin/ischroot
 
-## Install apt-utils.
-mini-apt-install \
-    apt-utils \
-    apt-transport-https \
-    ca-certificates \
-    locales \
-    procps \
-    dirmngr \
-    gnupg \
-    iproute2 \
-    python3-minimal \
-    python3-yaml
+## General config.
+export LC_ALL=C
+export DEBIAN_FRONTEND=noninteractive
 
-## Upgrade all packages.
-apt-get dist-upgrade -y --no-install-recommends -o Dpkg::Options::="--force-confold"
+## Prevent initramfs updates from trying to run grub and lilo
+echo "no" > /container/environment/INITRD
 
-# fix locale
+## Install and upgrade necessary packages
+apt-get update \
+    && mini-apt-install \
+        apt-utils \
+        apt-transport-https \
+        ca-certificates \
+        locales \
+        procps \
+        dirmngr \
+        gnupg \
+        iproute2 \
+        python3-minimal \
+        python3-yaml \
+    && apt-get dist-upgrade -y --no-install-recommends -o Dpkg::Options::="--force-confold"
+
+## Fix locale
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen en_US
 update-locale LANG=en_US.UTF-8 LC_CTYPE=en_US.UTF-8

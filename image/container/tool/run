@@ -21,15 +21,13 @@ def copy_service_to_run_dir():
     except shutil.Error as e:
         print(f"Error copying service directory: {e}", file=sys.stderr)
 
-def main(args):
+def main():
+    parser = argparse.ArgumentParser(description='Copy service directory to run directory.')
+    parser.add_argument('--copy-service', action='store_true', help='Copy service directory to run directory.')
+    args = parser.parse_args()
+
     if args.copy_service:
         copy_service_to_run_dir()
 
-# Parse options.
-parser = argparse.ArgumentParser(description='Copy service directory to run directory.')
-parser.add_argument('--copy-service', dest='copy_service',
-                    action='store_const', const=True, default=False,
-                    help='Copy service directory to run directory.')
-args = parser.parse_args()
-
-main(args)
+if __name__ == "__main__":
+    main()
