@@ -3,7 +3,15 @@ source /container/env
 
 ## Prerequisites
 ln -s /container/tool/* /sbin/
-chmod 700 /container/environment/ /container/environment/startup
+chmod 700 \
+    /container/environment/ \
+    /container/environment/startup
+
+chmod +x \
+    /container/*.sh \
+    /container/service/slapd/*.sh \
+    /container/tool/*
+
 groupadd -g 8377 docker_env
 
 # dpkg options

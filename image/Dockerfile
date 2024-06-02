@@ -5,12 +5,12 @@ LABEL maintainer="Antonio Neri <antoneri@proton.me>" \
       description="Persistent OpenLDAP for SAS Viya"
 
 COPY container /container
-RUN /container/build.sh
+RUN chmod +x /container/build.sh \
+    && /container/build.sh
 
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US:en" \
     LC_ALL="en_US.UTF-8"
-
 
 ARG OPENLDAP_PACKAGE_VERSION=2.6.7
 
