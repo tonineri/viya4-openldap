@@ -36,6 +36,9 @@ spec:
             - name: sas-ldap-certs
               mountPath: /certs
               readOnly: true
+            - name: sas-ldap-ldifs
+              mountPath: /ldifs
+              readOnly: true
       volumes:
         - name: sas-ldap-data
           persistentVolumeClaim:
@@ -46,3 +49,6 @@ spec:
         - name: sas-ldap-certs
           secret:
             secretName: sas-ldap-certs
+        - name: sas-ldap-ldifs
+          configMap:
+            name: sas-ldap-ldifs

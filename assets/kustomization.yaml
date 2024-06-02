@@ -13,16 +13,24 @@ secretGenerator:
 configMapGenerator:
   - name: sas-ldap-config
     literals:
+      ## Uncomment the line below to enable debug
       - BITNAMI_DEBUG=true
-      - LDAP_PORT_NUMBER=1389
-      - LDAP_LDAPS_PORT_NUMBER=1636
+      - LDAP_PORT_NUMBER=1389       # move to deployment.yaml
+      - LDAP_LDAPS_PORT_NUMBER=1636 # move to deployment.yaml
       - LDAP_ROOT=dc=sasldap,dc=com
       - LDAP_ADMIN_USERNAME=admin
       - LDAP_ADMIN_PASSWORD=SAS@ldapAdm1n
-      #- LDAP_USERS=sasbind
-      #- LDAP_PASSWORDS=SAS@ldapB1nd
       - LDAP_ENABLE_TLS=yes
-      - LDAP_REQUIRE_TLS=no
+      ## Uncomment the line below to force TLS
+      #- LDAP_REQUIRE_TLS=yes
       - LDAP_TLS_CERT_FILE=/certs/tls.crt
       - LDAP_TLS_KEY_FILE=/certs/tls.key
       - LDAP_TLS_CA_FILE=/certs/ca.crt
+      - LDAP_EXTRA_SCHEMAS=cosine, inetorgperson
+      - LDAP_CUSTOM_LDIF_DIR=/ldifs
+  - name: sas-ldap-ldifs
+    files:
+      - ldifs/rfc2307bis.ldif
+      - ldifs/memberOf_config.ldif
+      - ldifs/refint1.ldif
+      - ldifs/refint2.ldif
