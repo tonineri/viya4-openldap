@@ -5,6 +5,7 @@ objectClass: organizationalPerson
 objectClass: posixAccount
 objectClass: top
 uidNumber: 1000
+gidNumber: 1000
 uid: sasbind
 cn: sasbind
 givenName: SAS Bind
