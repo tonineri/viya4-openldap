@@ -13,6 +13,7 @@ secretGenerator:
 configMapGenerator:
   - name: sas-ldap-config
     literals:
+      - BITNAMI_DEBUG=true
       - LDAP_PORT_NUMBER=1389
       - LDAP_LDAPS_PORT_NUMBER=1636
       - LDAP_ROOT=dc=sasldap,dc=com
