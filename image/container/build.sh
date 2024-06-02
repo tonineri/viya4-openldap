@@ -1,4 +1,4 @@
-#!/bin/sh -ex
+#!/bin/bash
 source /container/env
 
 ## Prerequisites
