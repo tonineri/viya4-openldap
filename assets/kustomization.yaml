@@ -27,7 +27,8 @@ configMapGenerator:
       - LDAP_TLS_KEY_FILE=/certs/tls.key
       - LDAP_TLS_CA_FILE=/certs/ca.crt
       - LDAP_EXTRA_SCHEMAS=cosine, inetorgperson # move to deployment.yaml
-      - LDAP_CUSTOM_SCHEMA_FILE=/schemas/rfc2307bis.ldif
+      #- LDAP_CUSTOM_SCHEMA_FILE=/schemas/rfc2307bis.ldif
+      - LDAP_CUSTOM_SCHEMA_FILE=/bitnami/openldap/schemas/rfc2307bis.ldif
       #- LDAP_CUSTOM_LDIF_DIR=/ldifs
   - name: sas-ldap-schema
     files:

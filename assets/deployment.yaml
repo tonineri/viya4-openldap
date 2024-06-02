@@ -40,7 +40,8 @@ spec:
             #  mountPath: /ldifs
             #  readOnly: true
             - name: sas-ldap-schema
-              mountPath: /schemas/rfc2307bis.ldif
+              #mountPath: /schemas/rfc2307bis.ldif
+              mountPath: /bitnami/openldap/schemas/rfc2307bis.ldif
               subPath: rfc2307bis.ldif
               readOnly: true
       volumes:
