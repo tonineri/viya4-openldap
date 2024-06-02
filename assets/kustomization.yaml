@@ -29,20 +29,21 @@ configMapGenerator:
 # These variables are used for port configurations in `service.yaml`
 # and `deployment.yaml` for consistency and maintainability.
 # NOTE: Do not modify the values below.
-vars:
-  - name: LDAP_PORT_NUMBER
-    objref:
-      kind: ConfigMap
-      name: sas-ldap-config
-      apiVersion: v1
-    fieldref:
-      fieldpath: data.LDAP_PORT_NUMBER
-  - name: LDAP_LDAPS_PORT_NUMBER
-    objref:
-      kind: ConfigMap
-      name: sas-ldap-config
-      apiVersion: v1
-    fieldref:
-      fieldpath: data.LDAP_LDAPS_PORT_NUMBER
-configurations:
-  - vars.yaml
+#vars:
+#  - name: LDAP_PORT_NUMBER
+#    objref:
+#      kind: ConfigMap
+#      name: sas-ldap-config
+#      apiVersion: v1
+#    fieldref:
+#      fieldpath: data.LDAP_PORT_NUMBER
+#  - name: LDAP_LDAPS_PORT_NUMBER
+#    objref:
+#      kind: ConfigMap
+#      name: sas-ldap-config
+#      apiVersion: v1
+#    fieldref:
+#      fieldpath: data.LDAP_LDAPS_PORT_NUMBER
+#configurations:
+#  - vars.yaml
+#

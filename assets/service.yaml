@@ -4,14 +4,22 @@ metadata:
   name: sas-ldap-service
   labels:
     app: sas-ldap-server
+#spec:
+#  ports:
+#    - name: sas-ldap-port
+#      port: $(LDAP_PORT_NUMBER)
+#      targetPort: $(LDAP_PORT_NUMBER)
+#    - name: sas-ldaps-port
+#      port: $(LDAP_LDAPS_PORT_NUMBER)
+#      targetPort: $(LDAP_LDAPS_PORT_NUMBER)
 spec:
   ports:
     - name: sas-ldap-port
-      port: $(LDAP_PORT_NUMBER)
-      targetPort: $(LDAP_PORT_NUMBER)
+      port: 1389
+      targetPort: 1389
     - name: sas-ldaps-port
-      port: $(LDAP_LDAPS_PORT_NUMBER)
-      targetPort: $(LDAP_LDAPS_PORT_NUMBER)
+      port: 1636
+      targetPort: 1636
   selector:
     app: sas-ldap-server
   type: ClusterIP

@@ -20,10 +20,15 @@ spec:
         - name: sas-ldap-server
           image: bitnami/openldap:latest
           imagePullPolicy: IfNotPresent
+          #ports:
+          #  - containerPort: $(LDAP_PORT_NUMBER)
+          #    name: sas-ldap-port
+          #  - containerPort: $(LDAP_LDAPS_PORT_NUMBER)
+          #    name: sas-ldaps-port
           ports:
-            - containerPort: $(LDAP_PORT_NUMBER)
+            - containerPort: 1389
               name: sas-ldap-port
-            - containerPort: $(LDAP_LDAPS_PORT_NUMBER)
+            - containerPort: 1636
               name: sas-ldaps-port
           envFrom:
             - configMapRef:
