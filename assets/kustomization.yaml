@@ -21,7 +21,7 @@ configMapGenerator:
       - LDAP_USERS=sasbind
       - LDAP_PASSWORDS=SAS@ldapB1nd
       - LDAP_ENABLE_TLS=yes
-      - LDAP_REQUIRE_TLS=yes
+      - LDAP_REQUIRE_TLS=no
       - LDAP_TLS_CERT_FILE=/certs/tls.crt
       - LDAP_TLS_KEY_FILE=/certs/tls.key
       - LDAP_TLS_CA_FILE=/certs/ca.crt
