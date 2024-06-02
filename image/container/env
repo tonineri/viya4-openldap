@@ -1,0 +1,15 @@
+# Functions
+mini-apt-install() {
+    apt-get install -y --no-install-recommends --no-install-suggests "$@"
+}
+
+# Aliases (for interactive shell use)
+alias vim="vim.tiny"
+alias ll="ls -la"
+alias bat="batcat"
+alias locate="plocate"
+alias please="sudo"
+
+# Variables
+export CONTAINER_SERVICE_DIR="/container/service"
+export CONTAINER_STATE_DIR="/container/state"
