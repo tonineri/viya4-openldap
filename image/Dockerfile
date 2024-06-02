@@ -5,6 +5,7 @@ LABEL maintainer="Antonio Neri <antoneri@proton.me>" \
       description="Persistent OpenLDAP for SAS Viya"
 
 COPY container /container
+SHELL ["/bin/bash", "-c"]
 RUN chmod +x /container/build.sh
 RUN /container/build.sh
 
