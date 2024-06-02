@@ -23,9 +23,6 @@ spec:
           ports:
             - containerPort: 1636
               name: sas-ldaps-port
-          env:
-            - name: LDAP_PORT_NUMBER
-              value: "1636"
           envFrom:
             - configMapRef:
                 name: sas-ldap-config
