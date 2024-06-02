@@ -15,8 +15,8 @@ objectClass: top
 olcOverlay: memberof
 olcMemberOfDangling: ignore
 olcMemberOfRefInt: TRUE
-olcMemberOfGroupOC: group
-olcMemberOfMemberAD: member
+olcMemberOfGroupOC: groupOfUniqueNames
+olcMemberOfMemberAD: uniqueMember
 olcMemberOfMemberOfAD: memberOf
 
 #refint overlay
@@ -26,5 +26,6 @@ objectClass: olcRefintConfig
 olcOverlay: refint
 olcRefintAttribute: owner
 olcRefintAttribute: manager
+olcRefintAttribute: uniqueMember
 olcRefintAttribute: member
 olcRefintAttribute: memberOf
