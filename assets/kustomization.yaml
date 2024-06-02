@@ -27,10 +27,13 @@ configMapGenerator:
       - LDAP_TLS_KEY_FILE=/certs/tls.key
       - LDAP_TLS_CA_FILE=/certs/ca.crt
       - LDAP_EXTRA_SCHEMAS=cosine, inetorgperson
+      - LDAP_CUSTOM_SCHEMA_FILE=/schemas/0-rfc2307bis.ldif
       - LDAP_CUSTOM_LDIF_DIR=/ldifs
-  - name: sas-ldap-ldifs
+  - name: sas-ldap-schema
     files:
       - ldifs/0-rfc2307bis.ldif
+  - name: sas-ldap-ldifs
+    files:
       - ldifs/1-memberOf_config.ldif
       - ldifs/2-refint1.ldif
       - ldifs/3-refint2.ldif

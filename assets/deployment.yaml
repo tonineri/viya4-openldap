@@ -39,6 +39,10 @@ spec:
             - name: sas-ldap-ldifs
               mountPath: /ldifs
               readOnly: true
+            - name: sas-ldap-schemas
+              mountPath: /schemas/0-rfc2307bis.ldif
+              subPath: 0-rfc2307bis.ldif
+              readOnly: true
       volumes:
         - name: sas-ldap-data
           persistentVolumeClaim:
