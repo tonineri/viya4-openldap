@@ -18,8 +18,8 @@ configMapGenerator:
       - LDAP_ADMIN_PASSWORD=SAS@ldapAdm1n
       - LDAP_USERS=sasbind
       - LDAP_PASSWORDS=SAS@ldapB1nd
-      - LDAP_ADD_SCHEMAS=yes
-      - LDAP_EXTRA_SCHEMAS=/schemas/rfc2307bis.schema
+      #- LDAP_ADD_SCHEMAS=yes
+      #- LDAP_EXTRA_SCHEMAS=/schemas/rfc2307bis.schema
       - LDAP_ENABLE_TLS=yes
       - LDAP_TLS_CERT_FILE=/certs/tls.crt
       - LDAP_TLS_KEY_FILE=/certs/tls.key
