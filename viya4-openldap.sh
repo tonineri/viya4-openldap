@@ -422,7 +422,7 @@ waitForOpenLDAP() {
 
   # Wait for pod to be ready
   if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
-    kubectl port-forward -n $NS $podOpenLDAP 1636:636 > /dev/null 2>&1 &
+    kubectl port-forward -n $NS $podOpenLDAP 1636:1636 > /dev/null 2>&1 &
     port_forward_pid=$!
   else
     return 1 # Failed to find the pod or pod not ready
@@ -480,7 +480,7 @@ printConnectionInfo() {
   sleep 0.5
   echo ""
   echo -e "   $NOTEMSG | To manage your LDAP, launch the following command ${YELLOW}before${NONE} accessing it via LDAP browser:"
-  echo -e "   ${ITALIC}kubectl --namespace $NS port-forward --address localhost svc/sas-ldap-service 1636:636${NONE}"
+  echo -e "   ${ITALIC}kubectl --namespace $NS port-forward --address localhost svc/sas-ldap-service 1636:1636${NONE}"
 }
 
 ### Print default tree
@@ -524,7 +524,7 @@ printGoodbye(){
 ## OpenLDAP info
 deploySASViyaStructure() {
   # Launch port-forward in the background
-  kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1636:636 > /dev/null 2>&1 &
+  kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1636:1636 > /dev/null 2>&1 &
   port_forward_pid=$!
   sleep 5 # Give port-forward some time to set up
 
