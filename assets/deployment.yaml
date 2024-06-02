@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: as-ldap-server
+  name: sas-ldap-server
   labels:
     app: sas-ldap-server
     app.kubernetes.io/part-of: sas-ldap
