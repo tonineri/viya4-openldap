@@ -531,7 +531,7 @@ deploySASViyaStructure() {
   # Add the default LDAP structure
   LDAPTLS_REQCERT=allow LDAPTLS_CACERT="assets/certificates/sasldap_CA.crt" \
   ldapadd -x \
-  -H ldaps://localhost:1389 \
+  -H ldap://localhost:1389 \
   -D cn=admin,dc=sasldap,dc=com \
   -w SAS@ldapAdm1n \
   -f samples/sas_ldap_structure.ldif > /dev/null 2>&1
