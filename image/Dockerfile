@@ -43,8 +43,7 @@ RUN apt-get -y --no-install-recommends \
     openssl \
     slapd=${OPENLDAP_VERSION}* \
     slapd-contrib=${OPENLDAP_VERSION}* \
-    krb5-kdc-ldap \
-    && update-ca-certificates
+    krb5-kdc-ldap
 
 # Cleanup
 RUN /container/cleanup.sh
