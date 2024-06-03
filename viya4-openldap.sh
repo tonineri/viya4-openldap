@@ -427,6 +427,16 @@ divider
 
 ## OpenLDAP info
 ### Print connection info
+applyMemberOf(){
+  sleep 15
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/0-load-memberof-module.ldif
+  sleep 5
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/1-configure-memberof-overlay.ldif
+  sleep 5
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/2-create-base-dn.ldif
+  sleep 5
+}
+
 printConnectionInfo() {
   echo ""
   echo -e "⮞  ${CYAN}OpenLDAP${NONE} connection info"
@@ -517,6 +527,7 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
   
   # Print current OpenLDAP structure
   echo -e "\nCurrent ${CYAN}OpenLDAP${NONE} structure:"
+  applyMemberOf
   printDefaultTree
   divider
 

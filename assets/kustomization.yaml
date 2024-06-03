@@ -52,15 +52,8 @@ configMapGenerator:
       - LDAP_LOGLEVEL=256
       - BITNAMI_DEBUG=true
       ## Additional
-      #- LDAP_CUSTOM_LDIF_DIR=/ldifs
       - LDAP_ADD_SCHEMAS=yes
       - LDAP_EXTRA_SCHEMAS=cosine, inetorgperson
-  #    - LDAP_CUSTOM_SCHEMA_FILE=/schemas/03-memberOf.ldif
-  #- name: sas-ldap-ldifs
-  #  files:
-  #    - ldifs/0-load-memberof-module.ldif
-  #    - ldifs/1-configure-memberof-overlay.ldif
-  #    - ldifs/2-create-base-dn.ldif
 
 images:
   - name: sas-ldap-server

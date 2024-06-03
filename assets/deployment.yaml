@@ -49,7 +49,7 @@ spec:
               mountPath: /container/service/slapd/assets/certs
               readOnly: true
             - name: sas-ldap-ldifs
-              mountPath: /ldifs
+              mountPath: /custom-ldifs
               readOnly: true
       volumes:
         - name: sas-ldap-data
@@ -61,7 +61,4 @@ spec:
         - name: sas-ldap-ldifs
           configMap:
             name: sas-ldap-ldifs
-        #- name: sas-ldap-memberof-overlay
-        #  configMap:
-        #    name: sas-ldap-memberof-overlay
       restartPolicy: Always

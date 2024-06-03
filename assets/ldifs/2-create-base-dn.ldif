@@ -4,17 +4,17 @@ objectClass: top
 objectClass: domain
 dc: sasldap
 
-# OU: users
-dn: ou=users,dc=sasldap,dc=com
-objectClass: top
-objectClass: organizationalUnit
-ou: users
-
-# OU: groups
-dn: ou=groups,dc=sasldap,dc=com
-objectClass: top
-objectClass: organizationalUnit
-ou: groups
+## OU: users
+#dn: ou=users,dc=sasldap,dc=com
+#objectClass: top
+#objectClass: organizationalUnit
+#ou: users
+#
+## OU: groups
+#dn: ou=groups,dc=sasldap,dc=com
+#objectClass: top
+#objectClass: organizationalUnit
+#ou: groups
 
 # User: sasbind
 dn: uid=sasbind,dc=sasldap,dc=com
