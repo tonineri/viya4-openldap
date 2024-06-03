@@ -517,7 +517,7 @@ resetSasbindPassword() {
   local ldifTempFile="assets/change-sasbind-password.ldif"
 
   # Generate hashed password
-  local hashedPassword=$(kubectl -s $NS exec -it $podOpenLDAP -- slappasswd -s $sasbindPassword | tr -d '\r')
+  local hashedPassword=$(kubectl -n $NS exec -it $podOpenLDAP -- slappasswd -s $sasbindPassword | tr -d '\r')
 
   # Create the LDIF content
   local ldifContent=$(cat <<EOF
@@ -527,20 +527,21 @@ replace: userPassword
 userPassword: $hashedPassword
 EOF
   )
-  
+
   # Create LDIF file locally
   echo "$ldifContent" > $ldifTempFile
-  
+
   # Copy the LDIF file to the OpenLDAP container
-  kubectl cp $ldifTempFile $podOpenLDAP:/custom-ldifs/change-sasbind-password.ldif
+  kubectl cp $ldifTempFile $podOpenLDAP:/custom-ldifs/change-sasbind-password.ldif -n $NS
 
   # Apply the LDIF file using ldapmodify
-  kubectl exec -it $podOpenLDAP -- ldapmodify -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/change-sasbind-password.ldif
+  kubectl exec -it $podOpenLDAP -n $NS -- ldapmodify -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/change-sasbind-password.ldif
 
   # Clean up
   rm -f $ldifTempFile
-  kubectl exec -it $podOpenLDAP -- rm /custom-ldifs/change-sasbind-password.ldif
+  kubectl exec -it $podOpenLDAP -n $NS -- rm /custom-ldifs/change-sasbind-password.ldif
 
+  return 0
 }
 
 applyMemberOf(){
