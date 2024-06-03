@@ -53,7 +53,7 @@ configMapGenerator:
       - BITNAMI_DEBUG=true
       ## Additional
   #    - LDAP_CUSTOM_LDIF_DIR=/ldifs
-  #    - LDAP_CUSTOM_SCHEMA_FILE=/schemas/03-memberOf.ldif
+      - LDAP_CUSTOM_SCHEMA_FILE=/schemas/03-memberOf.ldif
   #- name: sas-ldap-schema
   #  files:
   #    - schemas/overlays.ldif

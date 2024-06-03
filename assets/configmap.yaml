@@ -7,17 +7,17 @@ metadata:
 data:
   03-memberOf.ldif: |
     # Load memberof module
-    dn: cn=module{0},cn=config
+    dn: cn=module,cn=config
     changetype: modify
     add: olcModuleLoad
     olcModuleLoad: memberof
-
+    
     # Backend memberOf overlay
-    dn: olcOverlay={0}memberof,olcDatabase={1}{{ LDAP_BACKEND }},cn=config
+    dn: olcOverlay=memberof,olcDatabase={2}mdb,cn=config
     changetype: add
     objectClass: olcOverlayConfig
     objectClass: olcMemberOf
-    olcOverlay: {0}memberof
+    olcOverlay: memberof
     olcMemberOfDangling: ignore
     olcMemberOfRefInt: TRUE
     olcMemberOfGroupOC: posixGroup
