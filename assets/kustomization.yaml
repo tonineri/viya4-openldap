@@ -51,10 +51,10 @@ configMapGenerator:
       - LDAP_LOGLEVEL=256
       - BITNAMI_DEBUG=true
       ## Additional
-      - LDAP_CUSTOM_SCHEMA_FILE=/schemas/overlays.ldif
-  - name: sas-ldap-schema
-    files:
-      - schemas/overlays.ldif
+  #    - LDAP_CUSTOM_SCHEMA_FILE=/schemas/overlays.ldif
+  #- name: sas-ldap-schema
+  #  files:
+  #    - schemas/overlays.ldif
 
 images:
   - name: sas-ldap-server
