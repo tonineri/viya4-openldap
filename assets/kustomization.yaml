@@ -27,9 +27,6 @@ configMapGenerator:
       - LDAP_CONFIG_ADMIN_ENABLED=yes
       - LDAP_CONFIG_ADMIN_USERNAME=config
       - LDAP_CONFIG_ADMIN_PASSWORD=SAS@ldapAdm1n
-      - LDAP_USERS=""
-      - LDAP_USER_DC=""
-      - LDAP_GROUP=""
       # Access log options
       #- LDAP_ENABLE_ACCESSLOG=yes
       #- LDAP_ACCESSLOG_ADMIN_USERNAME=admin

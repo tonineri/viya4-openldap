@@ -48,4 +48,4 @@ data:
     dn: uid=sasbind,dc=sasldap,dc=com
     changetype: modify
     replace: userPassword
-    userPassword: {CLEARTEXT}SAS@ldapB1nd
+    userPassword: SAS@ldapB1nd
