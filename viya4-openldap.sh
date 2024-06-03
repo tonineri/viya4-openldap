@@ -517,13 +517,9 @@ applyMemberOf(){
   podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
   sleep 15
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/0-load-memberof-module.ldif
-  sleep 5
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/1-configure-memberof-overlay.ldif
-  sleep 5
-  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/2-create-base-dn.ldif
-  sleep 5
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/2-create-sasbind-user.ldif
   kubectl -n $NS delete pod $podOpenLDAP
-  sleep 10
 }
 
 if [ "$OpenLDAPdeployed" = "YES" ]; then

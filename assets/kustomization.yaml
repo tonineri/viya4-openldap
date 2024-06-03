@@ -55,6 +55,9 @@ configMapGenerator:
       - LDAP_CUSTOM_LDIF_DIR=/ldifs
       - LDAP_ADD_SCHEMAS=yes
       - LDAP_EXTRA_SCHEMAS=cosine, inetorgperson
+  - name: sas-ldap-domain
+    files:
+      - ldifs/0-create-domain.ldif
 
 images:
   - name: sas-ldap-server

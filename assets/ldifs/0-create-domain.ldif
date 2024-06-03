@@ -1,0 +1,5 @@
+# Domain
+dn: dc=sasldap,dc=com
+objectClass: top
+objectClass: domain
+dc: sasldap

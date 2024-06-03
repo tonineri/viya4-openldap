@@ -1,0 +1,11 @@
+# OU: users
+dn: ou=users,dc=sasldap,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: users
+
+# OU: groups
+dn: ou=groups,dc=sasldap,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: groups
