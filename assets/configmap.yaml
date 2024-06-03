@@ -1,25 +1,41 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: sas-ldap-memberof-overlay
+  name: sas-ldap-ldifs
   labels:
     app.kubernetes.io/part-of: sas-ldap-server
 data:
-  03-memberOf.ldif: |
-    # Load memberof module
-    dn: cn=module,cn=config
+  0-load-memberof-module.ldif: |
+    dn: cn=module{0},cn=config
     changetype: modify
     add: olcModuleLoad
-    olcModuleLoad: memberof
-    
-    # Backend memberOf overlay
+    olcModuleLoad: /opt/bitnami/openldap/lib/openldap/memberof.so
+  1-configure-memberof-overlay.ldif: |
     dn: olcOverlay=memberof,olcDatabase={2}mdb,cn=config
-    changetype: add
     objectClass: olcOverlayConfig
     objectClass: olcMemberOf
     olcOverlay: memberof
     olcMemberOfDangling: ignore
     olcMemberOfRefInt: TRUE
-    olcMemberOfGroupOC: posixGroup
+    olcMemberOfGroupOC: groupOfNames
     olcMemberOfMemberAD: member
     olcMemberOfMemberOfAD: memberOf
+
+    dn: olcDatabase={2}mdb,cn=config
+    changetype: modify
+    add: olcAccess
+    olcAccess: to attrs=memberOf by * read
+  2-create-base-dn.ldif: |
+    dn: dc=sasldap,dc=com
+    objectClass: top
+    objectClass: dcObject
+    objectClass: organization
+    o: sasldap
+    dc: sasldap
+
+    dn: cn=admin,dc=sasldap,dc=com
+    objectClass: simpleSecurityObject
+    objectClass: organizationalRole
+    cn: admin
+    description: Directory Manager
+    userPassword: SAS@ldapB1nd
