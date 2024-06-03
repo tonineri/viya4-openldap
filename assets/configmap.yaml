@@ -21,7 +21,7 @@ data:
     cn: sasbind
     sn: SAS Bind User
     uid: sasbind
-    userPassword: passw0rd
+    userPassword: {CLEARTEXT}SAS@ldapB1nd
     description: SAS Bind Read-Only User
   0-load-memberof-module.ldif: |
     dn: cn=module{0},cn=config
@@ -48,4 +48,4 @@ data:
     dn: uid=sasbind,dc=sasldap,dc=com
     changetype: modify
     replace: userPassword
-    userPassword: SAS@ldapB1nd
+    userPassword: {CLEARTEXT}SAS@ldapB1nd
