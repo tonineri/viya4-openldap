@@ -46,6 +46,10 @@ spec:
             - name: sas-ldap-certs
               mountPath: /container/service/slapd/assets/certs
               readOnly: true
+            - name: sas-ldap-memberof-overlay
+              mountPath: /ldifs/03-memberOf.ldif
+              subPath: 03-memberOf.ldif
+              readOnly: true
             #- name: sas-ldap-schema
             #  mountPath: /schemas/overlays.ldif
             #  subPath: overlays.ldif
@@ -60,4 +64,7 @@ spec:
         #- name: sas-ldap-schema
         #  configMap:
         #    name: sas-ldap-schema
+        - name: sas-ldap-memberof-overlay
+          configMap:
+            name: sas-ldap-memberof-overlay
       restartPolicy: Always
