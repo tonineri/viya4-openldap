@@ -37,8 +37,8 @@ configMapGenerator:
   - name: sas-ldap-schema
     files:
       - schemas/overlays.ldif
-  - name: sas-ldap-ldifs
-    files:
-      #- ldifs/1-memberOf_config.ldif
-      #- ldifs/2-refint1.ldif
-      #- ldifs/3-refint2.ldif
+  #- name: sas-ldap-ldifs
+  #  files:
+  #    - ldifs/1-memberOf_config.ldif
+  #    - ldifs/2-refint1.ldif
+  #    - ldifs/3-refint2.ldif
