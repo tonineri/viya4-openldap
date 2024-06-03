@@ -518,10 +518,14 @@ applyMemberOf(){
   sleep 15
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/0-load-memberof-module.ldif
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/1-configure-memberof-overlay.ldif
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/2-create-sasbind-user.ldif
+  sleep 5
   kubectl -n $NS delete pod $podOpenLDAP
   if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
     sleep 10
-    kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/2-create-sasbind-user.ldif
+    return 0
+  else
+    return 1
   fi
 }
 
