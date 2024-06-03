@@ -428,6 +428,9 @@ divider
 ## OpenLDAP info
 ### Print connection info
 applyMemberOf(){
+  local podOpenLDAP
+  local port_forward_pid
+  podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
   sleep 15
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/0-load-memberof-module.ldif
   sleep 5
