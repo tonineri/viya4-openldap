@@ -46,10 +46,10 @@ spec:
             - name: sas-ldap-certs
               mountPath: /container/service/slapd/assets/certs
               readOnly: true
-            #- name: sas-ldap-schema
-            #  mountPath: /schemas/overlays.ldif
-            #  subPath: overlays.ldif
-            #  readOnly: true
+            - name: sas-ldap-schema
+              mountPath: /schemas/overlays.ldif
+              subPath: overlays.ldif
+              readOnly: true
       volumes:
         - name: sas-ldap-data
           persistentVolumeClaim:
@@ -57,7 +57,7 @@ spec:
         - name: sas-ldap-certs
           secret:
             secretName: sas-ldap-certs
-        #- name: sas-ldap-schema
-        #  configMap:
-        #    name: sas-ldap-schema
+        - name: sas-ldap-schema
+          configMap:
+            name: sas-ldap-schema
       restartPolicy: Always
