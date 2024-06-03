@@ -1,44 +1,62 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+
 resources:
   - deployment.yaml
   - storage.yaml
   - service.yaml
+
 secretGenerator:
   - name: sas-ldap-certs
     files:
       - ca.crt=certificates/sasldap_CA.crt
       - tls.crt=certificates/sasldap_server.crt
       - tls.key=certificates/sasldap_server.key
+
 configMapGenerator:
   - name: sas-ldap-config
+    options:
+      disableNameSuffixHash: true
     literals:
-      ## Uncomment the line below to enable debug
-      - BITNAMI_DEBUG=true
-      - LDAP_PORT_NUMBER=1389       # move to deployment.yaml
-      - LDAP_LDAPS_PORT_NUMBER=1636 # move to deployment.yaml
+      ## Base options
+      - LDAP_PORT_NUMBER=1389
       - LDAP_ROOT=dc=sasldap,dc=com
       - LDAP_ADMIN_USERNAME=admin
       - LDAP_ADMIN_PASSWORD=SAS@ldapAdm1n
-      - LDAP_ENABLE_TLS=yes
-      ## Uncomment the line below to force TLS
-      #- LDAP_REQUIRE_TLS=yes
-      - LDAP_TLS_CERT_FILE=/certs/tls.crt
-      - LDAP_TLS_KEY_FILE=/certs/tls.key
-      - LDAP_TLS_CA_FILE=/certs/ca.crt
-      ##
+      - LDAP_CONFIG_ADMIN_ENABLED=yes
+      - LDAP_CONFIG_ADMIN_USERNAME=config
+      - LDAP_CONFIG_ADMIN_PASSWORD=SAS@ldapAdm1n
+      - LDAP_USERS=""
+      - LDAP_USER_DC=""
+      - LDAP_GROUP=""
+      # Access log options
+      - LDAP_ENABLE_ACCESSLOG=yes
+      - LDAP_ACCESSLOG_ADMIN_USERNAME=admin
+      - LDAP_ACCESSLOG_ADMIN_PASSWORD=SAS@ldapAdm1n
+      - LDAP_ACCESSLOG_DB=cn=accesslog
+      - LDAP_ACCESSLOG_LOGSUCCESS=yes
+      ## Security
       - LDAP_PASSWORD_HASH={SSHA}
       - LDAP_CONFIGURE_PPOLICY=yes
       - LDAP_PPOLICY_USE_LOCKOUT=yes
       - LDAP_PPOLICY_HASH_CLEARTEXT=yes
-      #- LDAP_EXTRA_SCHEMAS=cosine, inetorgperson # move to deployment.yaml
+      ## TLS
+      - LDAP_ENABLE_TLS=yes
+      - LDAP_REQUIRE_TLS=no
+      - LDAP_LDAPS_PORT_NUMBER=1636
+      - LDAP_TLS_CERT_FILE=/container/service/slapd/assets/certs/tls.crt
+      - LDAP_TLS_KEY_FILE=/container/service/slapd/assets/certs/tls.key
+      - LDAP_TLS_CA_FILE=/container/service/slapd/assets/certs/ca.crt
+      ## Logging
+      - LDAP_LOGLEVEL=256
+      - BITNAMI_DEBUG=true
+      ## Additional
       - LDAP_CUSTOM_SCHEMA_FILE=/schemas/overlays.ldif
-      - LDAP_CUSTOM_LDIF_DIR=/ldifs
   - name: sas-ldap-schema
     files:
       - schemas/overlays.ldif
-  #- name: sas-ldap-ldifs
-  #  files:
-  #    - ldifs/1-memberOf_config.ldif
-  #    - ldifs/2-refint1.ldif
-  #    - ldifs/3-refint2.ldif
+
+images:
+  - name: sas-ldap-server
+    newName: bitnami/openldap
+    newTag: latest

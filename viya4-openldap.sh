@@ -343,45 +343,6 @@ execute \
 
 divider
 
-### Kubernetes secrets
-#echo -e "\n⮞  ${BYELLOW}Kubernetes Secrets Creation${NONE}\n"
-#
-#### CA secret
-#createCAsecret() {
-#  if kubectl create secret generic sas-ldap-ca-certificate \
-#      --from-file=ca.crt=assets/certificates/sasldap_CA.crt \
-#      --from-file=ca.key=assets/certificates/sasldap_CA_nopass.key \
-#      -n $NS > /dev/null 2>&1; then
-#    return 0 # CA secret created
-#  else
-#    return 1 # Failed to create CA secret
-#  fi
-#}
-#
-#execute \
-#  --title "Creating ${CYAN}CA secret${NONE}" \
-#  createCAsecret \
-#  --error "$ERRORMSG | ${CYAN}CA secret${NONE} creation failed."
-#
-#### Server secret
-#createServerSecret() {
-#  if kubectl create secret generic sas-ldap-certificate \
-#      --from-file=tls.crt=assets/certificates/sasldap_server.crt \
-#      --from-file=tls.key=assets/certificates/sasldap_server.key \
-#      -n $NS > /dev/null 2>&1; then
-#    return 0 # Server secret created
-#  else
-#    return 1 # Failed to generate Server secret
-#  fi
-#}
-#
-#execute \
-#  --title "Creating ${CYAN}Server secret${NONE}" \
-#  createServerSecret \
-#  --error "$ERRORMSG | ${CYAN}Server secret${NONE} creation failed."
-#
-#divider
-
 ## Deploy OpenLDAP
 echo -e "\n⮞  ${BYELLOW}OpenLDAP Deployment${NONE}\n"
 

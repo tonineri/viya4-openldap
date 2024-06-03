@@ -13,7 +13,7 @@ config:
       baseDN: 'ou=groups,dc=sasldap,dc=com'
       createdDate: 'createTimestamp'
       distinguishedName: 'none'
-      member: 'memberUid'
+      member: 'uniqueMember'
       memberOf: 'none'
       modifiedDate: 'modifyTimestamp'
       objectClass: 'posixGroup'

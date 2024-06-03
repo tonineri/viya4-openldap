@@ -6,20 +6,32 @@ metadata:
     app: sas-ldap-server
     app.kubernetes.io/part-of: sas-ldap
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: sas-ldap-server
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
   template:
     metadata:
       labels:
         app: sas-ldap-server
-        app.kubernetes.io/part-of: sas-ldap
+        app.kubernetes.io/part-of: sas-ldap-server
     spec:
       containers:
         - name: sas-ldap-server
-          image: bitnami/openldap:latest
+          image: sas-ldap-server:latest
           imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi
           ports:
             - containerPort: 1389
               name: sas-ldap-port
@@ -30,32 +42,22 @@ spec:
                 name: sas-ldap-config
           volumeMounts:
             - name: sas-ldap-data
-              mountPath: /bitnami/openldap/data
-            - name: sas-ldap-config
-              mountPath: /bitnami/openldap/config
+              mountPath: /bitnami
             - name: sas-ldap-certs
-              mountPath: /certs
+              mountPath: /container/service/slapd/assets/certs
               readOnly: true
-            #- name: sas-ldap-ldifs
-            #  mountPath: /ldifs
-            #  readOnly: true
             - name: sas-ldap-schema
-              mountPath: /schemas/rfc2307bis.ldif
-              subPath: rfc2307bis.ldif
+              mountPath: /schemas/overlays.ldif
+              subPath: overlays.ldif
               readOnly: true
       volumes:
         - name: sas-ldap-data
           persistentVolumeClaim:
             claimName: sas-ldap-data-pvc
-        - name: sas-ldap-config
-          persistentVolumeClaim:
-            claimName: sas-ldap-config-pvc
         - name: sas-ldap-certs
           secret:
             secretName: sas-ldap-certs
-        #- name: sas-ldap-ldifs
-        #  configMap:
-        #    name: sas-ldap-ldifs
         - name: sas-ldap-schema
           configMap:
             name: sas-ldap-schema
+      restartPolicy: Always
