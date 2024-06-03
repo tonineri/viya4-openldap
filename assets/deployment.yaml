@@ -60,10 +60,10 @@ spec:
               mountPath: /custom-ldifs/1-configure-memberof-overlay.ldif
               subPath: 1-configure-memberof-overlay.ldif
               readOnly: true
-            - name: sas-ldap-ldifs
-              mountPath: /custom-ldifs/2-reset-sasbind-pwd.ldif
-              subPath: 2-reset-sasbind-pwd.ldif
-              readOnly: true
+            #- name: sas-ldap-ldifs
+            #  mountPath: /custom-ldifs/2-reset-sasbind-pwd.ldif
+            #  subPath: 2-reset-sasbind-pwd.ldif
+            #  readOnly: true
       volumes:
         - name: sas-ldap-data
           persistentVolumeClaim:

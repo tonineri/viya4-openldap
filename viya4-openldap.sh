@@ -511,14 +511,48 @@ deploySASViyaStructure() {
   fi
 }
 
+resetSasbindPassword() {
+  local podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
+  local sasbindPassword="SAS@ldapB1nd"
+  local ldifTempFile="assets/change-sasbind-password.ldif"
+
+  # Generate hashed password
+  local hashedPassword=$(kubectl -s $NS exec -it slappasswd -s $sasbindPassword | tr -d '\r')
+
+  # Create the LDIF content
+  local ldifContent=$(cat <<EOF
+dn: uid=sasbind,dc=sasldap,dc=com
+changetype: modify
+replace: userPassword
+userPassword: $hashedPassword
+EOF
+  )
+  
+  # Create LDIF file locally
+  echo "$ldifContent" > $ldifTempFile
+  
+  # Copy the LDIF file to the OpenLDAP container
+  kubectl cp $ldifTempFile $podOpenLDAP:/custom-ldifs/change-sasbind-password.ldif
+
+  # Apply the LDIF file using ldapmodify
+  kubectl exec -it $podOpenLDAP -- ldapmodify -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/change-sasbind-password.ldif
+
+  # Clean up
+  rm -f $ldifTempFile
+  kubectl exec -it $podOpenLDAP -- rm /custom-ldifs/change-sasbind-password.ldif
+
+}
+
 applyMemberOf(){
   local podOpenLDAP
   local port_forward_pid
+
   podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
+
   sleep 15
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/0-load-memberof-module.ldif
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/1-configure-memberof-overlay.ldif
-  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/2-reset-sasbind-pwd.ldif
+  #kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/2-reset-sasbind-pwd.ldif
   sleep 5
   kubectl -n $NS delete pod $podOpenLDAP
   sleep 15
@@ -533,7 +567,7 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
   # Configure OpenLDAP initial structure
   execute \
     --title "Configuring ${CYAN}OpenLDAP${NONE} initial structure" \
-    applyMemberOf \
+    "applyMemberOf && resetSasbindPassword" \
     --error "$ERRORMSG | Failed to configure ${CYAN}OpenLDAP${NONE} initial structure."
 
   # Print current OpenLDAP structure
