@@ -26,15 +26,19 @@ configMapGenerator:
       - LDAP_TLS_CERT_FILE=/certs/tls.crt
       - LDAP_TLS_KEY_FILE=/certs/tls.key
       - LDAP_TLS_CA_FILE=/certs/ca.crt
-      - LDAP_EXTRA_SCHEMAS=cosine, inetorgperson # move to deployment.yaml
-      #- LDAP_CUSTOM_SCHEMA_FILE=/schemas/rfc2307bis.ldif
-      - LDAP_CUSTOM_SCHEMA_FILE=/bitnami/openldap/schemas/rfc2307bis.ldif
-      #- LDAP_CUSTOM_LDIF_DIR=/ldifs
+      ##
+      - LDAP_PASSWORD_HASH={SSHA}
+      - LDAP_CONFIGURE_PPOLICY=yes
+      - LDAP_PPOLICY_USE_LOCKOUT=yes
+      - LDAP_PPOLICY_HASH_CLEARTEXT=yes
+      #- LDAP_EXTRA_SCHEMAS=cosine, inetorgperson # move to deployment.yaml
+      - LDAP_CUSTOM_SCHEMA_FILE=/schemas/overlays.ldif
+      - LDAP_CUSTOM_LDIF_DIR=/ldifs
   - name: sas-ldap-schema
     files:
-      - schemas/rfc2307bis.ldif
-  #- name: sas-ldap-ldifs
-  #  files:
-  #    - ldifs/1-memberOf_config.ldif
-  #    - ldifs/2-refint1.ldif
-  #    - ldifs/3-refint2.ldif
+      - schemas/overlays.ldif
+  - name: sas-ldap-ldifs
+    files:
+      #- ldifs/1-memberOf_config.ldif
+      #- ldifs/2-refint1.ldif
+      #- ldifs/3-refint2.ldif
