@@ -533,7 +533,7 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
   execute \
     --title "Configuring ${CYAN}OpenLDAP${NONE} initial structure" \
     applyMemberOf \
-    --error "$ERRORMSG | Failed to configure ${CYAN}OpenLDAP${NONE} initial structure."; then
+    --error "$ERRORMSG | Failed to configure ${CYAN}OpenLDAP${NONE} initial structure."
 
   # Print current OpenLDAP structure
   echo -e "\nCurrent ${CYAN}OpenLDAP${NONE} structure:"
