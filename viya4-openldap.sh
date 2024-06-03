@@ -517,7 +517,7 @@ resetSasbindPassword() {
   local ldifTempFile="assets/change-sasbind-password.ldif"
 
   # Generate hashed password
-  local hashedPassword=$(kubectl -s $NS exec -it slappasswd -s $sasbindPassword | tr -d '\r')
+  local hashedPassword=$(kubectl -s $NS exec -it $podOpenLDAP -- slappasswd -s $sasbindPassword | tr -d '\r')
 
   # Create the LDIF content
   local ldifContent=$(cat <<EOF
