@@ -25,6 +25,8 @@ spec:
         - name: sas-ldap-server
           image: sas-ldap-server:latest
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: true
           resources:
             requests:
               cpu: 100m
