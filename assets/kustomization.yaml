@@ -2,7 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - configmap.yaml
+  #- configmap.yaml
   - deployment.yaml
   - storage.yaml
   - service.yaml
@@ -52,11 +52,13 @@ configMapGenerator:
       - LDAP_LOGLEVEL=256
       - BITNAMI_DEBUG=true
       ## Additional
-  #    - LDAP_CUSTOM_LDIF_DIR=/ldifs
+      - LDAP_CUSTOM_LDIF_DIR=/ldifs
   #    - LDAP_CUSTOM_SCHEMA_FILE=/schemas/03-memberOf.ldif
-  #- name: sas-ldap-schema
-  #  files:
-  #    - schemas/overlays.ldif
+  - name: sas-ldap-ldifs
+    files:
+      - ldifs/0-load-memberof-module.ldif
+      - ldifs/1-configure-memberof-overlay.ldif
+      - ldifs/2-create-base-dn.ldif
 
 images:
   - name: sas-ldap-server

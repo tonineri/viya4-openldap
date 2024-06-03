@@ -1,0 +1,14 @@
+dn: dc=sasldap,dc=com
+objectClass: top
+objectClass: domain
+dc: sasldap
+
+dn: ou=users,dc=sasldap,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: users
+
+dn: ou=groups,dc=sasldap,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: groups
