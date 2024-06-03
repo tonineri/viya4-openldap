@@ -27,7 +27,7 @@ ou: groups
 # Group - SAS Service Accounts
 dn: cn=sas,ou=groups,dc=sasldap,dc=com
 objectClass: extensibleObject
-objectClass: groupOfNames
+objectClass: groupOfUniqueNames
 objectClass: posixGroup
 objectClass: top
 gidNumber: 1001
@@ -44,7 +44,7 @@ o: SASLDAP
 # Group - SAS Admins group
 dn: cn=sasadmins,ou=groups,dc=sasldap,dc=com
 objectClass: extensibleObject
-objectClass: groupOfNames
+objectClass: groupOfUniqueNames
 objectClass: posixGroup
 objectClass: top
 gidNumber: 2001
@@ -59,7 +59,7 @@ o: SASLDAP
 # Group - SAS Developers group
 dn: cn=sasdevs,ou=groups,dc=sasldap,dc=com
 objectClass: extensibleObject
-objectClass: groupOfNames
+objectClass: groupOfUniqueNames
 objectClass: posixGroup
 objectClass: top
 gidNumber: 3001
@@ -74,7 +74,7 @@ o: SASLDAP
 # Group - SAS Users group
 dn: cn=sasusers,ou=groups,dc=sasldap,dc=com
 objectClass: extensibleObject
-objectClass: groupOfNames
+objectClass: groupOfUniqueNames
 objectClass: posixGroup
 objectClass: top
 gidNumber: 4001
