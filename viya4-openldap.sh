@@ -524,9 +524,6 @@ applyMemberOf(){
   sleep 15
   if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
     sleep 5
-    return 0 # Pod restarted
-  else
-    return 1 # Pod failed to restart
   fi
 }
 
