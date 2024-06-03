@@ -90,7 +90,6 @@ objectClass: posixAccount
 objectClass: top
 uidNumber: 1001
 gidNumber: 1001
-memberOf: cn=sas,ou=groups,dc=sasldap,dc=com
 uid: sas
 cn: sas
 givenName: SAS
@@ -111,7 +110,6 @@ objectClass: posixAccount
 objectClass: top
 uidNumber: 1002
 gidNumber: 1001
-memberOf: cn=sas,ou=groups,dc=sasldap,dc=com
 uid: cas
 cn: cas
 givenName: CAS
@@ -132,7 +130,6 @@ objectClass: posixAccount
 objectClass: top
 uidNumber: 2001
 gidNumber: 2001
-memberOf: cn=sasadmins,ou=groups,dc=sasldap,dc=com
 uid: sasadm
 cn: sasadm
 givenName: SAS Admin
@@ -153,7 +150,6 @@ objectClass: posixAccount
 objectClass: top
 uidNumber: 3001
 gidNumber: 3001
-cn=sasdevs,ou=groups,dc=sasldap,dc=com
 uid: sasdev
 cn: sasdev
 givenName: SAS Developer
@@ -174,7 +170,6 @@ objectClass: posixAccount
 objectClass: top
 uidNumber: 4001
 gidNumber: 4001
-cn=sasusers,ou=groups,dc=sasldap,dc=com
 uid: sasuser
 cn: sasuser
 givenName: SAS User
