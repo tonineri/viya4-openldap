@@ -7,5 +7,5 @@ objectClass: inetOrgPerson
 cn: sasbind
 sn: SAS Bind User
 uid: sasbind
-userPassword: SAS@ldapB1nd
+userPassword: {SSHA}HOrAaXMxYHzHcZAgTKhQVpoY3pB9Rw+v
 description: SAS Bind Read-Only User
