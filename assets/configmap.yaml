@@ -5,6 +5,24 @@ metadata:
   labels:
     app.kubernetes.io/part-of: sas-ldap-server
 data:
+  0-create-domain-sasbind.ldif: |
+    # Domain
+    dn: dc=sasldap,dc=com
+    objectClass: top
+    objectClass: domain
+    dc: sasldap
+
+    # User: sasbind
+    dn: uid=sasbind,dc=sasldap,dc=com
+    objectClass: top
+    objectClass: person
+    objectClass: organizationalPerson
+    objectClass: inetOrgPerson
+    cn: sasbind
+    sn: SAS Bind User
+    uid: sasbind
+    userPassword: passw0rd
+    description: SAS Bind Read-Only User
   0-load-memberof-module.ldif: |
     dn: cn=module{0},cn=config
     changetype: modify
@@ -25,15 +43,9 @@ data:
     changetype: modify
     add: olcAccess
     olcAccess: to attrs=memberOf by * read
-  #2-create-sasbind-user.ldif: |
-  #  # User: sasbind
-  #  dn: uid=sasbind,dc=sasldap,dc=com
-  #  objectClass: top
-  #  objectClass: person
-  #  objectClass: organizationalPerson
-  #  objectClass: inetOrgPerson
-  #  cn: sasbind
-  #  sn: SAS Bind User
-  #  uid: sasbind
-  #  userPassword: SAS@ldapB1nd
-  #  description: SAS Bind Read-Only User
+  2-reset-sasbind-pwd.ldif: |
+    # Password reset - automatically converts to SSHA
+    dn: uid=sasbind,dc=sasldap,dc=com
+    changetype: modify
+    replace: userPassword
+    userPassword: SAS@ldapB1nd
