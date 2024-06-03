@@ -538,8 +538,8 @@ EOF
   kubectl exec -it $podOpenLDAP -n $NS -- ldapmodify -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/change-sasbind-password.ldif
 
   # Clean up
-  rm -f $ldifTempFile
-  kubectl exec -it $podOpenLDAP -n $NS -- rm /custom-ldifs/change-sasbind-password.ldif
+  #rm -f $ldifTempFile
+  #kubectl exec -it $podOpenLDAP -n $NS -- rm /custom-ldifs/change-sasbind-password.ldif
 
   return 0
 }
