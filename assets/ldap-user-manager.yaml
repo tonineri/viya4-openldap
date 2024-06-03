@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ldap-user-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ldap-user-manager
+  template:
+    metadata:
+      labels:
+        app: ldap-user-manager
+    spec:
+      containers:
+        - name: ldap-user-manager
+          image: wheelybird/ldap-user-manager:v1.5
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 443
+              name: https
+          env:
+            - name: SERVER_HOSTNAME
+              value: "lum.example.com"
+            - name: LDAP_URI
+              value: "ldap://sas-ldap-service:1389"
+            - name: LDAP_BASE_DN
+              value: "dc=sasldap,dc=com"
+            - name: LDAP_REQUIRE_STARTTLS
+              value: "TRUE"
+            - name: LDAP_ADMINS_GROUP
+              value: "admins"
+            - name: LDAP_ADMIN_BIND_DN
+              value: "cn=admin,dc=sasldap,dc=com"
+            - name: LDAP_ADMIN_BIND_PWD
+              value: "SAS@ldapAdm1n"
+            - name: LDAP_IGNORE_CERT_ERRORS
+              value: "true"
+            - name: EMAIL_DOMAIN
+              value: "sasldap.com"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ldap-user-manager
+spec:
+  selector:
+    app: ldap-user-manager
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      name: http
+    - protocol: TCP
+      port: 443
+      targetPort: 443
+      name: https
+  type: ClusterIP
