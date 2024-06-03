@@ -25,7 +25,7 @@ data:
     changetype: modify
     add: olcAccess
     olcAccess: to attrs=memberOf by * read
-  2-create-base-dn.ldif: |
+  2-create-sasbind-user.ldif: |
     dn: dc=sasldap,dc=com
     objectClass: top
     objectClass: dcObject
