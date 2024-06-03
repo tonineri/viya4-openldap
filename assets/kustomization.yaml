@@ -52,6 +52,7 @@ configMapGenerator:
       - LDAP_LOGLEVEL=256
       - BITNAMI_DEBUG=true
       ## Additional
+      - LDAP_CUSTOM_LDIF_DIR=/ldifs
       - LDAP_ADD_SCHEMAS=yes
       - LDAP_EXTRA_SCHEMAS=cosine, inetorgperson
 

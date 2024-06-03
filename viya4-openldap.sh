@@ -427,19 +427,6 @@ divider
 
 ## OpenLDAP info
 ### Print connection info
-applyMemberOf(){
-  local podOpenLDAP
-  local port_forward_pid
-  podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
-  sleep 15
-  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/0-load-memberof-module.ldif
-  sleep 5
-  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/1-configure-memberof-overlay.ldif
-  sleep 5
-  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/2-create-base-dn.ldif
-  sleep 5
-}
-
 printConnectionInfo() {
   echo ""
   echo -e "⮞  ${CYAN}OpenLDAP${NONE} connection info"
@@ -524,13 +511,32 @@ deploySASViyaStructure() {
   fi
 }
 
-## OpenLDAP info
+applyMemberOf(){
+  local podOpenLDAP
+  local port_forward_pid
+  podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
+  sleep 15
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/0-load-memberof-module.ldif
+  sleep 5
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/1-configure-memberof-overlay.ldif
+  sleep 5
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/2-create-base-dn.ldif
+  sleep 5
+  kubectl -n $NS delete pod $podOpenLDAP
+  sleep 10
+}
+
 if [ "$OpenLDAPdeployed" = "YES" ]; then
   echo -e "\n⮞  ${BYELLOW}OpenLDAP configuration${NONE}\n"
   
+  # Configure OpenLDAP initial structure
+  execute \
+    --title "Configuring ${CYAN}OpenLDAP${NONE} initial structure" \
+    applyMemberOf \
+    --error "$ERRORMSG | Failed to configure ${CYAN}OpenLDAP${NONE} initial structure."; then
+
   # Print current OpenLDAP structure
   echo -e "\nCurrent ${CYAN}OpenLDAP${NONE} structure:"
-  applyMemberOf
   printDefaultTree
   divider
 
