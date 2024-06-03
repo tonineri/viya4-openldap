@@ -47,7 +47,7 @@ spec:
               mountPath: /container/service/slapd/assets/certs
               readOnly: true
             - name: sas-ldap-memberof-overlay
-              mountPath: /ldifs/03-memberOf.ldif
+              mountPath: /schemas/03-memberOf.ldif
               subPath: 03-memberOf.ldif
               readOnly: true
             #- name: sas-ldap-schema

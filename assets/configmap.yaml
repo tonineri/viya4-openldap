@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: sas-ldap-memberof-overlay
   labels:
-    app.kubernetes.io/part-of: sas-ldap
+    app.kubernetes.io/part-of: sas-ldap-server
 data:
   03-memberOf.ldif: |
     # Load memberof module
