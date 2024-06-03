@@ -450,7 +450,7 @@ printDefaultTree() {
   echo -e "🌐 dc=sasldap,dc=com"
   sleep 0.5
   echo -e " ├──🛠️ cn=admin   | 🔑 SAS@ldapAdm1n"
-  echo -e " └──🔗 cn=sasbind | 🔑 SAS@ldapB1nd"
+  echo -e " └──🔗 uid=sasbind | 🔑 SAS@ldapB1nd"
 }
 
 ### Print SAS tree
@@ -459,7 +459,7 @@ printSAStree() {
   echo -e "🌐 dc=sasldap,dc=com"
   sleep 0.5
   echo -e " ├──🛠️ cn=admin   | 🔑 SAS@ldapAdm1n"
-  echo -e " ├──🔗 cn=sasbind | 🔑 SAS@ldapB1nd"
+  echo -e " ├──🔗 uid=sasbind | 🔑 SAS@ldapB1nd"
   echo -e " ├──📁 ou=groups"
   sleep 0.5
   echo -e " │   ├──👥 cn=sas       | 🤝 cas, sas"
@@ -518,8 +518,11 @@ applyMemberOf(){
   sleep 15
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/0-load-memberof-module.ldif
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/1-configure-memberof-overlay.ldif
-  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/2-create-sasbind-user.ldif
   kubectl -n $NS delete pod $podOpenLDAP
+  if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
+    sleep 10
+    kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/2-create-sasbind-user.ldif
+  fi
 }
 
 if [ "$OpenLDAPdeployed" = "YES" ]; then
