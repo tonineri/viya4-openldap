@@ -60,10 +60,6 @@ spec:
               mountPath: /custom-ldifs/1b-configure-memberof-overlay.ldif
               subPath: 1b-configure-memberof-overlay.ldif
               readOnly: true
-            - name: sas-ldap-ldifs
-              mountPath: /custom-ldifs/2-create-sasbind.ldif
-              subPath: 2-create-sasbind.ldif
-              readOnly: true
       volumes:
         - name: sas-ldap-data
           persistentVolumeClaim:

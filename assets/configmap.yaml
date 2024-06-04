@@ -11,12 +11,6 @@ data:
     objectClass: top
     objectClass: domain
     dc: sasldap
-
-    # OU: service
-    dn: ou=service,dc=sasldap,dc=com
-    objectClass: organizationalUnit
-    objectClass: top
-    ou: service
   1a-load-memberof-module.ldif: |
     dn: cn=module{0},cn=config
     changetype: modify
