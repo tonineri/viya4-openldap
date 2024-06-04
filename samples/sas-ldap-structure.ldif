@@ -18,17 +18,22 @@ o: SAS Institute
 homeDirectory: /home/sasbind
 loginShell: /bin/bash
 userPassword: SAS@ldapB1nd
-## Read access to all user attributes
+
+# Access Controls to allow sasbind read access
 dn: olcDatabase={2}mdb,cn=config
 changetype: modify
-replace: olcAccess
+add: olcAccess
 olcAccess: to attrs=userPassword,shadowLastChange
   by anonymous auth
   by self write
   by dn="cn=admin,dc=sasldap,dc=com" write
   by * none
+-
+add: olcAccess
 olcAccess: to dn.base=""
   by * read
+-
+add: olcAccess
 olcAccess: to *
   by dn="uid=sasbind,dc=sasldap,dc=com" read
   by dn="cn=admin,dc=sasldap,dc=com" write
