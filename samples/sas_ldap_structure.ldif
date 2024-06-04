@@ -40,7 +40,6 @@ gidNumber: 1001
 cn: sas
 member: uid=sas,ou=users,dc=sasldap,dc=com
 member: uid=cas,ou=users,dc=sasldap,dc=com
-l: Italy
 o: SAS Institute
 
 # Group - SAS Admins group
@@ -51,7 +50,6 @@ objectClass: top
 gidNumber: 2001
 cn: sasadmins
 member: uid=sasadm,ou=users,dc=sasldap,dc=com
-l: Italy
 o: SAS Institute
 
 # Group - SAS Developers group
@@ -62,7 +60,6 @@ objectClass: top
 gidNumber: 3001
 cn: sasdevs
 member: uid=sasdev,ou=users,dc=sasldap,dc=com
-l: Italy
 o: SAS Institute
 
 # Group - SAS Users group
@@ -73,7 +70,6 @@ objectClass: top
 gidNumber: 4001
 cn: sasusers
 member: uid=sasuser,ou=users,dc=sasldap,dc=com
-l: Italy
 o: SAS Institute
 
 # User - SAS System Account
