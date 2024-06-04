@@ -31,16 +31,3 @@ data:
     changetype: modify
     add: olcAccess
     olcAccess: to attrs=memberOf by * read
-  2-create-sasbind.ldif: |
-    # User: sasbind
-    dn: uid=sasbind,ou=service,dc=sasldap,dc=com
-    objectClass: top
-    objectClass: person
-    objectClass: organizationalPerson
-    objectClass: inetOrgPerson
-    cn: sasbind
-    sn: SAS Bind User
-    uid: sasbind
-    userPassword: SAS@ldapB1nd
-    description: SAS Bind Read-Only User
-  #3-sas_ldap_structure.ldif: |
