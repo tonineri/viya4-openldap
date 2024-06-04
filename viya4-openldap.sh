@@ -449,7 +449,7 @@ printDefaultTree() {
   echo ""
   echo -e "🌐 dc=sasldap,dc=com"
   sleep 0.5
-  echo -e " ├──🛠️ cn=admin   | 🔑 SAS@ldapAdm1n"
+  echo -e " ├──🛠️ cn=admin    | 🔑 SAS@ldapAdm1n"
   echo -e " └──🔗 uid=sasbind | 🔑 SAS@ldapB1nd"
 }
 
@@ -458,7 +458,7 @@ printSAStree() {
   echo ""
   echo -e "🌐 dc=sasldap,dc=com"
   sleep 0.5
-  echo -e " ├──🛠️ cn=admin   | 🔑 SAS@ldapAdm1n"
+  echo -e " ├──🛠️ cn=admin    | 🔑 SAS@ldapAdm1n"
   echo -e " ├──🔗 uid=sasbind | 🔑 SAS@ldapB1nd"
   echo -e " ├──📁 ou=groups"
   sleep 0.5
