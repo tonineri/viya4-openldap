@@ -36,7 +36,7 @@ data:
     dn: ou=service,dc=sasldap,dc=com
     objectClass: organizationalUnit
     objectClass: top
-    ou: groups
+    ou: service
 
     # User: sasbind
     dn: uid=sasbind,ou=service,dc=sasldap,dc=com
