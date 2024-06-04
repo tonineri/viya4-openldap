@@ -29,7 +29,7 @@ configMapGenerator:
       - LDAP_CONFIG_ADMIN_PASSWORD=SAS@ldapAdm1n
       - LDAP_USERS=sasbind
       - LDAP_PASSWORDS=SAS@ldapB1nd
-      - LDAP_USERS_DC=service
+      - LDAP_USER_DC=service
       - LDAP_GROUP=service
       # Access log options
       #- LDAP_ENABLE_ACCESSLOG=yes
