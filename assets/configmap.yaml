@@ -5,6 +5,15 @@ metadata:
   labels:
     app.kubernetes.io/part-of: sas-ldap-server
 data:
+  createDomain.ldif: |
+    dn: dc=sasldap,dc=com
+    objectClass: top
+    objectClass: dcObject
+    objectClass: organization
+    o: SAS Institute
+    dc: sasldap
+    l: Italy
+    description: SAS Institute base entry
   loadMemberOfModule.ldif: |
     dn: cn=module{0},cn=config
     changetype: modify
