@@ -5,7 +5,7 @@ config:
       host: 'sas-ldap-service'
       port: '1636'
       url: 'ldaps://${sas.identities.providers.ldap.connection.host}:${sas.identities.providers.ldap.connection.port}'
-      userDN: 'cn=sasbind,dc=sasldap,dc=com'
+      userDN: 'uid=sasbind,dc=sasldap,dc=com'
       password: 'SAS@ldapB1nd'
       anonymousBind: 'false'
     sas.identities.providers.ldap.group:

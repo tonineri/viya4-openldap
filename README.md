@@ -21,8 +21,8 @@
 
 ## Description
 
-Based on [osixia/openldap](https://github.com/osixia/docker-openldap), this script streamlines the establishment of a dedicated namespace for OpenLDAP, deploying it effortlessly with default user and group configurations.
-The tool **only** supports encrypted connection to port **636**.
+Based on [bitnami/openldap](https://github.com/bitnami/containers/tree/main/bitnami/openldap), this script streamlines the establishment of a dedicated namespace for OpenLDAP, deploying it effortlessly with default user and group configurations.
+The tool supports unencrypted connection to port **1389** (LDAP) and encrypted connection to port **1636** (LDAPS).
 
 ![Divider](/.design/divider.png)
 
@@ -33,8 +33,6 @@ Ensure the following prerequisites are met before executing the script:
 - **Packages:**
   - `kubectl`
   - `kustomize`
-  - `ldap-utils`
-  - `netcat` (nc)
 
 - **Permissions:**
   - The user must have namespace creation permissions on the cluster.
@@ -73,7 +71,7 @@ You can
 3. Follow any on-screen prompts or instructions to complete the deployment process seamlessly.
 
 
-5. **OPTIONAL**: If no modifications were made to the script, consider copying the [samples/sitedefault.yaml](samples/sitedefault.yaml) to `$deploy/site-config/sitedefault.yaml`.
+5. **OPTIONAL**: If you chose to load the **SAS Viya**-ready structure and no modifications were made to the script, consider copying the [samples/sitedefault.yaml](samples/sitedefault.yaml) to `$deploy/site-config/sitedefault.yaml`.
 
     > ![Note](/.design/note.png)
     >
@@ -94,17 +92,12 @@ You can
 2. While port-forwarding in running on you jump host, access the LDAP server through an LDAP browser (like ApacheDirectoryStudio, LdapAdmin, etc.) from your client machine using the following parameters:
 
     - Host:         `IP/hostname of your jump host`
-    - Port:         `1636`
+    - Port:         `1389 / 1636`
     - User:         `cn=admin,dc=sasldap,dc=com`
     - Pass:         `SAS@ldapAdm1n`
     - BaseDN:       `dc=sasldap,dc=com`
     - Certificate:  `viya4-openldap/certificates/sasldap_CA.crt`
 
-3. **OPTIONAL**: You can manually upload the default OU/User/Group structure (found in [samples/sas_ldap_structure.ldif](samples/sas_ldap_structure.ldif)) by opening a new terminal and launching the following command from the `viya4-openldap` directory **while port-forwarding is running**:
-
-    ```bash
-    LDAPTLS_REQCERT=allow LDAPTLS_CACERT="$PWD/certificates/sasldap_CA.crt" ldapadd -x -H ldaps://    localhost:1636 -D cn=admin,dc=sasldap,dc=com -w SAS@ldapAdm1n -f $PWD/samples/sas_ldap_structure.ldif
-    ```
 
 ![Divider](/.design/divider.png)
 
@@ -115,18 +108,17 @@ You can
   | username  | password       | distinguishedName                        |
   |-----------|----------------|------------------------------------------|
   | `admin`   | `SAS@ldapAdm1n`| `cn=admin,dc=sasldap,dc=com`             |
-  | `sasbind` | `SAS@ldapB1nd` | `cn=sasbind,dc=sasldap,dc=com`           |
 
   ```text
   🌐 dc=sasldap,dc=com
-    ├──🛠️ cn=admin   | 🔑 SAS@ldapAdm1n
-    └──🔗 cn=sasbind | 🔑 SAS@ldapB1nd
+   └──🛠️ cn=admin   | 🔑 SAS@ldapAdm1n
   ```
 
-- These are the additional default accounts (**if** you decided to upload the [samples/sas_ldap_structure.ldif](samples/sas_ldap_structure.ldif) file as per [Usage: Point 4](README.md#usage)):
+- These are the additional default accounts (**if** you decided to configure the **SAS Viya**-ready structure):
 
   | username  | password       | distinguishedName                        |
   |-----------|----------------|------------------------------------------|
+  | `sasbind` | `SAS@ldapB1nd` | `uid=sasbind,dc=sasldap,dc=com`     |
   | `sas`     | `lnxsas`       | `uid=sas,ou=users,dc=sasldap,dc=com`     |
   | `cas`     | `lnxsas`       | `uid=cas,ou=users,dc=sasldap,dc=com`     |
   | `sasadm`  | `lnxsas`       | `uid=sasadm,ou=users,dc=sasldap,dc=com`  |
@@ -135,25 +127,29 @@ You can
 
   ```text
   🌐 dc=sasldap,dc=com
-    ├──🛠️ cn=admin   | 🔑 SAS@ldapAdm1n
-    ├──🔗 cn=sasbind | 🔑 SAS@ldapB1nd
-    ├──📁 ou=groups
-    │   ├──👥 cn=sas       | 🤝 cas, sas
-    │   ├──👥 cn=sasadmins | 🤝 sasadm
-    │   ├──👥 cn=sasdevs   | 🤝 sasdev
-    │   └──👥 cn=sasusers  | 🤝 sasuser
-    └──📁 ou=users
-        ├──👤 uid=cas      | 🔑 lnxsas
-        ├──👤 uid=sas      | 🔑 lnxsas
-        ├──👤 uid=sasadm   | 🔑 lnxsas
-        ├──👤 uid=sasdev   | 🔑 lnxsas
-        └──👤 uid=sasuser  | 🔑 lnxsas
+   ├──🛠️ cn=admin         | 🔑 SAS@ldapAdm1n
+   ├──🔗 cn=sasbind       | 🔑 SAS@ldapB1nd
+   ├──📁 ou=groups
+   │   ├──👥 cn=sas       | 🤝 cas, sas
+   │   ├──👥 cn=sasadmins | 🤝 sasadm
+   │   ├──👥 cn=sasdevs   | 🤝 sasdev
+   │   └──👥 cn=sasusers  | 🤝 sasuser
+   └──📁 ou=users
+       ├──👤 uid=cas      | 🔑 lnxsas
+       ├──👤 uid=sas      | 🔑 lnxsas
+       ├──👤 uid=sasadm   | 🔑 lnxsas
+       ├──👤 uid=sasdev   | 🔑 lnxsas
+       └──👤 uid=sasuser  | 🔑 lnxsas
   ```
 
 ![Divider](/.design/divider.png)
 
 ## Configure with SAS Viya
 
-Copy the `viya4-openldap/certificates/sasldap_CA.crt` file in your `$deploy/site-config/security/cacerts` directory and define it in your `customer-provided-ca-certificates.yaml` file."
+For LDAP**S** (secure), copy the `viya4-openldap/certificates/sasldap_CA.crt` file in your `$deploy/site-config/security/cacerts` directory and define it in your `customer-provided-ca-certificates.yaml` file."
+
+    > ![Note](/.design/note.png)
+    >
+    > Ensure you also defined the `customer-provided-ca-certificates.yaml` file in the 'transformers' section of your `$deploy/kustomization.yaml` file.
 
 ![Divider](/.design/divider.png)

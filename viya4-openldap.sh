@@ -3,7 +3,7 @@
 # -----------------------------------------------  header  -----------------------------------------------
 
 # SAS Viya 4 - Persistent OpenLDAP Light
-# Description: the script can fully prepare a bastion host for a SAS Viya 4 cluster creation and management on Azure, AWS and Google Cloud Plaform.
+# Description: This script fully prepares and deploys an OpenLDAP server for use with SAS Viya 4.
 
 # Copyright © 2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
@@ -63,14 +63,14 @@ spin() {
                 if [[ $(cat $TMPFILE) -ne 0 ]]; then
                     tput cnorm
                     printf "\033[2K" 2>/dev/null
-                    printf " ❌  $before_msg\n" 2>/dev/null
+                    printf " ${BRED}✗${NONE}  $before_msg\n" 2>/dev/null
                     rm -f $TMPFILE
                     exit 1
                 else
                     rm -f $TMPFILE
                     tput cnorm
                     printf "\033[2K" 2>/dev/null
-                    printf " ✔  $after_msg\n" 2>/dev/null
+                    printf " ${BGREEN}✓${NONE}  $after_msg\n" 2>/dev/null
                     return 0
                 fi
             fi
@@ -181,7 +181,7 @@ printHeader
 ## Check if kubectl, kustomize and ldap-utils are installed
 echo -e "\n⮞  ${BYELLOW}Prerequisites Check${NONE}\n"
 
-requiredPackages=("kubectl" "kustomize" "ldapadd" "nc")
+requiredPackages=("kubectl" "kustomize")
 for pkg in "${requiredPackages[@]}"; do
   execute \
     --title "Checking if ${CYAN}$pkg${NONE} is installed" \
@@ -378,27 +378,10 @@ execute \
 waitForOpenLDAP() {
   local secs=$1
   local podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
-  local port_forward_pid
-  
-
-  # Wait for pod to be ready
-  if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
-    kubectl port-forward -n $NS $podOpenLDAP 1389:1389 > /dev/null 2>&1 &
-    port_forward_pid=$!
-  else
-    return 1 # Failed to find the pod or pod not ready
-  fi
-
-  # Wait for the local port to be open
-  until nc -z localhost 1389; do
-      sleep 1
-  done
 
   # Check if "slapd starting" message appears in the pod's logs
   while [ $secs -gt 0 ]; do
     if kubectl logs -n $NS $podOpenLDAP | grep -q "slapd starting"; then
-      kill $port_forward_pid
-      wait $port_forward_pid 2>/dev/null
       return 0 # Return success if the message is found
     else
       sleep 1
@@ -406,8 +389,6 @@ waitForOpenLDAP() {
     fi
   done
 
-  kill $port_forward_pid
-  wait $port_forward_pid 2>/dev/null
   echo -e "$ERRORMSG | Timeout: 'slapd starting' message not found in logs"
   return 1 # Return failure if the message is not found within the timeout
 }
@@ -425,7 +406,7 @@ fi
 
 divider
 
-## OpenLDAP info
+## OpenLDAP configuration
 ### Print connection info
 printConnectionInfo() {
   echo ""
@@ -477,43 +458,7 @@ printGoodbye(){
   echo -e "This script will now exit."
 }
 
-## OpenLDAP info
-deploySASViyaStructure() {
-  podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
-  # Launch port-forward in the background
-  kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1389:1389 > /dev/null 2>&1 &
-  port_forward_pid=$!
-  sleep 1 # Give port-forward some time to set up
-
-  # Add the default LDAP structure
-  LDAPTLS_REQCERT=allow LDAPTLS_CACERT="assets/certificates/sasldap_CA.crt" \
-  ldapadd -x \
-  -H ldap://localhost:1389 \
-  -D cn=admin,dc=sasldap,dc=com \
-  -w SAS@ldapAdm1n \
-  -f samples/sas-ldap-structure.ldif > /dev/null 2>&1
-
-  # Check if ldapadd was successful
-  if [ $? -eq 0 ]; then
-    # Kill the background port-forward task
-    kill $port_forward_pid
-    wait $port_forward_pid 2>/dev/null
-    kubectl -n $NS exec -it $podOpenLDAP -- ldapmodify -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/sasbindACLs.ldif
-    sleep 2
-    kubectl -n $NS delete pod $podOpenLDAP
-    sleep 5
-    if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
-      sleep 5
-    fi
-    return 0
-  else
-    echo -e "$ERRORMSG | ldapadd command failed. Check if the certificate and credentials are correct."
-    kill $port_forward_pid
-    wait $port_forward_pid 2>/dev/null
-    return 1
-  fi
-}
-
+### Enable `memberOf` attribute
 applyMemberOf(){
   local podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
   local port_forward_pid
@@ -527,6 +472,45 @@ applyMemberOf(){
   if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
     sleep 5
   fi
+}
+
+### Deploy SAS Viya-ready structure
+deploySASViyaStructure() {
+  podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
+  
+  ### Copy the sas-ldap-structure.ldif file to the OpenLDAP container
+  kubectl cp samples/sas-ldap-structure.ldif $podOpenLDAP:/tmp/sas-ldap-structure.ldif -n $NS
+  if [ $? -ne 0 ]; then
+    echo -e "$ERRORMSG | Failed to copy sas-ldap-structure.ldif to the OpenLDAP container."
+    return 1
+  fi
+
+  ### ldapadd sas-ldap-structure.ldif
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /tmp/sas-ldap-structure.ldif
+  if [ $? -ne 0 ]; then
+    echo -e "$ERRORMSG | Failed to apply SAS Viya-ready structure."
+    return 1
+  fi
+
+  ### ldapmodify sasbindACLs.ldif
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapmodify -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/sasbindACLs.ldif
+  if [ $? -ne 0 ]; then
+    echo -e "$ERRORMSG | Failed to apply ACLs to sasbind user."
+    return 1
+  fi
+
+  ### Restart $podOpenLDAP
+  sleep 2
+  kubectl -n $NS delete pod $podOpenLDAP
+  sleep 5
+
+  kubectl wait --for=condition=ready pod -l app=sas-ldap-server -n $NS
+  if [ $? -ne 0 ]; then
+    echo -e "$ERRORMSG | Failed to wait for OpenLDAP pod to be ready."
+    return 1
+  fi
+
+  return 0
 }
 
 if [ "$OpenLDAPdeployed" = "YES" ]; then
