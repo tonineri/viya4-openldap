@@ -19,22 +19,6 @@ homeDirectory: /home/sasbind
 loginShell: /bin/bash
 userPassword: SAS@ldapB1nd
 
-# Access Controls to allow sasbind read access
-dn: olcDatabase={2}mdb,cn=config
-changetype: modify
-replace: olcAccess
-olcAccess: to attrs=userPassword,shadowLastChange
-  by anonymous auth
-  by self write
-  by dn="cn=admin,dc=sasldap,dc=com" write
-  by * none
-olcAccess: to dn.base=""
-  by * read
-olcAccess: to *
-  by dn="uid=sasbind,dc=sasldap,dc=com" read
-  by dn="cn=admin,dc=sasldap,dc=com" write
-  by * none
-
 # Organizational Unit - Users
 dn: ou=users,dc=sasldap,dc=com
 objectClass: organizationalUnit
