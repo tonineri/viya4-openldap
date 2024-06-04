@@ -55,7 +55,7 @@ configMapGenerator:
       ## Additional
       #- LDAP_CUSTOM_LDIF_DIR=/ldifs
       - LDAP_ADD_SCHEMAS=yes
-      - LDAP_EXTRA_SCHEMAS=core, cosine, inetorgperson, rfc2307bis
+      - LDAP_EXTRA_SCHEMAS=cosine, inetorgperson, rfc2307bis
   - name: sas-ldap-rfc2307bis
     files:
       - openldap/rfc2307bis/rfc2307bis.schema
