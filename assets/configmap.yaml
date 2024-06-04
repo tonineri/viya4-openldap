@@ -11,6 +11,12 @@ data:
     objectClass: top
     objectClass: domain
     dc: sasldap
+
+    # OU: service
+    dn: ou=service,dc=sasldap,dc=com
+    objectClass: organizationalUnit
+    objectClass: top
+    ou: service
   1a-load-memberof-module.ldif: |
     dn: cn=module{0},cn=config
     changetype: modify
@@ -32,12 +38,6 @@ data:
     add: olcAccess
     olcAccess: to attrs=memberOf by * read
   2-create-sasbind.ldif: |
-    # OU: service
-    dn: ou=service,dc=sasldap,dc=com
-    objectClass: organizationalUnit
-    objectClass: top
-    ou: service
-
     # User: sasbind
     dn: uid=sasbind,ou=service,dc=sasldap,dc=com
     objectClass: top
