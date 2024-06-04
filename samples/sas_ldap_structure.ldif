@@ -1,5 +1,5 @@
 # User - SAS Bind Service Account
-dn: uid=sasbind,dc=sasldap,dc=com
+dn: uid=sasbind,ou=users,dc=sasldap,dc=com
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
 objectClass: person
@@ -17,7 +17,7 @@ l: Italy
 o: SAS Institute
 homeDirectory: /home/sasbind
 loginShell: /bin/bash
-userPassword: SAS@ldapB1nd
+userPassword: SAS-ldapB1nd
 
 # Organizational Unit - Users
 dn: ou=users,dc=sasldap,dc=com
@@ -38,8 +38,6 @@ objectClass: posixGroup
 objectClass: top
 gidNumber: 1001
 cn: sas
-name: SAS System Accounts
-displayName: SAS System Accounts
 member: uid=sas,ou=users,dc=sasldap,dc=com
 member: uid=cas,ou=users,dc=sasldap,dc=com
 l: Italy
@@ -52,8 +50,6 @@ objectClass: posixGroup
 objectClass: top
 gidNumber: 2001
 cn: sasadmins
-name: SAS Admins
-displayName: SAS Admins
 member: uid=sasadm,ou=users,dc=sasldap,dc=com
 l: Italy
 o: SAS Institute
@@ -65,8 +61,6 @@ objectClass: posixGroup
 objectClass: top
 gidNumber: 3001
 cn: sasdevs
-name: SAS Developers
-displayName: SAS Developers
 member: uid=sasdev,ou=users,dc=sasldap,dc=com
 l: Italy
 o: SAS Institute
@@ -78,8 +72,6 @@ objectClass: posixGroup
 objectClass: top
 gidNumber: 4001
 cn: sasusers
-name: SASUsers
-displayName: SAS Users
 member: uid=sasuser,ou=users,dc=sasldap,dc=com
 l: Italy
 o: SAS Institute
