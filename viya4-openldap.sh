@@ -486,7 +486,7 @@ deploySASViyaStructure() {
   fi
 
   ### ldapadd sas-ldap-structure.ldif
-  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /tmp/sas-ldap-structure.ldif
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/sas-ldap-structure.ldif
   if [ $? -ne 0 ]; then
     echo -e "$ERRORMSG | Failed to apply SAS Viya-ready structure."
     return 1
