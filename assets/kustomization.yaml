@@ -58,8 +58,8 @@ configMapGenerator:
       - LDAP_EXTRA_SCHEMAS=core, cosine, inetorgperson, rfc2307bis
   - name: sas-ldap-rfc2307bis
     files:
-      - assets/openldap/rfc2307bis/rfc2307bis.schema
-      - assets/openldap/rfc2307bis/rfc2307bis.ldif
+      - openldap/rfc2307bis/rfc2307bis.schema
+      - openldap/rfc2307bis/rfc2307bis.ldif
 images:
   - name: sas-ldap-server
     newName: bitnami/openldap
