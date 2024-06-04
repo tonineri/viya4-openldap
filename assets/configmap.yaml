@@ -6,6 +6,30 @@ metadata:
     app.kubernetes.io/part-of: sas-ldap-server
 data:
   0-create-domain.ldif: |
+    # Include core schema
+    dn: cn=schema,cn=config
+    changetype: modify
+    add: olcInclude
+    olcInclude: file://opt/bitnami/openldap/etc/schema/core.ldif
+
+    # Include cosine schema
+    dn: cn=schema,cn=config
+    changetype: modify
+    add: olcInclude
+    olcInclude: file://opt/bitnami/openldap/etc/schema/cosine.ldif
+
+    # Include inetorgperson schema
+    dn: cn=schema,cn=config
+    changetype: modify
+    add: olcInclude
+    olcInclude: file://opt/bitnami/openldap/etc/schema/inetorgperson.ldif
+
+    # Include rfc2307bis schema (assuming it's available in the specified path)
+    dn: cn=schema,cn=config
+    changetype: modify
+    add: olcInclude
+    olcInclude: file://opt/bitnami/openldap/etc/schema/rfc2307bis.ldif
+
     # Domain
     dn: dc=sasldap,dc=com
     objectClass: top
