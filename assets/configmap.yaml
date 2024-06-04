@@ -34,3 +34,10 @@ data:
     changetype: modify
     add: olcAccess
     olcAccess: to attrs=memberOf by * read
+  readAccessSASbindUser.ldif: | 
+    dn: cn=config
+    changetype: modify
+    add: olcAccess
+    olcAccess: to attrs=*
+      by dn.base="uid=sasbind,dc=sasldap,dc=com" read
+      by * none

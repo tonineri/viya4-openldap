@@ -479,6 +479,7 @@ printGoodbye(){
 
 ## OpenLDAP info
 deploySASViyaStructure() {
+  local podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
   # Launch port-forward in the background
   kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1389:1389 > /dev/null 2>&1 &
   port_forward_pid=$!
@@ -490,13 +491,14 @@ deploySASViyaStructure() {
   -H ldap://localhost:1389 \
   -D cn=admin,dc=sasldap,dc=com \
   -w SAS@ldapAdm1n \
-  -f samples/sas_ldap_structure.ldif > /dev/null 2>&1
+  -f samples/sas-ldap-structure.ldif > /dev/null 2>&1
 
   # Check if ldapadd was successful
   if [ $? -eq 0 ]; then
     # Kill the background port-forward task
     kill $port_forward_pid
     wait $port_forward_pid 2>/dev/null
+    kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/readAccessSASbindUser.ldif
     return 0
   else
     echo -e "$ERRORMSG | ldapadd command failed. Check if the certificate and credentials are correct."

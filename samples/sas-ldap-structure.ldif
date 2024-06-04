@@ -19,13 +19,6 @@ homeDirectory: /home/sasbind
 loginShell: /bin/bash
 userPassword: SAS@ldapB1nd
 
-dn: cn=config
-changetype: modify
-add: olcAccess
-olcAccess: to attrs=*
-  by dn.base="uid=sasbind,dc=sasldap,dc=com" read
-  by * none
-
 # Organizational Unit - Users
 dn: ou=users,dc=sasldap,dc=com
 objectClass: organizationalUnit
