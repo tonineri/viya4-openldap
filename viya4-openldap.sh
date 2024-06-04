@@ -479,14 +479,14 @@ deploySASViyaStructure() {
   podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
   
   ### Copy the sas-ldap-structure.ldif file to the OpenLDAP container
-  kubectl cp samples/sas-ldap-structure.ldif $podOpenLDAP:/tmp/sas-ldap-structure.ldif -n $NS
+  kubectl -n $NS cp samples/sas-ldap-structure.ldif $podOpenLDAP:/tmp/sas-ldap-structure.ldif
   if [ $? -ne 0 ]; then
     echo -e "$ERRORMSG | Failed to copy sas-ldap-structure.ldif to the OpenLDAP container."
     return 1
   fi
 
   ### ldapadd sas-ldap-structure.ldif
-  kubectl -n $NS exec -it $podOpenLDAP -- ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/sas-ldap-structure.ldif
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -x -H ldap://localhost:1389 -D "cn=admin,dc=sasldap,dc=com" -w SAS@ldapAdm1n -f /tmp/sas-ldap-structure.ldif
   if [ $? -ne 0 ]; then
     echo -e "$ERRORMSG | Failed to apply SAS Viya-ready structure."
     return 1
