@@ -35,9 +35,9 @@ configMapGenerator:
       #- LDAP_ACCESSLOG_LOGSUCCESS=yes
       ## Security
       - LDAP_PASSWORD_HASH={SSHA}
-      - LDAP_CONFIGURE_PPOLICY=yes
-      - LDAP_PPOLICY_USE_LOCKOUT=yes
-      - LDAP_PPOLICY_HASH_CLEARTEXT=yes
+      #- LDAP_CONFIGURE_PPOLICY=yes
+      #- LDAP_PPOLICY_USE_LOCKOUT=yes
+      #- LDAP_PPOLICY_HASH_CLEARTEXT=yes
       ## TLS
       - LDAP_ENABLE_TLS=yes
       - LDAP_REQUIRE_TLS=no
