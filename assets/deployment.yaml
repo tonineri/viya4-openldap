@@ -60,6 +60,14 @@ spec:
               mountPath: /custom-ldifs/1b-configure-memberof-overlay.ldif
               subPath: 1b-configure-memberof-overlay.ldif
               readOnly: true
+            - name: sas-ldap-rfc2307bis
+              mountPath: /opt/bitnami/openldap/etc/schema/rfc2307bis.schema
+              subPath: rfc2307bis.schema
+              readOnly: true
+            - name: sas-ldap-rfc2307bis
+              mountPath: /opt/bitnami/openldap/etc/schema/rfc2307bis.ldif
+              subPath: rfc2307bis.ldif
+              readOnly: true
       volumes:
         - name: sas-ldap-data
           persistentVolumeClaim:
@@ -70,4 +78,7 @@ spec:
         - name: sas-ldap-ldifs
           configMap:
             name: sas-ldap-ldifs
+        - name: sas-ldap-rfc2307bis
+          configMap:
+            name: sas-ldap-rfc2307bis
       restartPolicy: Always

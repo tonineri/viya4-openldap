@@ -541,7 +541,7 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
   # Configure OpenLDAP initial structure
   execute \
     --title "Configuring ${CYAN}OpenLDAP${NONE} initial structure" \
-    "applyMemberOf && createSASbind" \
+    applyMemberOf \
     --error "$ERRORMSG | Failed to configure ${CYAN}OpenLDAP${NONE} initial structure."
 
   # Print current OpenLDAP structure
