@@ -527,11 +527,11 @@ createSASbind(){
   local port_forward_pid
 
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/2-create-sasbind.ldif
-  sleep 5
+  sleep 2
   kubectl -n $NS delete pod $podOpenLDAP
-  sleep 15
+  sleep 5
   if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
-    sleep 5
+    sleep 1
   fi
 }
 

@@ -49,3 +49,4 @@ data:
     uid: sasbind
     userPassword: SAS@ldapB1nd
     description: SAS Bind Read-Only User
+  #3-sas_ldap_structure.ldif: |
