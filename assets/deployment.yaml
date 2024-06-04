@@ -56,7 +56,7 @@ spec:
               readOnly: true
             - name: sas-ldap-ldifs
               mountPath: /ldifs/x-create-domain.ldif
-              subPath: 0-create-domain.ldif
+              subPath: x-create-domain.ldif
               readOnly: true
             - name: sas-ldap-ldifs
               mountPath: /custom-ldifs/1a-load-memberof-module.ldif
