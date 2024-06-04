@@ -498,7 +498,7 @@ deploySASViyaStructure() {
     # Kill the background port-forward task
     kill $port_forward_pid
     wait $port_forward_pid 2>/dev/null
-    kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/readAccessSASbindUser.ldif
+    #kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/readAccessSASbindUser.ldif
     return 0
   else
     echo -e "$ERRORMSG | ldapadd command failed. Check if the certificate and credentials are correct."
@@ -515,6 +515,7 @@ applyMemberOf(){
   sleep 15
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/loadMemberOfModule.ldif
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/configureMemberOfOverlay.ldif
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/readAccessSASbindUser.ldif
   sleep 5
   kubectl -n $NS delete pod $podOpenLDAP
   sleep 15

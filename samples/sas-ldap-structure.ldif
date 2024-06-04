@@ -1,23 +1,23 @@
-# User - SAS Bind Service Account
-dn: uid=sasbind,dc=sasldap,dc=com
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: posixAccount
-objectClass: top
-uidNumber: 1003
-gidNumber: 1003
-uid: sasbind
-cn: sasbind
-givenName: SAS Bind
-sn: Service Account
-displayName: SAS Bind Service Account
-mail: sasbind@sasldap.com
-l: Italy
-o: SAS Institute
-homeDirectory: /home/sasbind
-loginShell: /bin/bash
-userPassword: SAS@ldapB1nd
+## User - SAS Bind Service Account
+#dn: uid=sasbind,dc=sasldap,dc=com
+#objectClass: inetOrgPerson
+#objectClass: organizationalPerson
+#objectClass: person
+#objectClass: posixAccount
+#objectClass: top
+#uidNumber: 1003
+#gidNumber: 1003
+#uid: sasbind
+#cn: sasbind
+#givenName: SAS Bind
+#sn: Service Account
+#displayName: SAS Bind Service Account
+#mail: sasbind@sasldap.com
+#l: Italy
+#o: SAS Institute
+#homeDirectory: /home/sasbind
+#loginShell: /bin/bash
+#userPassword: SAS@ldapB1nd
 
 # Organizational Unit - Users
 dn: ou=users,dc=sasldap,dc=com
