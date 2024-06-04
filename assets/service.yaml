@@ -5,7 +5,7 @@ metadata:
   labels:
     app: sas-ldap-server
 spec:
-  type: ClusterIP
+  type: type: LoadBalancer # default is ClusterIP
   selector:
     app: sas-ldap-server
   ports:
