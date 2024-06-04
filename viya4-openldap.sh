@@ -422,7 +422,7 @@ printConnectionInfo() {
   sleep 0.5
   echo ""
   echo -e "   $NOTEMSG | To manage your LDAP, launch the following command ${YELLOW}before${NONE} accessing it via LDAP browser:"
-  echo -e "   ${ITALIC}kubectl --namespace $NS port-forward --address localhost svc/sas-ldap-service 1389:1389${NONE}"
+  echo -e "   ${ITALIC}kubectl -n $NS port-forward --address localhost svc/sas-ldap-service 1389:1389${NONE}"
 }
 
 ### Print default tree

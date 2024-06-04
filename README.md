@@ -84,7 +84,7 @@ You can
 1. To access and manage your LDAP, execute the following command on your jump host:
 
     ```bash
-    kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1636:636
+    kubectl -n <desiredNamespaceName> port-forward --address localhost svc/sas-ldap-service 1636:1636
     ```
 
 ![Divider](/.design/divider.png)
