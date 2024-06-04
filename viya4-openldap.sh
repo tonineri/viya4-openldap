@@ -513,7 +513,7 @@ deploySASViyaStructure() {
 
 resetSasbindPassword() {
   local podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
-  local sasbindPassword="SAS@ldapB1nd"
+  local sasbindPassword="0"
   local ldifTempFile="assets/change-sasbind-password.ldif"
 
   # Generate hashed password
