@@ -5,13 +5,15 @@ metadata:
   labels:
     app: sas-ldap-server
 spec:
-  type: type: LoadBalancer # default is ClusterIP
+  type: LoadBalancer # default is ClusterIP
   selector:
     app: sas-ldap-server
   ports:
     - name: sas-ldap-port
       port: 1389
       targetPort: 1389
+      protocol: TCP
     - name: sas-ldaps-port
       port: 1636
       targetPort: 1636
+      protocol: TCP
