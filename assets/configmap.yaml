@@ -5,12 +5,12 @@ metadata:
   labels:
     app.kubernetes.io/part-of: sas-ldap-server
 data:
-  x-create-domain.ldif: |
-    # Domain
-    dn: dc=sasldap,dc=com
-    objectClass: top
-    objectClass: domain
-    dc: sasldap
+  #x-create-domain.ldif: |
+  #  # Domain
+  #  dn: dc=sasldap,dc=com
+  #  objectClass: top
+  #  objectClass: domain
+  #  dc: sasldap
   1a-load-memberof-module.ldif: |
     dn: cn=module{0},cn=config
     changetype: modify
