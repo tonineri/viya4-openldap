@@ -377,9 +377,9 @@ execute \
 ### Wait for OpenLDAP server to start
 waitForOpenLDAP() {
   local secs=$1
-  local podOpenLDAP
+  local podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
   local port_forward_pid
-  podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
+  
 
   # Wait for pod to be ready
   if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
@@ -479,10 +479,11 @@ printGoodbye(){
 
 ## OpenLDAP info
 deploySASViyaStructure() {
+  podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
   # Launch port-forward in the background
   kubectl --namespace "$NS" port-forward --address localhost svc/sas-ldap-service 1389:1389 > /dev/null 2>&1 &
   port_forward_pid=$!
-  sleep 5 # Give port-forward some time to set up
+  sleep 1 # Give port-forward some time to set up
 
   # Add the default LDAP structure
   LDAPTLS_REQCERT=allow LDAPTLS_CACERT="assets/certificates/sasldap_CA.crt" \
@@ -497,6 +498,13 @@ deploySASViyaStructure() {
     # Kill the background port-forward task
     kill $port_forward_pid
     wait $port_forward_pid 2>/dev/null
+    kubectl -n $NS exec -it $podOpenLDAP -- ldapmodify -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/sasbindACLs.ldif
+    sleep 2
+    kubectl -n $NS delete pod $podOpenLDAP
+    sleep 5
+    if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
+      sleep 5
+    fi
     return 0
   else
     echo -e "$ERRORMSG | ldapadd command failed. Check if the certificate and credentials are correct."
@@ -510,12 +518,12 @@ applyMemberOf(){
   local podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
   local port_forward_pid
 
-  sleep 15
+  sleep 5
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/loadMemberOfModule.ldif
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/configureMemberOfOverlay.ldif
-  sleep 5
+  sleep 2
   kubectl -n $NS delete pod $podOpenLDAP
-  sleep 15
+  sleep 5
   if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
     sleep 5
   fi

@@ -62,6 +62,10 @@ spec:
               mountPath: /custom-ldifs/configureMemberOfOverlay.ldif
               subPath: configureMemberOfOverlay.ldif
               readOnly: true
+            - name: sas-ldap-ldifs
+              mountPath: /custom-ldifs/sasbindACLs.ldif
+              subPath: sasbindACLs.ldif
+              readOnly: true
             - name: sas-ldap-rfc2307bis
               mountPath: /opt/bitnami/openldap/etc/schema/rfc2307bis.ldif
               subPath: rfc2307bis.ldif
