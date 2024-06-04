@@ -5,30 +5,18 @@ metadata:
   labels:
     app.kubernetes.io/part-of: sas-ldap-server
 data:
-  #0-create-domain-sasbind.ldif: |
-  #  # Domain
-  #  dn: dc=sasldap,dc=com
-  #  objectClass: top
-  #  objectClass: domain
-  #  dc: sasldap
-  #
-  #  # User: sasbind
-  #  dn: uid=sasbind,dc=sasldap,dc=com
-  #  objectClass: top
-  #  objectClass: person
-  #  objectClass: organizationalPerson
-  #  objectClass: inetOrgPerson
-  #  cn: sasbind
-  #  sn: SAS Bind User
-  #  uid: sasbind
-  #  userPassword: SAS@ldapB1nd
-  #  description: SAS Bind Read-Only User
-  0-load-memberof-module.ldif: |
+  0-create-domain.ldif: |
+    # Domain
+    dn: dc=sasldap,dc=com
+    objectClass: top
+    objectClass: domain
+    dc: sasldap
+  1a-load-memberof-module.ldif: |
     dn: cn=module{0},cn=config
     changetype: modify
     add: olcModuleLoad
     olcModuleLoad: /opt/bitnami/openldap/lib/openldap/memberof.so
-  1-configure-memberof-overlay.ldif: |
+  1b-configure-memberof-overlay.ldif: |
     dn: olcOverlay=memberof,olcDatabase={2}mdb,cn=config
     objectClass: olcOverlayConfig
     objectClass: olcMemberOf
@@ -43,6 +31,24 @@ data:
     changetype: modify
     add: olcAccess
     olcAccess: to attrs=memberOf by * read
+  2-create-sasbind.ldif: |
+    # OU: service
+    dn: ou=service,dc=sasldap,dc=com
+    objectClass: organizationalUnit
+    objectClass: top
+    ou: groups
+
+    # User: sasbind
+    dn: uid=sasbind,ou=service,dc=sasldap,dc=com
+    objectClass: top
+    objectClass: person
+    objectClass: organizationalPerson
+    objectClass: inetOrgPerson
+    cn: sasbind
+    sn: SAS Bind User
+    uid: sasbind
+    userPassword: SAS@ldapB1nd
+    description: SAS Bind Read-Only User
   #2-reset-sasbind-pwd.ldif: |
   #  # Password reset - automatically converts to SSHA
   #  dn: uid=sasbind,dc=sasldap,dc=com
