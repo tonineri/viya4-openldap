@@ -50,10 +50,10 @@ spec:
             - name: sas-ldap-certs
               mountPath: /container/service/slapd/assets/certs
               readOnly: true
-            - name: sas-ldap-ldifs
-              mountPath: /ldifs/createDomain.ldif
-              subPath: createDomain.ldif
-              readOnly: true
+            #- name: sas-ldap-ldifs
+            #  mountPath: /ldifs/createDomain.ldif
+            #  subPath: createDomain.ldif
+            #  readOnly: true
             - name: sas-ldap-ldifs
               mountPath: /custom-ldifs/loadMemberOfModule.ldif
               subPath: loadMemberOfModule.ldif
