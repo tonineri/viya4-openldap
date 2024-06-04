@@ -5,18 +5,12 @@ metadata:
   labels:
     app.kubernetes.io/part-of: sas-ldap-server
 data:
-  #x-create-domain.ldif: |
-  #  # Domain
-  #  dn: dc=sasldap,dc=com
-  #  objectClass: top
-  #  objectClass: domain
-  #  dc: sasldap
-  1a-load-memberof-module.ldif: |
+  loadMemberOfModule.ldif: |
     dn: cn=module{0},cn=config
     changetype: modify
     add: olcModuleLoad
     olcModuleLoad: /opt/bitnami/openldap/lib/openldap/memberof.so
-  1b-configure-memberof-overlay.ldif: |
+  configureMemberOfOverlay.ldif: |
     dn: olcOverlay=memberof,olcDatabase={2}mdb,cn=config
     objectClass: olcOverlayConfig
     objectClass: olcMemberOf

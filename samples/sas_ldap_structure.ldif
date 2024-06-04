@@ -1,3 +1,30 @@
+# User - SAS Bind Service Account
+dn: uid=sasbind,dc=sasldap,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: posixAccount
+objectClass: top
+uidNumber: 1003
+gidNumber: 1003
+uid: sasbind
+cn: sasbind
+givenName: SAS Bind
+sn: Service Account
+displayName: SAS Bind Service Account
+mail: sasbind@sasldap.com
+l: Italy
+o: SAS Institute
+homeDirectory: /home/sasbind
+loginShell: /bin/bash
+userPassword: SAS@ldapB1nd
+
+# Organizational Unit - Users
+dn: ou=users,dc=sasldap,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: users
+
 # Organizational Unit - Groups
 dn: ou=groups,dc=sasldap,dc=com
 objectClass: organizationalUnit
@@ -6,66 +33,62 @@ ou: groups
 
 # Group - SAS Service Accounts
 dn: cn=sas,ou=groups,dc=sasldap,dc=com
-objectClass: extensibleObject
-objectClass: groupOfUniqueNames
+objectClass: groupOfNames
+objectClass: posixGroup
 objectClass: top
 gidNumber: 1001
 cn: sas
 name: SAS System Accounts
 displayName: SAS System Accounts
-uniqueMember: uid=sas,ou=users,dc=sasldap,dc=com
-uniqueMember: uid=cas,ou=users,dc=sasldap,dc=com
-memberUid: sas
-memberUid: cas
+member: uid=sas,ou=users,dc=sasldap,dc=com
+member: uid=cas,ou=users,dc=sasldap,dc=com
 l: Italy
-o: SASLDAP
+o: SAS Institute
 
 # Group - SAS Admins group
 dn: cn=sasadmins,ou=groups,dc=sasldap,dc=com
-objectClass: extensibleObject
-objectClass: groupOfUniqueNames
+objectClass: groupOfNames
+objectClass: posixGroup
 objectClass: top
 gidNumber: 2001
 cn: sasadmins
 name: SAS Admins
 displayName: SAS Admins
-uniqueMember: uid=sasadm,ou=users,dc=sasldap,dc=com
-memberUid: sasadm
+member: uid=sasadm,ou=users,dc=sasldap,dc=com
 l: Italy
-o: SASLDAP
+o: SAS Institute
 
 # Group - SAS Developers group
 dn: cn=sasdevs,ou=groups,dc=sasldap,dc=com
-objectClass: extensibleObject
-objectClass: groupOfUniqueNames
+objectClass: groupOfNames
+objectClass: posixGroup
 objectClass: top
 gidNumber: 3001
 cn: sasdevs
 name: SAS Developers
 displayName: SAS Developers
-uniqueMember: uid=sasdev,ou=users,dc=sasldap,dc=com
-memberUid: sasdev
+member: uid=sasdev,ou=users,dc=sasldap,dc=com
 l: Italy
-o: SASLDAP
+o: SAS Institute
 
 # Group - SAS Users group
 dn: cn=sasusers,ou=groups,dc=sasldap,dc=com
-objectClass: extensibleObject
-objectClass: groupOfUniqueNames
+objectClass: groupOfNames
+objectClass: posixGroup
 objectClass: top
 gidNumber: 4001
 cn: sasusers
 name: SASUsers
 displayName: SAS Users
-uniqueMember: uid=sasuser,ou=users,dc=sasldap,dc=com
-memberUid: sasuser
+member: uid=sasuser,ou=users,dc=sasldap,dc=com
 l: Italy
-o: SASLDAP
+o: SAS Institute
 
 # User - SAS System Account
 dn: uid=sas,ou=users,dc=sasldap,dc=com
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
+objectClass: person
 objectClass: posixAccount
 objectClass: top
 uidNumber: 1001
@@ -77,7 +100,7 @@ sn: System Account
 displayName: SAS System Account
 mail: sas@sasldap.com
 l: Italy
-o: SASLDAP
+o: SAS Institute
 homeDirectory: /home/sas
 loginShell: /bin/bash
 userPassword: lnxsas
@@ -86,6 +109,7 @@ userPassword: lnxsas
 dn: uid=cas,ou=users,dc=sasldap,dc=com
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
+objectClass: person
 objectClass: posixAccount
 objectClass: top
 uidNumber: 1002
@@ -97,7 +121,7 @@ sn: System Account
 displayName: CAS System Account
 mail: cas@sasldap.com
 l: Italy
-o: SASLDAP
+o: SAS Institute
 homeDirectory: /home/cas
 loginShell: /bin/bash
 userPassword: lnxsas
@@ -106,6 +130,7 @@ userPassword: lnxsas
 dn: uid=sasadm,ou=users,dc=sasldap,dc=com
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
+objectClass: person
 objectClass: posixAccount
 objectClass: top
 uidNumber: 2001
@@ -114,10 +139,10 @@ uid: sasadm
 cn: sasadm
 givenName: SAS Admin
 sn: Admin    
-displayName: SAS Admin Admin
+displayName: SAS Administrator
 mail: sasadm@sasldap.com
 l: Italy
-o: SASLDAP
+o: SAS Institute
 homeDirectory: /home/sasadm
 loginShell: /bin/bash
 userPassword: lnxsas
@@ -126,6 +151,7 @@ userPassword: lnxsas
 dn: uid=sasdev,ou=users,dc=sasldap,dc=com
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
+objectClass: person
 objectClass: posixAccount
 objectClass: top
 uidNumber: 3001
@@ -137,7 +163,7 @@ sn: Developer
 displayName: SAS Developer
 mail: sasdev@sasldap.com
 l: Italy
-o: SASLDAP
+o: SAS Institute
 homeDirectory: /home/sasdev
 loginShell: /bin/bash
 userPassword: lnxsas
@@ -146,6 +172,7 @@ userPassword: lnxsas
 dn: uid=sasuser,ou=users,dc=sasldap,dc=com
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
+objectClass: person
 objectClass: posixAccount
 objectClass: top
 uidNumber: 4001
@@ -157,7 +184,7 @@ sn: User
 displayName: SAS User
 mail: sasuser@sasldap.com
 l: Italy
-o: SASLDAP
+o: SAS Institute
 homeDirectory: /home/sasuser
 loginShell: /bin/bash
 userPassword: lnxsas

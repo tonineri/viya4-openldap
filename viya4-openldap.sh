@@ -433,7 +433,7 @@ printConnectionInfo() {
   sleep 0.5
   echo ""
   echo -e "   Host:   IP/hostname of this host"
-  echo -e "   Port:   1389"
+  echo -e "   Port:   1389 / 1636"
   echo -e "   User:   cn=admin,dc=sasldap,dc=com"
   echo -e "   Pass:   SAS@ldapAdm1n"
   echo -e "   BaseDN: dc=sasldap,dc=com"
@@ -448,27 +448,26 @@ printConnectionInfo() {
 printDefaultTree() {
   echo ""
   echo -e "🌐 dc=sasldap,dc=com"
-  echo -e " ├──🛠️ cn=admin    | 🔑 SAS@ldapAdm1n"
-  echo -e " └──🔗 uid=sasbind | 🔑 SAS@ldapB1nd"
+  echo -e " └───🛠️ cn=admin         | 🔑 SAS@ldapAdm1n"
 }
 
 ### Print SAS tree
 printSAStree() {
   echo ""
   echo -e "🌐 dc=sasldap,dc=com"
-  echo -e " ├──🛠️ cn=admin    | 🔑 SAS@ldapAdm1n"
-  echo -e " ├──🔗 uid=sasbind | 🔑 SAS@ldapB1nd"
-  echo -e " ├──📁 ou=groups"
-  echo -e " │   ├──👥 cn=sas       | 🤝 cas, sas"
-  echo -e " │   ├──👥 cn=sasadmins | 🤝 sasadm"
-  echo -e " │   ├──👥 cn=sasdevs   | 🤝 sasdev"
-  echo -e " │   └──👥 cn=sasusers  | 🤝 sasuser"
-  echo -e " └──📁 ou=users"
-  echo -e "     ├──👤 uid=cas      | 🔑 lnxsas"
-  echo -e "     ├──👤 uid=sas      | 🔑 lnxsas"
-  echo -e "     ├──👤 uid=sasadm   | 🔑 lnxsas"
-  echo -e "     ├──👤 uid=sasdev   | 🔑 lnxsas"
-  echo -e "     └──👤 uid=sasuser  | 🔑 lnxsas"
+  echo -e " ├───🛠️ cn=admin         | 🔑 SAS@ldapAdm1n"
+  echo -e " ├───🔗 uid=sasbind      | 🔑 SAS@ldapB1nd"
+  echo -e " ├───📁 ou=groups"
+  echo -e " │   ├───👥 cn=sas       | 🤝 cas, sas"
+  echo -e " │   ├───👥 cn=sasadmins | 🤝 sasadm"
+  echo -e " │   ├───👥 cn=sasdevs   | 🤝 sasdev"
+  echo -e " │   └───👥 cn=sasusers  | 🤝 sasuser"
+  echo -e " └───📁 ou=users"
+  echo -e "     ├───👤 uid=cas      | 🔑 lnxsas"
+  echo -e "     ├───👤 uid=sas      | 🔑 lnxsas"
+  echo -e "     ├───👤 uid=sasadm   | 🔑 lnxsas"
+  echo -e "     ├───👤 uid=sasdev   | 🔑 lnxsas"
+  echo -e "     └───👤 uid=sasuser  | 🔑 lnxsas"
 }
 
 printGoodbye(){
@@ -512,26 +511,13 @@ applyMemberOf(){
   local port_forward_pid
 
   sleep 15
-  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/1a-load-memberof-module.ldif
-  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/1b-configure-memberof-overlay.ldif
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/loadMemberOfModule.ldif
+  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/configureMemberOfOverlay.ldif
   sleep 5
   kubectl -n $NS delete pod $podOpenLDAP
   sleep 15
   if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
     sleep 5
-  fi
-}
-
-createSASbind(){
-  local podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
-  local port_forward_pid
-
-  kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/2-create-sasbind.ldif
-  sleep 2
-  kubectl -n $NS delete pod $podOpenLDAP
-  sleep 5
-  if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
-    sleep 1
   fi
 }
 

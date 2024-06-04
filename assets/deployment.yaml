@@ -50,21 +50,13 @@ spec:
             - name: sas-ldap-certs
               mountPath: /container/service/slapd/assets/certs
               readOnly: true
-            #- name: sas-ldap-rfc2307bis
-            #  mountPath: /ldifs/rfc2307bis.ldif
-            #  subPath: rfc2307bis.ldif
-            #  readOnly: true
-            #- name: sas-ldap-ldifs
-            #  mountPath: /ldifs/x-create-domain.ldif
-            #  subPath: x-create-domain.ldif
-            #  readOnly: true
             - name: sas-ldap-ldifs
-              mountPath: /custom-ldifs/1a-load-memberof-module.ldif
-              subPath: 1a-load-memberof-module.ldif
+              mountPath: /custom-ldifs/loadMemberOfModule.ldif
+              subPath: loadMemberOfModule.ldif
               readOnly: true
             - name: sas-ldap-ldifs
-              mountPath: /custom-ldifs/1b-configure-memberof-overlay.ldif
-              subPath: 1b-configure-memberof-overlay.ldif
+              mountPath: /custom-ldifs/configureMemberOfOverlay.ldif
+              subPath: configureMemberOfOverlay.ldif
               readOnly: true
             - name: sas-ldap-rfc2307bis
               mountPath: /opt/bitnami/openldap/etc/schema/rfc2307bis.ldif
