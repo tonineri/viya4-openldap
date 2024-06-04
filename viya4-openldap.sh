@@ -448,7 +448,6 @@ printConnectionInfo() {
 printDefaultTree() {
   echo ""
   echo -e "🌐 dc=sasldap,dc=com"
-  sleep 0.5
   echo -e " ├──🛠️ cn=admin    | 🔑 SAS@ldapAdm1n"
   echo -e " └──🔗 uid=sasbind | 🔑 SAS@ldapB1nd"
 }
@@ -457,16 +456,13 @@ printDefaultTree() {
 printSAStree() {
   echo ""
   echo -e "🌐 dc=sasldap,dc=com"
-  sleep 0.5
   echo -e " ├──🛠️ cn=admin    | 🔑 SAS@ldapAdm1n"
   echo -e " ├──🔗 uid=sasbind | 🔑 SAS@ldapB1nd"
   echo -e " ├──📁 ou=groups"
-  sleep 0.5
   echo -e " │   ├──👥 cn=sas       | 🤝 cas, sas"
   echo -e " │   ├──👥 cn=sasadmins | 🤝 sasadm"
   echo -e " │   ├──👥 cn=sasdevs   | 🤝 sasdev"
   echo -e " │   └──👥 cn=sasusers  | 🤝 sasuser"
-  sleep 0.5
   echo -e " └──📁 ou=users"
   echo -e "     ├──👤 uid=cas      | 🔑 lnxsas"
   echo -e "     ├──👤 uid=sas      | 🔑 lnxsas"
@@ -511,48 +507,25 @@ deploySASViyaStructure() {
   fi
 }
 
-resetSasbindPassword() {
-  local podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
-  local sasbindPassword="0"
-  local ldifTempFile="assets/change-sasbind-password.ldif"
-
-  # Generate hashed password
-  local hashedPassword=$(kubectl -n $NS exec -it $podOpenLDAP -- slappasswd -s $sasbindPassword | tr -d '\r')
-
-  # Create the LDIF content
-  local ldifContent=$(cat <<EOF
-dn: uid=sasbind,dc=sasldap,dc=com
-changetype: modify
-replace: userPassword
-userPassword: $hashedPassword
-EOF
-  )
-
-  # Create LDIF file locally
-  echo "$ldifContent" > $ldifTempFile
-
-  # Copy the LDIF file to the OpenLDAP container
-  kubectl cp $ldifTempFile $podOpenLDAP:/custom-ldifs/change-sasbind-password.ldif -n $NS
-
-  # Apply the LDIF file using ldapmodify
-  kubectl exec -it $podOpenLDAP -n $NS -- ldapmodify -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/change-sasbind-password.ldif
-
-  # Clean up
-  #rm -f $ldifTempFile
-  #kubectl exec -it $podOpenLDAP -n $NS -- rm /custom-ldifs/change-sasbind-password.ldif
-
-  return 0
-}
-
 applyMemberOf(){
-  local podOpenLDAP
+  local podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
   local port_forward_pid
-
-  podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
 
   sleep 15
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/1a-load-memberof-module.ldif
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/1b-configure-memberof-overlay.ldif
+  sleep 5
+  kubectl -n $NS delete pod $podOpenLDAP
+  sleep 15
+  if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
+    sleep 5
+  fi
+}
+
+createSASbind(){
+  local podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
+  local port_forward_pid
+
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/2-create-sasbind.ldif
   sleep 5
   kubectl -n $NS delete pod $podOpenLDAP
@@ -568,17 +541,14 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
   # Configure OpenLDAP initial structure
   execute \
     --title "Configuring ${CYAN}OpenLDAP${NONE} initial structure" \
-    applyMemberOf \
+    "applyMemberOf && createSASbind" \
     --error "$ERRORMSG | Failed to configure ${CYAN}OpenLDAP${NONE} initial structure."
-  
-  #execute \
-  #  --title "Configuring ${CYAN}OpenLDAP${NONE} initial structure" \
-  #  "applyMemberOf && resetSasbindPassword" \
-  #  --error "$ERRORMSG | Failed to configure ${CYAN}OpenLDAP${NONE} initial structure."
 
   # Print current OpenLDAP structure
   echo -e "\nCurrent ${CYAN}OpenLDAP${NONE} structure:"
+  sleep 0.5
   printDefaultTree
+  sleep 0.5
   divider
 
   # Prompt for deploying SAS Viya-ready structure
@@ -594,12 +564,15 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
           --error "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."; then
         echo ""
         echo -e "\nThis is the new ${CYAN}OpenLDAP${NONE} structure:"
+        sleep 0.5
         printSAStree
         sleep 0.5
         divider
+        sleep 0.5
         printConnectionInfo
         sleep 0.5
         divider
+        sleep 0.5
         printGoodbye
       else
         echo -e "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."
@@ -608,9 +581,11 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
       break
 
     elif [[ "$user_input" =~ ^[Nn]$ ]]; then
+      sleep 0.5
       printConnectionInfo
       sleep 0.5
       divider
+      sleep 0.5
       printGoodbye
       break
 

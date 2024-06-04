@@ -49,9 +49,3 @@ data:
     uid: sasbind
     userPassword: SAS@ldapB1nd
     description: SAS Bind Read-Only User
-  #2-reset-sasbind-pwd.ldif: |
-  #  # Password reset - automatically converts to SSHA
-  #  dn: uid=sasbind,dc=sasldap,dc=com
-  #  changetype: modify
-  #  replace: userPassword
-  #  userPassword: SAS@ldapB1nd
