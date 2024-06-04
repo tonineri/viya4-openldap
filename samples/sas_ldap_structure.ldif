@@ -1,5 +1,5 @@
 # User - SAS Bind Service Account
-dn: uid=sasbind,ou=users,dc=sasldap,dc=com
+dn: uid=sasbind,dc=sasldap,dc=com
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
 objectClass: person
