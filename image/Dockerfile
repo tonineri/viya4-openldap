@@ -13,11 +13,9 @@ ADD resources/custom-ldifs /custom-ldifs
 ADD resources/scripts /scripts
 
 # Install additional packages
-RUN install_packages \
-    ca-certificates \
-    openssl \
-    sudo \
-    vim
+SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
+RUN mkdir -p /var/lib/apt/lists/partial
+RUN install_packages ca-certificates openssl sudo vim
 
 # Generate certificates
 RUN chmod +x /scripts/certificate-generation.sh \
