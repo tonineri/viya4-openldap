@@ -348,6 +348,11 @@ echo -e "\n⮞  ${BYELLOW}OpenLDAP Deployment${NONE}\n"
 
 ### Build OpenLDAP deployment
 buildOpenLDAP() {
+  if sed -i 's|{{ SASLDAP-NAMESPACE }}|$NS|g' assets/namespace.yaml > /dev/null 2>&1; then
+    return 0 # namespace.yaml edited
+  else
+    return 1 # namespace.yaml edit failed
+  fi
   if kustomize build ./assets/ -o ${NS}-deployment.yaml > /dev/null 2>&1; then
     return 0 # OpenLDAP deployment built
   else
