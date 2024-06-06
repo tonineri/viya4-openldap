@@ -32,14 +32,14 @@ RUN chmod +x /scripts/certificate-generation.sh \
 # Define variables for `bitnami/openldap`
 ## Base options
 ENV LDAP_PORT_NUMBER=1389
-ENV LDAP_ROOT=dc=sasldap,dc=com
+ENV LDAP_ROOT="dc=sasldap,dc=com"
 ENV LDAP_ADMIN_USERNAME=admin
-ENV LDAP_ADMIN_PASSWORD=SAS@ldapAdm1n
+ENV LDAP_ADMIN_PASSWORD="SAS@ldapAdm1n"
 ENV LDAP_CONFIG_ADMIN_ENABLED=yes
 ENV LDAP_CONFIG_ADMIN_USERNAME=config
-ENV LDAP_CONFIG_ADMIN_PASSWORD=SAS@ldapAdm1n
+ENV LDAP_CONFIG_ADMIN_PASSWORD="SAS@ldapAdm1n"
 ## Security
-ENV LDAP_PASSWORD_HASH={SSHA}
+ENV LDAP_PASSWORD_HASH="{SSHA}"
 ENV LDAP_CONFIGURE_PPOLICY=yes
 ENV LDAP_PPOLICY_USE_LOCKOUT=yes
 ENV LDAP_PPOLICY_HASH_CLEARTEXT=yes
@@ -47,16 +47,16 @@ ENV LDAP_PPOLICY_HASH_CLEARTEXT=yes
 ENV LDAP_ENABLE_TLS=yes
 ENV LDAP_REQUIRE_TLS=no
 ENV LDAP_LDAPS_PORT_NUMBER=1636
-ENV LDAP_TLS_CERT_FILE=/container/service/slapd/assets/certs/tls.crt
-ENV LDAP_TLS_KEY_FILE=/container/service/slapd/assets/certs/tls.key
-ENV LDAP_TLS_CA_FILE=/container/service/slapd/assets/certs/ca.crt
+ENV LDAP_TLS_CERT_FILE="/container/service/slapd/assets/certs/tls.crt"
+ENV LDAP_TLS_KEY_FILE="/container/service/slapd/assets/certs/tls.key"
+ENV LDAP_TLS_CA_FILE="/container/service/slapd/assets/certs/ca.crt"
 ## Logging
 ENV LDAP_LOGLEVEL=256
 ENV BITNAMI_DEBUG=true
 ## Additional - rfc2307bis schema
-ENV LDAP_CUSTOM_LDIF_DIR=/ldifs
+ENV LDAP_CUSTOM_LDIF_DIR="/ldifs"
 ENV LDAP_ADD_SCHEMAS=yes
-ENV LDAP_EXTRA_SCHEMAS=cosine, inetorgperson, rfc2307bis
+ENV LDAP_EXTRA_SCHEMAS="cosine, inetorgperson, rfc2307bis"
 
 # Apply custom configurations (previously copied .ldifs)
 USE
