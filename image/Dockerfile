@@ -15,7 +15,7 @@ ADD resources/scripts /scripts
 SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
 USER 0
 RUN mkdir -p /var/lib/apt/lists/partial
-RUN install_packages ca-certificates ncurses-bin openssl sudo vim
+RUN install_packages ca-certificates ldap-utils ncurses-bin openssl sudo vim
 
 # Generate certificates
 RUN mkdir /certificates
@@ -55,3 +55,6 @@ ENV LDAP_CUSTOM_LDIF_DIR="/ldifs"
 ENV LDAP_ADD_SCHEMAS=yes
 ENV LDAP_EXTRA_SCHEMAS="cosine, inetorgperson, rfc2307bis"
 
+# Apply 'memberOf' overlay
+RUN ldapadd -x -H ldap://localhost:1389 -D "cn=admin,dc=sasldap,dc=com" -w SAS@ldapAdm1n -f /custom-ldifs/loadMemberOfModule.ldif
+RUN ldapadd -x -H ldap://localhost:1389 -D "cn=admin,dc=sasldap,dc=com" -w SAS@ldapAdm1n -f /custom-ldifs/configureMemberOfOverlay.ldif
