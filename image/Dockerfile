@@ -8,8 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Copy necessary files
 ADD resources/schema/rfc2307bis.ldif /opt/bitnami/openldap/etc/schema/rfc2307bis.ldif
-ADD resources/ldifs/createDomain.ldif /ldifs/createDomain.ldif
-ADD resources/custom-ldifs /custom-ldifs
+ADD resources/ldifs /ldifs
 ADD resources/scripts /scripts
 
 # Install additional packages
@@ -56,8 +55,3 @@ ENV LDAP_CUSTOM_LDIF_DIR="/ldifs"
 ENV LDAP_ADD_SCHEMAS=yes
 ENV LDAP_EXTRA_SCHEMAS="cosine, inetorgperson, rfc2307bis"
 
-# Apply custom configurations (previously copied .ldifs)
-RUN ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/loadMemberOfModule.ldif \
-    ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/configureMemberOfOverlay.ldif \
-    ldapadd -x -H ldap://localhost:1389 -D "cn=admin,dc=sasldap,dc=com" -w SAS@ldapAdm1n -f /tmp/sas-ldap-structure.ldif \
-    ldapmodify -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/sasbindACLs.ldif
