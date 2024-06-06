@@ -56,5 +56,5 @@ ENV LDAP_ADD_SCHEMAS=yes
 ENV LDAP_EXTRA_SCHEMAS="cosine, inetorgperson, rfc2307bis"
 
 # Apply 'memberOf' overlay
-RUN ldapadd -x -H ldap://localhost:1389 -D "cn=admin,dc=sasldap,dc=com" -w SAS@ldapAdm1n -f /custom-ldifs/loadMemberOfModule.ldif
-RUN ldapadd -x -H ldap://localhost:1389 -D "cn=admin,dc=sasldap,dc=com" -w SAS@ldapAdm1n -f /custom-ldifs/configureMemberOfOverlay.ldif
+RUN ldapadd -x -H ldap://localhost:1389 -D "cn=admin,dc=sasldap,dc=com" -w SAS@ldapAdm1n -f /ldifs/0-loadMemberOfModule.ldif
+RUN ldapadd -x -H ldap://localhost:1389 -D "cn=admin,dc=sasldap,dc=com" -w SAS@ldapAdm1n -f /ldifs/1-configureMemberOfOverlay.ldif
