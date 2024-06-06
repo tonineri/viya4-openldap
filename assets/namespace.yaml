@@ -1,0 +1,4 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sas-ldap # or namespace where SAS Viya is deployed
