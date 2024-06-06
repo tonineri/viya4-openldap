@@ -1,0 +1,5 @@
+# Load 'memberOf' module
+dn: cn=module{0},cn=config
+changetype: modify
+add: olcModuleLoad
+olcModuleLoad: /opt/bitnami/openldap/lib/openldap/memberof.so

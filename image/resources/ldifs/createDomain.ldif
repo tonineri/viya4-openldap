@@ -1,0 +1,9 @@
+# Domain "sasldap.com"
+dn: dc=sasldap,dc=com
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+o: SAS Institute
+dc: sasldap
+l: Italy
+description: SAS Institute base entry
