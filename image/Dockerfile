@@ -14,6 +14,7 @@ ADD resources/scripts /scripts
 
 # Install additional packages
 SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
+USER 0
 RUN mkdir -p /var/lib/apt/lists/partial
 RUN install_packages ca-certificates openssl sudo vim
 
@@ -24,6 +25,7 @@ RUN chmod +x /scripts/certificate-generation.sh \
     && cp /scripts/certificates/sasldap_server.crt /container/service/slapd/assets/certs/tls.crt \
     && cp /scripts/certificates/sasldap_server.key /container/service/slapd/assets/certs/tls.key
 
+USER 1001
 # Define variables for `bitnami/openldap`
 ## Base options
 ENV LDAP_PORT_NUMBER=1389
