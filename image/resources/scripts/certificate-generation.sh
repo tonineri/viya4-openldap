@@ -135,13 +135,13 @@ printHeader
 
 ## Certificates
 echo -e "\n⮞  ${BYELLOW}Certificate Generation for LDAP(S)${NONE}\n"
-mkdir -p ./certificates > /dev/null 2>&1
+mkdir -p /scripts/certificates > /dev/null 2>&1
 
 ### Self-signed CA
 #### Generate self-signed CA key
 generateCAkey() {
-  if openssl genrsa -aes256 -passout pass:SAS-ld4p -out ./certificates/sasldap_CA.key 2048 > /dev/null 2>&1; then
-    if openssl rsa -in ./certificates/sasldap_CA.key -out ./certificates/sasldap_CA_nopass.key -passin pass:SAS-ld4p > /dev/null 2>&1; then
+  if openssl genrsa -aes256 -passout pass:SAS-ld4p -out /scripts/certificates/sasldap_CA.key 2048 > /dev/null 2>&1; then
+    if openssl rsa -in /scripts/certificates/sasldap_CA.key -out /scripts/certificates/sasldap_CA_nopass.key -passin pass:SAS-ld4p > /dev/null 2>&1; then
       return 0 # Removed CA private key passphrase
     else
       return 1 # Failed to remove CA private key passphrase
@@ -162,8 +162,8 @@ generateCAcrt() {
   if openssl req -new -x509 -sha256 -extensions v3_ca \
       -days 3650 \
       -subj "/C=IT/ST=Lombardy/L=Milan/O=SASLDAP/CN=SAS Viya LDAP Root CA/emailAddress=noreply@sasldap.com" \
-      -key ./certificates/sasldap_CA.key \
-      -out ./certificates/sasldap_CA.crt \
+      -key /scripts/certificates/sasldap_CA.key \
+      -out /scripts/certificates/sasldap_CA.crt \
       -passin pass:SAS-ld4p > /dev/null 2>&1; then
     return 0 # CA generated
   else
@@ -179,7 +179,7 @@ execute \
 ### Self-signed Server
 #### Generate self-signed server private key
 generateServerKey() {
-  if openssl genrsa -out ./certificates/sasldap_server.key 2048 > /dev/null 2>&1; then
+  if openssl genrsa -out /scripts/certificates/sasldap_server.key 2048 > /dev/null 2>&1; then
     return 0 # Server private key generated
   else
     return 1 # Failed to generate Server private key
@@ -193,7 +193,7 @@ execute \
 
 #### Create OpenSSL config file for the self-signed Server certificate
 createServerConf() {
-  cat > ./certificates/sasldap_server.conf <<EOF
+  cat > /scripts/certificates/sasldap_server.conf <<EOF
 [ req ]
 default_bits       = 2048
 distinguished_name = req_distinguished_name
@@ -225,9 +225,9 @@ EOF
 generateServerCSR() {
   createServerConf
   if openssl req -new \
-      -key ./certificates/sasldap_server.key \
-      -out ./certificates/sasldap_server.csr \
-      -config ./certificates/sasldap_server.conf > /dev/null 2>&1; then
+      -key /scripts/certificates/sasldap_server.key \
+      -out /scripts/certificates/sasldap_server.csr \
+      -config /scripts/certificates/sasldap_server.conf > /dev/null 2>&1; then
     return 0 # Server CSR generated
   else
     return 1 # Failed to generate Server CSR
@@ -242,15 +242,15 @@ execute \
 #### Generate Server certificate with the CA
 generateServerCrt() {
   if openssl x509 -req \
-      -in ./certificates/sasldap_server.csr \
-      -CA ./certificates/sasldap_CA.crt \
-      -CAkey ./certificates/sasldap_CA_nopass.key \
+      -in /scripts/certificates/sasldap_server.csr \
+      -CA /scripts/certificates/sasldap_CA.crt \
+      -CAkey /scripts/certificates/sasldap_CA_nopass.key \
       -CAcreateserial \
-      -out ./certificates/sasldap_server.crt \
+      -out /scripts/certificates/sasldap_server.crt \
       -days 3650 \
       -sha256 \
       -extensions v3_req \
-      -extfile ./certificates/sasldap_server.conf > /dev/null 2>&1; then
+      -extfile /scripts/certificates/sasldap_server.conf > /dev/null 2>&1; then
     return 0 # Server certificate generated
   else
     return 1 # Failed to generate Server certificate

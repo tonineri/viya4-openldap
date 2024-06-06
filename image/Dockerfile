@@ -16,7 +16,7 @@ ADD resources/scripts /scripts
 SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
 USER 0
 RUN mkdir -p /var/lib/apt/lists/partial
-RUN install_packages ca-certificates openssl sudo vim
+RUN install_packages ca-certificates ncurses-bin openssl sudo vim
 
 # Generate certificates
 RUN chmod +x /scripts/certificate-generation.sh \
