@@ -44,13 +44,13 @@ ENV LDAP_PPOLICY_HASH_CLEARTEXT=yes
 ENV LDAP_ENABLE_TLS=yes
 ENV LDAP_REQUIRE_TLS=no
 ENV LDAP_LDAPS_PORT_NUMBER=1636
-ENV LDAP_TLS_CERT_FILE="/certificates/tls.crt"
-ENV LDAP_TLS_KEY_FILE="/certificates/tls.key"
-ENV LDAP_TLS_CA_FILE="/certificates/ca.crt"
+ENV LDAP_TLS_CERT_FILE=/certificates/tls.crt
+ENV LDAP_TLS_KEY_FILE=/certificates/tls.key
+ENV LDAP_TLS_CA_FILE=/certificates/ca.crt
 ## Logging
 ENV LDAP_LOGLEVEL=256
 ENV BITNAMI_DEBUG=true
 ## Additional - rfc2307bis schema
-ENV LDAP_CUSTOM_LDIF_DIR="/ldifs"
+ENV LDAP_CUSTOM_LDIF_DIR=/ldifs
 ENV LDAP_ADD_SCHEMAS=yes
 ENV LDAP_EXTRA_SCHEMAS="cosine, inetorgperson, rfc2307bis"
