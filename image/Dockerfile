@@ -59,7 +59,6 @@ ENV LDAP_ADD_SCHEMAS=yes
 ENV LDAP_EXTRA_SCHEMAS="cosine, inetorgperson, rfc2307bis"
 
 # Apply custom configurations (previously copied .ldifs)
-USE
 RUN ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/loadMemberOfModule.ldif \
     ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/configureMemberOfOverlay.ldif \
     ldapadd -x -H ldap://localhost:1389 -D "cn=admin,dc=sasldap,dc=com" -w SAS@ldapAdm1n -f /tmp/sas-ldap-structure.ldif \
