@@ -19,11 +19,12 @@ RUN mkdir -p /var/lib/apt/lists/partial
 RUN install_packages ca-certificates ncurses-bin openssl sudo vim
 
 # Generate certificates
+RUN mkdir /certificates
 RUN chmod +x /scripts/certificate-generation.sh \
     && /scripts/certificate-generation.sh \
-    && cp /scripts/certificates/sasldap_CA.crt /container/service/slapd/assets/certs/ca.crt \
-    && cp /scripts/certificates/sasldap_server.crt /container/service/slapd/assets/certs/tls.crt \
-    && cp /scripts/certificates/sasldap_server.key /container/service/slapd/assets/certs/tls.key
+    && cp /scripts/certificates/sasldap_CA.crt /certificates/ca.crt \
+    && cp /scripts/certificates/sasldap_server.crt /certificates/tls.crt \
+    && cp /scripts/certificates/sasldap_server.key /certificates/tls.key
 
 USER 1001
 # Define variables for `bitnami/openldap`
@@ -44,9 +45,9 @@ ENV LDAP_PPOLICY_HASH_CLEARTEXT=yes
 ENV LDAP_ENABLE_TLS=yes
 ENV LDAP_REQUIRE_TLS=no
 ENV LDAP_LDAPS_PORT_NUMBER=1636
-ENV LDAP_TLS_CERT_FILE="/container/service/slapd/assets/certs/tls.crt"
-ENV LDAP_TLS_KEY_FILE="/container/service/slapd/assets/certs/tls.key"
-ENV LDAP_TLS_CA_FILE="/container/service/slapd/assets/certs/ca.crt"
+ENV LDAP_TLS_CERT_FILE="/certificates/tls.crt"
+ENV LDAP_TLS_KEY_FILE="/certificates/tls.key"
+ENV LDAP_TLS_CA_FILE="/certificates/ca.crt"
 ## Logging
 ENV LDAP_LOGLEVEL=256
 ENV BITNAMI_DEBUG=true
