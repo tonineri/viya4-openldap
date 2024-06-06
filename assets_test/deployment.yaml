@@ -41,9 +41,6 @@ spec:
               name: sas-ldap-port
             - containerPort: 1636
               name: sas-ldaps-port
-          envFrom:
-            - configMapRef:
-                name: sas-ldap-config
           volumeMounts:
             - name: sas-ldap-data
               mountPath: /bitnami
