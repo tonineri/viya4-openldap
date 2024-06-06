@@ -13,14 +13,11 @@ ADD resources/custom-ldifs /custom-ldifs
 ADD resources/scripts /scripts
 
 # Install additional packages
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends --no-install-suggests \
-        ca-certificates \
-        openssl \
-        sudo \
-        vim \
-    && apt clean \
-    && rm -rf /tmp/* /root/.cache /var/lib/apt/lists/*
+RUN install_packages \
+    ca-certificates \
+    openssl \
+    sudo \
+    vim \
 
 # Generate certificates
 RUN chmod +x /scripts/certificate-generation.sh \
