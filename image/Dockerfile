@@ -17,7 +17,7 @@ RUN install_packages \
     ca-certificates \
     openssl \
     sudo \
-    vim \
+    vim
 
 # Generate certificates
 RUN chmod +x /scripts/certificate-generation.sh \
