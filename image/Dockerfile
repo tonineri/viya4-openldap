@@ -1,4 +1,4 @@
-FROM binami/openldap:latest
+FROM bitnami/openldap:latest
 
 LABEL maintainer="Antonio Neri <antoneri@proton.me>" \
       description="OpenLDAP for SAS Viya"
