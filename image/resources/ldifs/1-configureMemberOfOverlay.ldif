@@ -8,6 +8,7 @@ olcMemberOfRefInt: TRUE
 olcMemberOfGroupOC: groupOfNames
 olcMemberOfMemberAD: member
 olcMemberOfMemberOfAD: memberOf
+
 dn: olcDatabase={2}mdb,cn=config
 changetype: modify
 add: olcAccess
