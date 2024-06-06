@@ -7,10 +7,10 @@ LABEL maintainer="Antonio Neri <antoneri@proton.me>" \
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Copy necessary files
-COPY schema/rfc2307bis.ldif /opt/bitnami/openldap/etc/schema/rfc2307bis.ldif
-COPY ldifs/createDomain.ldif /ldifs/createDomain.ldif
-COPY custom-ldifs /custom-ldifs
-COPY scripts /scripts
+ADD schema/rfc2307bis.ldif /opt/bitnami/openldap/etc/schema/rfc2307bis.ldif
+ADD ldifs/createDomain.ldif /ldifs/createDomain.ldif
+ADD custom-ldifs /custom-ldifs
+ADD scripts /scripts
 
 # Install additional packages
 RUN apt-get update \
