@@ -3,9 +3,9 @@ config:
   application:
     sas.identities.providers.ldap.connection:
       host: 'sas-ldap-service'
-      port: '636'
+      port: '1636'
       url: 'ldaps://${sas.identities.providers.ldap.connection.host}:${sas.identities.providers.ldap.connection.port}'
-      userDN: 'cn=sasbind,dc=sasldap,dc=com'
+      userDN: 'uid=sasbind,dc=sasldap,dc=com'
       password: 'SAS@ldapB1nd'
       anonymousBind: 'false'
     sas.identities.providers.ldap.group:
@@ -13,7 +13,7 @@ config:
       baseDN: 'ou=groups,dc=sasldap,dc=com'
       createdDate: 'createTimestamp'
       distinguishedName: 'none'
-      member: 'memberUid'
+      member: 'member'
       memberOf: 'none'
       modifiedDate: 'modifyTimestamp'
       objectClass: 'posixGroup'
@@ -24,7 +24,7 @@ config:
       baseDN: 'ou=users,dc=sasldap,dc=com'
       createdDate: 'createTimestamp'
       distinguishedName: 'none'
-      memberOf: 'none'
+      memberOf: 'memberOf'
       modifiedDate: 'modifyTimestamp'
       objectClass: 'posixAccount'
       objectFilter: '(objectClass=posixAccount)'

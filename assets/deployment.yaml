@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -7,83 +6,81 @@ metadata:
     app: sas-ldap-server
     app.kubernetes.io/part-of: sas-ldap
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: sas-ldap-server
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
   template:
     metadata:
       labels:
         app: sas-ldap-server
-        app.kubernetes.io/part-of: sas-ldap
+        app.kubernetes.io/part-of: sas-ldap-server
     spec:
       containers:
         - name: sas-ldap-server
-          image: osixia/openldap:1.5.0
+          image: sas-ldap-server:latest
           imagePullPolicy: IfNotPresent
-          args:
-            - --copy-service
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            allowPrivilegeEscalation: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi
+          ports:
+            - containerPort: 1389
+              name: sas-ldap-port
+            - containerPort: 1636
+              name: sas-ldaps-port
+          envFrom:
+            - configMapRef:
+                name: sas-ldap-config
           volumeMounts:
-            - name: sas-ldap-volume-overlay
-              mountPath: /container/service/slapd/assets/config/bootstrap/ldif/03-memberOf.ldif
-              subPath: 03-memberOf.ldif
             - name: sas-ldap-data
-              mountPath: /var/lib/ldap
-            - name: sas-ldap-config
-              mountPath: /etc/ldap/slapd.d
+              mountPath: /bitnami
             - name: sas-ldap-certs
               mountPath: /container/service/slapd/assets/certs
-          ports:
-            - containerPort: 636
-              name: sas-ldaps-port
-            - containerPort: 3269
-              name: sas-ldaps-gport
-          env:
-            - name: LDAP_TLS
-              value: "true"
-            - name: LDAP_TLS_CRT_FILENAME
-              value: "tls.crt"
-            - name: LDAP_TLS_KEY_FILENAME
-              value: "tls.key"
-            - name: LDAP_TLS_CA_CRT_FILENAME
-              value: "tls.crt"
-            - name: LDAP_TLS_VERIFY_CLIENT
-              value: "never"
-            - name: LDAP_ORGANISATION
-              value: "SASLDAP"
-            - name: LDAP_DOMAIN
-              value: "sasldap.com"
-            - name: LDAP_ADMIN_PASSWORD
-              value: "SAS@ldapAdm1n"
-            - name: LDAP_CONFIG_PASSWORD
-              value: "SAS@ldapAdm1n"
-            - name: LDAP_READONLY_USER
-              value: "true"
-            - name: LDAP_READONLY_USER_USERNAME
-              value: "sasbind"
-            - name: LDAP_READONLY_USER_PASSWORD
-              value: "SAS@ldapB1nd"
-            - name: LDAP_REMOVE_CONFIG_AFTER_SETUP
-              value: "false"
-            - name: LDAP_RFC2307BIS_SCHEMA
-              value: "true"
-          resources:
-            limits:
-              cpu: 500m
-              memory: 500Mi
-            requests:
-              cpu: 50m
-              memory: 50Mi
+              readOnly: true
+            - name: sas-ldap-ldifs
+              mountPath: /ldifs/createDomain.ldif
+              subPath: createDomain.ldif
+              readOnly: true
+            - name: sas-ldap-ldifs
+              mountPath: /custom-ldifs/loadMemberOfModule.ldif
+              subPath: loadMemberOfModule.ldif
+              readOnly: true
+            - name: sas-ldap-ldifs
+              mountPath: /custom-ldifs/configureMemberOfOverlay.ldif
+              subPath: configureMemberOfOverlay.ldif
+              readOnly: true
+            - name: sas-ldap-ldifs
+              mountPath: /custom-ldifs/sasbindACLs.ldif
+              subPath: sasbindACLs.ldif
+              readOnly: true
+            - name: sas-ldap-rfc2307bis
+              mountPath: /opt/bitnami/openldap/etc/schema/rfc2307bis.ldif
+              subPath: rfc2307bis.ldif
+              readOnly: true
       volumes:
-        - name: sas-ldap-volume-overlay
-          configMap:
-            name: sas-ldap-memberof-overlay
         - name: sas-ldap-data
           persistentVolumeClaim:
             claimName: sas-ldap-data-pvc
-        - name: sas-ldap-config
-          persistentVolumeClaim:
-            claimName: sas-ldap-config-pvc
         - name: sas-ldap-certs
           secret:
-            secretName: "sas-ldap-certificate"
+            secretName: sas-ldap-certs
+        - name: sas-ldap-ldifs
+          configMap:
+            name: sas-ldap-ldifs
+        - name: sas-ldap-rfc2307bis
+          configMap:
+            name: sas-ldap-rfc2307bis
+      restartPolicy: Always
