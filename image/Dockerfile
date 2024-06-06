@@ -54,7 +54,3 @@ ENV BITNAMI_DEBUG=true
 ENV LDAP_CUSTOM_LDIF_DIR="/ldifs"
 ENV LDAP_ADD_SCHEMAS=yes
 ENV LDAP_EXTRA_SCHEMAS="cosine, inetorgperson, rfc2307bis"
-
-# Apply 'memberOf' overlay
-RUN ldapadd -x -H ldap://localhost:1389 -D "cn=admin,dc=sasldap,dc=com" -w SAS@ldapAdm1n -f /ldifs/0-loadMemberOfModule.ldif
-RUN ldapadd -x -H ldap://localhost:1389 -D "cn=admin,dc=sasldap,dc=com" -w SAS@ldapAdm1n -f /ldifs/1-configureMemberOfOverlay.ldif
