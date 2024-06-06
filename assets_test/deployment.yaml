@@ -47,40 +47,8 @@ spec:
           volumeMounts:
             - name: sas-ldap-data
               mountPath: /bitnami
-            - name: sas-ldap-certs
-              mountPath: /container/service/slapd/assets/certs
-              readOnly: true
-            - name: sas-ldap-ldifs
-              mountPath: /ldifs/createDomain.ldif
-              subPath: createDomain.ldif
-              readOnly: true
-            - name: sas-ldap-ldifs
-              mountPath: /custom-ldifs/loadMemberOfModule.ldif
-              subPath: loadMemberOfModule.ldif
-              readOnly: true
-            - name: sas-ldap-ldifs
-              mountPath: /custom-ldifs/configureMemberOfOverlay.ldif
-              subPath: configureMemberOfOverlay.ldif
-              readOnly: true
-            - name: sas-ldap-ldifs
-              mountPath: /custom-ldifs/sasbindACLs.ldif
-              subPath: sasbindACLs.ldif
-              readOnly: true
-            - name: sas-ldap-rfc2307bis
-              mountPath: /opt/bitnami/openldap/etc/schema/rfc2307bis.ldif
-              subPath: rfc2307bis.ldif
-              readOnly: true
       volumes:
         - name: sas-ldap-data
           persistentVolumeClaim:
             claimName: sas-ldap-data-pvc
-        - name: sas-ldap-certs
-          secret:
-            secretName: sas-ldap-certs
-        - name: sas-ldap-ldifs
-          configMap:
-            name: sas-ldap-ldifs
-        - name: sas-ldap-rfc2307bis
-          configMap:
-            name: sas-ldap-rfc2307bis
       restartPolicy: Always

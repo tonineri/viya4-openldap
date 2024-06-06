@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sas-ldap-service
+  labels:
+    app: sas-ldap-server
+spec:
+  type: ClusterIP
+  selector:
+    app: sas-ldap-server
+  ports:
+    - name: sas-ldap-port
+      protocol: TCP
+      port: 1389
+      targetPort: 1389
+    - name: sas-ldaps-port
+      protocol: TCP
+      port: 1636
+      targetPort: 1636
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: sas-ldap-service
+#  labels:
+#    app: sas-ldap-server
+#spec:
+#  type: LoadBalancer
+#  selector:
+#    app: sas-ldap-server
+#  ports:
+#    - name: sas-ldap-port
+#      port: 1389
+#      targetPort: 1389
+#      protocol: TCP
+#    - name: sas-ldaps-port
+#      port: 1636
+#      targetPort: 1636
+#      protocol: TCP
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: sas-ldap-service
+#  labels:
+#    app: sas-ldap-server
+#spec:
+#  type: nodePort
+#  selector:
+#    app: sas-ldap-server
+#  ports:
+#    - name: sas-ldap-port
+#      port: 1389
+#      targetPort: 1389
+#      protocol: TCP
+#      nodePort: 31389 # adjust if necessary
+#    - name: sas-ldaps-port
+#      port: 1636
+#      targetPort: 1636
+#      protocol: TCP
+#      nodePort: 31636 # adjust if necessary
