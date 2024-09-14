@@ -42,11 +42,9 @@ Ensure the following prerequisites are met before executing the script:
 - **Image Access:**
   - The cluster should be capable of pulling images from `docker.io`. 
   
-    > ![Note](/.design/note.png)
-    >
-    > Alternatively, you can mirror [bitnami/openldap:latest](https://hub.docker.com/r/bitnami/openldap/tags?page=&page_size=&ordering=&name=latest) to your local container registry.
-    > Be sure to modify it in the [kustomization.yaml](assets/kustomizatiion.yaml) file before executing the [viya4-openldap.sh](viya4-openldap.sh) script.
-    
+> [!TIP]
+> Alternatively, you can mirror [bitnami/openldap:latest](https://hub.docker.com/r/bitnami/openldap/tags?page=&page_size=&ordering=&name=latest) to your local container registry.
+> Be sure to modify it in the [kustomization.yaml](assets/kustomizatiion.yaml) file before executing the [viya4-openldap.sh](viya4-openldap.sh) script.
 
 ![Divider](/.design/divider.png)
 
@@ -71,9 +69,8 @@ Ensure the following prerequisites are met before executing the script:
 
 5. **OPTIONAL**: If you chose to load the **SAS Viya**-ready structure, consider copying the [samples/sitedefault.yaml](samples/sitedefault.yaml) to `$deploy/site-config/sitedefault.yaml` for automation purposes.
 
-    > ![Note](/.design/note.png)
-    >
-    > Ensure you also defined it in the 'transformers' section of your `$deploy/kustomization.yaml` file.
+> [!IMPORTANT]
+> Ensure you also defined it in the 'transformers' section of your `$deploy/kustomization.yaml` file.
 
 ![Divider](/.design/divider.png)
 
@@ -155,9 +152,8 @@ Ensure the following prerequisites are met before executing the script:
 
 For LDAP**S** (secure), copy the `viya4-openldap/certificates/sasldap_CA.crt` file in your `$deploy/site-config/security/cacerts` directory and define it in your `customer-provided-ca-certificates.yaml` file."
 
-  > ![Note](/.design/note.png)
-  >
-  > Ensure you also defined the `customer-provided-ca-certificates.yaml` file in the 'transformers'   section of your `$deploy/kustomization.yaml` file.
+> [!IMPORTANT]
+> Ensure you also defined the `customer-provided-ca-certificates.yaml` file in the 'transformers' section of your `$deploy/kustomization.yaml` file.
 
 ![Divider](/.design/divider.png)
 
