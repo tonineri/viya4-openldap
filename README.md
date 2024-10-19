@@ -44,7 +44,7 @@ Ensure the following prerequisites are met before executing the script:
   
 > [!TIP]
 > Alternatively, you can mirror [bitnami/openldap:latest](https://hub.docker.com/r/bitnami/openldap/tags?page=&page_size=&ordering=&name=latest) to your local container registry.
-> Be sure to modify it in the [kustomization.yaml](assets/kustomizatiion.yaml) file before executing the [viya4-openldap.sh](viya4-openldap.sh) script.
+> Be sure to modify it in the [kustomization.yaml](assets/kustomization.yaml) file before executing the [viya4-openldap.sh](viya4-openldap.sh) script.
 
 ![Divider](/.design/divider.png)
 
@@ -66,8 +66,7 @@ Ensure the following prerequisites are met before executing the script:
 
 3. Follow any on-screen prompts or instructions to complete the deployment process seamlessly.
 
-
-5. **OPTIONAL**: If you chose to load the **SAS Viya**-ready structure, consider copying the [samples/sitedefault.yaml](samples/sitedefault.yaml) to `$deploy/site-config/sitedefault.yaml` for automation purposes.
+4. **OPTIONAL**: If you chose to load the **SAS Viya**-ready structure, consider copying the [samples/sitedefault.yaml](samples/sitedefault.yaml) to `$deploy/site-config/sitedefault.yaml` for automation purposes.
 
 > [!IMPORTANT]
 > Ensure you also defined it in the 'transformers' section of your `$deploy/kustomization.yaml` file.
