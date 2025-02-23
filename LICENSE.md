@@ -186,7 +186,7 @@
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright © 2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+   Copyright © 2025, Antonio Neri <antoneri@proton.me>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

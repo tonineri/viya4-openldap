@@ -16,7 +16,7 @@
 4. [OpenLDAP Management](#openldap-management)
 5. [Users and Passwords](#users-and-passwords)
 6. [Configure with SAS Viya](#configure-with-sas-viya)
-7. [Common Issues](#common-issues)
+7. [Known Issues](#known-issues)
 
 ![Divider](/.design/divider.png)
 
@@ -40,7 +40,7 @@ Ensure the following prerequisites are met before executing the script:
   - The user must have namespace creation/management permissions on the cluster.
 
 - **Image Access:**
-  - The cluster should be capable of pulling images from `docker.io`. 
+  - The cluster should be capable of pulling images from `docker.io`.
   
 > [!TIP]
 > Alternatively, you can mirror [bitnami/openldap:latest](https://hub.docker.com/r/bitnami/openldap/tags?page=&page_size=&ordering=&name=latest) to your local container registry.
@@ -50,13 +50,13 @@ Ensure the following prerequisites are met before executing the script:
 
 ## Usage
 
-1. Clone the `viya4-openldap` repository:
+1. Clone the `viya4-openldap` repository
 
   ```bash
   git clone https://github.com/tonineri/viya4-openldap
   ```
 
-2. Execute the script, specifying the desired namespace for OpenLDAP:
+2. Execute the script, specifying the desired namespace for OpenLDAP
 
     ```bash
     cd viya4-openldap 
@@ -78,14 +78,22 @@ Ensure the following prerequisites are met before executing the script:
 1. Using a `ClusterIP` (default) service.
     - To access and manage your LDAP, execute the following command on your jump host:
 
-      ```bash
-      kubectl -n <desiredNamespaceName> port-forward --address localhost svc/sas-ldap-service [1389:1389 |  1636:1636] # 1389:1389 for LDAP or 1636:1636 for LDAPS.
-      ```
+      - **With** TLS (LDAP**S**)
+
+        ```bash
+        kubectl -n <desiredNamespaceName> port-forward --address localhost svc/sas-ldap-service 1636:1636
+        ```
+
+      - **Without** TLS (LDAP)
+
+        ```bash
+        kubectl -n <desiredNamespaceName> port-forward --address localhost svc/sas-ldap-service 1389:1389
+        ```
 
     - While port-forwarding is running on you jump host, access the LDAP server through an LDAP browser (like ApacheDirectoryStudio, LdapAdmin, etc.) from your client machine using the following parameters:
 
       - Host:         `IP/hostname of your jump host`
-      - Port:         `1389 / 1636` (LDAP / LDAPS)
+      - Port:         `1389 / 1636` (LDAP / LDAP**S**)
       - User:         `cn=admin,dc=sasldap,dc=com`
       - Pass:         `SAS@ldapAdm1n`
       - BaseDN:       `dc=sasldap,dc=com`
@@ -96,7 +104,7 @@ Ensure the following prerequisites are met before executing the script:
     Access the LDAP server through an LDAP browser (like ApacheDirectoryStudio, LdapAdmin, etc.) from your  client machine using the following parameters:
 
       - Host:         `LoadBalancer EXTERNAL IP or hostname`
-      - Port:         `1389 / 1636` (LDAP/LDAPS)
+      - Port:         `1389 / 1636` (LDAP/LDAP**S**)
       - User:         `cn=admin,dc=sasldap,dc=com`
       - Pass:         `SAS@ldapAdm1n`
       - BaseDN:       `dc=sasldap,dc=com`
@@ -106,7 +114,7 @@ Ensure the following prerequisites are met before executing the script:
 
 ## Users and Passwords
 
-* These are the accounts (and their passwords) deployed by default:
+- These are the accounts (and their passwords) deployed by default:
 
   | username  | password       | distinguishedName                        |
   |-----------|----------------|------------------------------------------|

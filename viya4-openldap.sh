@@ -5,7 +5,7 @@
 # SAS Viya 4 - Persistent OpenLDAP Light
 # Description: This script fully prepares and deploys an OpenLDAP server for use with SAS Viya 4.
 
-# Copyright © 2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# Copyright © 2025, Antonio Neri <antoneri@proton.me>
 # SPDX-License-Identifier: Apache-2.0
 
 # -----------------------------------------------  version -----------------------------------------------
