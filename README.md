@@ -1,12 +1,12 @@
 <div align="center">
 
-![SAS Viya](/.design/sasviya.png)
+![SAS Viya](https://i.ibb.co/s9TsBGzK/sasviya.png)
 
 # **Persistent OpenLDAP for SAS Viya**
 
 </div>
 
-![Divider](/.design/divider.png)
+![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@
 6. [Configure with SAS Viya](#configure-with-sas-viya)
 7. [Known Issues](#known-issues)
 
-![Divider](/.design/divider.png)
+![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
 
 ## Description
 
@@ -26,7 +26,7 @@ Based on [bitnami/openldap](https://github.com/bitnami/containers/tree/main/bitn
 
 The tool supports unencrypted connection to port **1389** (LDAP) and encrypted connection to port **1636** (LDAPS).
 
-![Divider](/.design/divider.png)
+![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
 
 ## Prerequisites
 
@@ -46,7 +46,7 @@ Ensure the following prerequisites are met before executing the script:
 > Alternatively, you can mirror [bitnami/openldap:latest](https://hub.docker.com/r/bitnami/openldap/tags?page=&page_size=&ordering=&name=latest) to your local container registry.
 > Be sure to modify it in the [kustomization.yaml](assets/kustomization.yaml) file before executing the [viya4-openldap.sh](viya4-openldap.sh) script.
 
-![Divider](/.design/divider.png)
+![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
 
 ## Usage
 
@@ -71,7 +71,7 @@ Ensure the following prerequisites are met before executing the script:
 > [!IMPORTANT]
 > Ensure you also defined it in the 'transformers' section of your `$deploy/kustomization.yaml` file.
 
-![Divider](/.design/divider.png)
+![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
 
 ## OpenLDAP Management
 
@@ -110,7 +110,7 @@ Ensure the following prerequisites are met before executing the script:
       - BaseDN:       `dc=sasldap,dc=com`
       - Certificate:  `viya4-openldap/certificates/sasldap_CA.crt`
 
-![Divider](/.design/divider.png)
+![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
 
 ## Users and Passwords
 
@@ -153,7 +153,7 @@ Ensure the following prerequisites are met before executing the script:
        └──👤 uid=sasuser  | 🔑 lnxsas
   ```
 
-![Divider](/.design/divider.png)
+![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
 
 ## Configure with SAS Viya
 
@@ -162,7 +162,7 @@ For LDAP**S** (secure), copy the `viya4-openldap/certificates/sasldap_CA.crt` fi
 > [!IMPORTANT]
 > Ensure you also defined the `customer-provided-ca-certificates.yaml` file in the 'transformers' section of your `$deploy/kustomization.yaml` file.
 
-![Divider](/.design/divider.png)
+![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
 
 ## ACLs
 
