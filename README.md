@@ -112,6 +112,19 @@ Ensure the following prerequisites are met before executing the script:
 
 ![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
 
+> [!TIP]
+> [Macmod/godap](https://github.com/Macmod/godap) is cool terminal-based (TUI) OpenLDAP explorer/manager.
+> To use it:
+>   ```sh
+>   # Install version `v2.10.6`
+>   cd ~
+>   wget https://github.com/Macmod/godap/releases/download/v2.10.6/godap-v2.10.6-linux-amd64.tar.gz
+>   tar xf godap-v2.10.6-linux-amd64.tar.gz godap
+>   sudo install godap -o root -g root -m 0755 /usr/local/bin/godap
+>   # Execute
+>   godap <hostname or IP> -u admin@sasldap.com -p "SAS@ldapAdm1n"
+>   ```
+
 ## Users and Passwords
 
 - These are the accounts (and their passwords) deployed by default:
