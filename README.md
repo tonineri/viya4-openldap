@@ -22,7 +22,7 @@
 
 ## Description
 
-Based on [bitnami/openldap](https://github.com/bitnami/containers/tree/main/bitnami/openldap), this project automates the deployment and configuration of an OpenLDAP server tailored for SAS Viya 4, running in a Kubernetes environment. The setup includes custom schemas, ACLs, and integration with SAS applications, ensuring a ready-to-use LDAP service with necessary access controls and structure for SAS Viya.
+Based on [bitnamilegacy/openldap](https://hub.docker.com/r/bitnamilegacy/openldap/tags?name=latest), this project automates the deployment and configuration of an OpenLDAP server tailored for SAS Viya 4, running in a Kubernetes environment. The setup includes custom schemas, ACLs, and integration with SAS applications, ensuring a ready-to-use LDAP service with necessary access controls and structure for SAS Viya.
 
 The tool supports unencrypted connection to port **1389** (LDAP) and encrypted connection to port **1636** (LDAPS).
 
@@ -43,7 +43,7 @@ Ensure the following prerequisites are met before executing the script:
   - The cluster should be capable of pulling images from `docker.io`.
   
 > [!TIP]
-> Alternatively, you can mirror [bitnami/openldap:latest](https://hub.docker.com/r/bitnami/openldap/tags?page=&page_size=&ordering=&name=latest) to your local container registry.
+> Alternatively, you can mirror [bitnamilegacy/openldap:latest](https://hub.docker.com/r/bitnamilegacy/openldap/tags?name=latest) to your local container registry.
 > Be sure to modify it in the [kustomization.yaml](assets/kustomization.yaml) file before executing the [viya4-openldap.sh](viya4-openldap.sh) script.
 
 ![Divider](https://i.ibb.co/Rk1CXDML/divider.png)

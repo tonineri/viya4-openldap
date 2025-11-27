@@ -52,5 +52,5 @@ configMapGenerator:
       - openldap/rfc2307bis/rfc2307bis.ldif
 images:
   - name: sas-ldap-server
-    newName: bitnami/openldap
+    newName: bitnamilegacy/openldap
     newTag: latest
