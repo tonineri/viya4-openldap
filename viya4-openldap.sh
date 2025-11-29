@@ -10,7 +10,8 @@
 
 # -----------------------------------------------  version -----------------------------------------------
 
-V4LDAPVER="v1.0.0"        # viya4-openldap version
+V4LDAPVER="v1.1.1"                   # viya4-openldap version
+V4LDAPRELDATE="November 29th, 2025"  # viya4-openldap version release date
 
 # ----------------------------------------------  textStyle ----------------------------------------------
 
@@ -43,6 +44,8 @@ OPTMSG="${BOLD}${YELLOW}OPTIONAL${NONE}"
 TMPDIR=/tmp/kubetemp
 mkdir -p -m 777 $TMPDIR
 TMPFILE="/tmp/$$$RANDOM"
+TMPERROR="/tmp/$$$RANDOM.err"
+VERBOSE=0
 
 # -----------------------------------------------  backBone  ---------------------------------------------
 
@@ -64,10 +67,20 @@ spin() {
                     tput cnorm
                     printf "\033[2K" 2>/dev/null
                     printf " ${BRED}✗${NONE}  $before_msg\n" 2>/dev/null
-                    rm -f $TMPFILE
+                    
+                    # Show error details in verbose mode
+                    if [[ $VERBOSE -eq 1 ]] && [[ -f $TMPERROR ]]; then
+                        echo -e "\n   ${ERRORMSG} | Error details:"
+                        while IFS= read -r line; do
+                            echo -e "   ${RED}│${NONE} $line"
+                        done < "$TMPERROR"
+                        echo ""
+                    fi
+                    
+                    rm -f $TMPFILE $TMPERROR
                     exit 1
                 else
-                    rm -f $TMPFILE
+                    rm -f $TMPFILE $TMPERROR
                     tput cnorm
                     printf "\033[2K" 2>/dev/null
                     printf " ${BGREEN}✓${NONE}  $after_msg\n" 2>/dev/null
@@ -108,10 +121,25 @@ execute() {
     done
 
     {
+        # Clear error file
+        > "$TMPERROR"
+        
         for arg in "${args[@]}"; do
-            eval "$arg" &>/dev/null
-            status=$?
+            if [[ $VERBOSE -eq 1 ]]; then
+                # Verbose mode: show output
+                eval "$arg" 2>&1 | tee -a "$TMPERROR"
+                status=${PIPESTATUS[0]}
+            else
+                # Normal mode: capture stderr only
+                eval "$arg" 2>"$TMPERROR" 1>/dev/null
+                status=$?
+            fi
+            
             if [[ $status -ne 0 ]]; then
+                # Add custom error message if provided
+                if [[ ${#errors[@]} -gt 0 ]]; then
+                    echo "${errors[0]}" >> "$TMPERROR"
+                fi
                 printf "$status\n" >"$TMPFILE"
                 return $status
             fi
@@ -131,6 +159,13 @@ printHeader() {
   echo -e "\n                ${BOLD}Persistent OpenLDAP${NONE} for ${BCYAN}SAS Viya${NONE}               "
   echo -e "________________________________________________________________"
 }
+
+# Verbose logging function
+vlog() {
+  if [[ $VERBOSE -eq 1 ]]; then
+    echo -e "   ${CYAN}[VERBOSE]${NONE} $1"
+  fi
+}
 # -----------------------------------------------  options  ----------------------------------------------
 
 PWD=$PWD
@@ -147,8 +182,12 @@ while [ "$#" -gt 0 ]; do
         exit 1
       fi
       ;;
+    -v|--verbose)
+      VERBOSE=1
+      echo -e "\n${INFOMSG} | Verbose mode enabled"
+      ;;
     --version)
-	    echo -e "\n$V4LDAPVER | June 1st, 2024   "
+	    echo -e "\n$V4LDAPVER | $V4LDAPRELDATE"
 	    echo -e ""
       exit 0
       ;;
@@ -156,7 +195,7 @@ while [ "$#" -gt 0 ]; do
       echo -e "\n$ERRORMSG | Unknown option: $1"
       echo -e "____________________________________________"
       echo -e "\n$INFOMSG | Usage:"
-  	  echo -e "$0 --namespace ${ITALIC}<desired-ldap-namespace-name>${NONE}"
+  	  echo -e "$0 --namespace ${ITALIC}<desired-ldap-namespace-name>${NONE} [-v|--verbose]"
   	  echo -e "$0 --version to see script version"
       exit 1
       ;;
@@ -167,7 +206,7 @@ done
 # options | Check if the required options are provided
 if [ -z "$NS" ]; then
   echo -e "\n$INFOMSG | Usage:"
-  echo -e "$0 --namespace ${ITALIC}<desired-ldap-namespace-name>${NONE}"
+  echo -e "$0 --namespace ${ITALIC}<desired-ldap-namespace-name>${NONE} [-v|--verbose]"
   echo -e "$0 --version to see script version"
   exit 1
 fi
@@ -348,16 +387,23 @@ echo -e "\n⮞  ${BYELLOW}OpenLDAP Deployment${NONE}\n"
 
 ### Build OpenLDAP deployment
 buildOpenLDAP() {
-  if sed -i 's|{{ SASLDAP-NAMESPACE }}|$NS|g' assets/namespace.yaml > /dev/null 2>&1; then
-    return 0 # namespace.yaml edited
-  else
+  vlog "Replacing namespace placeholder in namespace.yaml with: $NS"
+  
+  if ! sed -i "s|{{ SASLDAP-NAMESPACE }}|$NS|g" assets/namespace.yaml > /dev/null 2>&1; then
+    echo -e "$ERRORMSG | Failed to edit namespace.yaml" >&2
     return 1 # namespace.yaml edit failed
   fi
-  if kustomize build ./assets/ -o ${NS}-deployment.yaml > /dev/null 2>&1; then
-    return 0 # OpenLDAP deployment built
-  else
+  
+  vlog "Running kustomize build to generate deployment manifest..."
+  
+  if ! kustomize build ./assets/ -o ${NS}-deployment.yaml > /dev/null 2>&1; then
+    echo -e "$ERRORMSG | Kustomize build failed" >&2
     return 1 # OpenLDAP deployment build failed
   fi
+  
+  vlog "Deployment manifest created: ${NS}-deployment.yaml"
+  
+  return 0
 }
 
 execute \
@@ -382,11 +428,32 @@ execute \
 ### Wait for OpenLDAP server to start
 waitForOpenLDAP() {
   local secs=$1
-  local podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
+  local podOpenLDAP=""
+  
+  vlog "Waiting for pod to be created..."
 
+  local wait_secs=60
+  while [ $wait_secs -gt 0 ]; do
+    podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+    if [ -n "$podOpenLDAP" ]; then
+      vlog "Pod created: $podOpenLDAP"
+      break
+    fi
+    sleep 1
+    ((wait_secs--))
+  done
+  
+  if [ -z "$podOpenLDAP" ]; then
+    echo -e "$ERRORMSG | Pod not created within timeout" >&2
+    return 1
+  fi
+
+  vlog "Waiting for 'slapd starting' message in logs (timeout: ${secs}s)..."
+  
   # Check if "slapd starting" message appears in the pod's logs
   while [ $secs -gt 0 ]; do
-    if kubectl logs -n $NS $podOpenLDAP | grep -q "slapd starting"; then
+    if kubectl logs -n $NS $podOpenLDAP 2>/dev/null | grep -q "slapd starting"; then
+      vlog "LDAP server started successfully"
       return 0 # Return success if the message is found
     else
       sleep 1
@@ -394,7 +461,7 @@ waitForOpenLDAP() {
     fi
   done
 
-  echo -e "$ERRORMSG | Timeout: 'slapd starting' message not found in logs"
+  echo -e "$ERRORMSG | Timeout: 'slapd starting' message not found in logs" >&2
   return 1 # Return failure if the message is not found within the timeout
 }
 
@@ -427,7 +494,7 @@ printConnectionInfo() {
   sleep 0.5
   echo ""
   echo -e "   $NOTEMSG | To manage your LDAP, launch the following command ${YELLOW}before${NONE} accessing it via LDAP browser:"
-  echo -e "   ${ITALIC}kubectl -n $NS port-forward --address localhost svc/sas-ldap-service 1389:1389${NONE}"
+  echo -e "   ${ITALIC}kubectl -n $NS port-forward svc/sas-ldap-service 1389:1389${NONE}"
 }
 
 ### Print default tree
@@ -466,16 +533,31 @@ printGoodbye(){
 ### Enable `memberOf` attribute
 applyMemberOf(){
   local podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
-  local port_forward_pid
-
+  
+  vlog "Applying memberOf module to pod: $podOpenLDAP"
+  
   sleep 5
+  vlog "Loading memberOf module..."
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/loadMemberOfModule.ldif
+  
+  vlog "Configuring memberOf overlay..."
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/configureMemberOfOverlay.ldif
   sleep 2
+  
+  vlog "Restarting pod to apply changes..."
+  
   kubectl -n $NS delete pod $podOpenLDAP
   sleep 5
-  if kubectl wait --for=condition=ready pod/$podOpenLDAP -n $NS; then
+  
+  vlog "Waiting for new pod to be ready..."
+  
+  if kubectl wait --for=condition=ready pod -l app=sas-ldap-server -n $NS --timeout=120s > /dev/null 2>&1; then
     sleep 5
+    vlog "MemberOf configuration applied successfully"
+    return 0
+  else
+    echo -e "$ERRORMSG | Failed to wait for pod restart" >&2
+    return 1
   fi
 }
 
@@ -483,38 +565,48 @@ applyMemberOf(){
 deploySASViyaStructure() {
   podOpenLDAP=$(kubectl get pod -l app=sas-ldap-server -n $NS -o jsonpath='{.items[0].metadata.name}')
   
+  vlog "Deploying SAS Viya structure to pod: $podOpenLDAP"
+  
   ### Copy the sas-ldap-structure.ldif file to the OpenLDAP container
+  vlog "Copying sas-ldap-structure.ldif to pod..."
   kubectl -n $NS cp samples/sas-ldap-structure.ldif $podOpenLDAP:/tmp/sas-ldap-structure.ldif
   if [ $? -ne 0 ]; then
-    echo -e "$ERRORMSG | Failed to copy sas-ldap-structure.ldif to the OpenLDAP container."
+    echo -e "$ERRORMSG | Failed to copy sas-ldap-structure.ldif to the OpenLDAP container." >&2
     return 1
   fi
 
   ### ldapadd sas-ldap-structure.ldif
+  vlog "Applying LDAP structure (users and groups)..."
   kubectl -n $NS exec -it $podOpenLDAP -- ldapadd -x -H ldap://localhost:1389 -D "cn=admin,dc=sasldap,dc=com" -w SAS@ldapAdm1n -f /tmp/sas-ldap-structure.ldif
   if [ $? -ne 0 ]; then
-    echo -e "$ERRORMSG | Failed to apply SAS Viya-ready structure."
+    echo -e "$ERRORMSG | Failed to apply SAS Viya-ready structure." >&2
     return 1
   fi
 
   ### ldapmodify sasbindACLs.ldif
+  vlog "Applying ACLs for sasbind user..."
   kubectl -n $NS exec -it $podOpenLDAP -- ldapmodify -Y EXTERNAL -H ldapi:/// -f /custom-ldifs/sasbindACLs.ldif
   if [ $? -ne 0 ]; then
-    echo -e "$ERRORMSG | Failed to apply ACLs to sasbind user."
+    echo -e "$ERRORMSG | Failed to apply ACLs to sasbind user." >&2
     return 1
   fi
 
   ### Restart $podOpenLDAP
+  vlog "Restarting pod to finalize configuration..."
   sleep 2
   kubectl -n $NS delete pod $podOpenLDAP
   sleep 5
 
-  kubectl wait --for=condition=ready pod -l app=sas-ldap-server -n $NS
+  vlog "Waiting for pod to be ready after restart..."
+  
+  kubectl wait --for=condition=ready pod -l app=sas-ldap-server -n $NS --timeout=120s
   if [ $? -ne 0 ]; then
-    echo -e "$ERRORMSG | Failed to wait for OpenLDAP pod to be ready."
+    echo -e "$ERRORMSG | Failed to wait for OpenLDAP pod to be ready." >&2
     return 1
   fi
 
+  vlog "SAS Viya structure deployed successfully"
+  
   return 0
 }
 

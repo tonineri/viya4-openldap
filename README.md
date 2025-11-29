@@ -62,6 +62,9 @@ Ensure the following prerequisites are met before executing the script:
     cd viya4-openldap 
     chmod +x viya4-openldap.sh
     ./viya4-openldap.sh --namespace <desiredNamespaceName>
+
+    # for enhanced logging/debugging
+    ./viya4-openldap.sh --namespace <desiredNamespaceName> --verbose
     ```
 
 3. Follow any on-screen prompts or instructions to complete the deployment process seamlessly.
@@ -70,6 +73,9 @@ Ensure the following prerequisites are met before executing the script:
 
 > [!IMPORTANT]
 > Ensure you also defined it in the 'transformers' section of your `$deploy/kustomization.yaml` file.
+
+> [!TIP]
+> Add `-v` or `--verbose` during script execution for enhanced logging.
 
 ![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
 
