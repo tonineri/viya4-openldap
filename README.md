@@ -6,7 +6,7 @@
 
 </div>
 
-![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
+![Divider](/.design/divider.png)
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@
 6. [Configure with SAS Viya](#configure-with-sas-viya)
 7. [Known Issues](#known-issues)
 
-![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
+![Divider](/.design/divider.png)
 
 ## Description
 
@@ -26,7 +26,7 @@ Based on [bitnamilegacy/openldap](https://hub.docker.com/r/bitnamilegacy/openlda
 
 The tool supports unencrypted connection to port **1389** (LDAP) and encrypted connection to port **1636** (LDAPS).
 
-![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
+![Divider](/.design/divider.png)
 
 ## Prerequisites
 
@@ -46,7 +46,7 @@ Ensure the following prerequisites are met before executing the script:
 > Alternatively, you can mirror [bitnamilegacy/openldap:latest](https://hub.docker.com/r/bitnamilegacy/openldap/tags?name=latest) to your local container registry.
 > Be sure to modify it in the [kustomization.yaml](assets/kustomization.yaml) file before executing the [viya4-openldap.sh](viya4-openldap.sh) script.
 
-![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
+![Divider](/.design/divider.png)
 
 ## Usage
 
@@ -77,7 +77,7 @@ Ensure the following prerequisites are met before executing the script:
 > [!TIP]
 > Add `-v` or `--verbose` during script execution for enhanced logging.
 
-![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
+![Divider](/.design/divider.png)
 
 ## OpenLDAP Management
 
@@ -116,7 +116,7 @@ Ensure the following prerequisites are met before executing the script:
       - BaseDN:       `dc=sasldap,dc=com`
       - Certificate:  `viya4-openldap/certificates/sasldap_CA.crt`
 
-![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
+![Divider](/.design/divider.png)
 
 > [!TIP]
 > [Macmod/godap](https://github.com/Macmod/godap) is cool terminal-based (TUI) OpenLDAP explorer/manager.
@@ -172,7 +172,7 @@ Ensure the following prerequisites are met before executing the script:
        └──👤 uid=sasuser  | 🔑 lnxsas
   ```
 
-![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
+![Divider](/.design/divider.png)
 
 ## Configure with SAS Viya
 
@@ -181,7 +181,7 @@ For LDAP**S** (secure), copy the `viya4-openldap/certificates/sasldap_CA.crt` fi
 > [!IMPORTANT]
 > Ensure you also defined the `customer-provided-ca-certificates.yaml` file in the 'transformers' section of your `$deploy/kustomization.yaml` file.
 
-![Divider](https://i.ibb.co/Rk1CXDML/divider.png)
+![Divider](/.design/divider.png)
 
 ## ACLs
 
